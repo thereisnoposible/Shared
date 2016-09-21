@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="message">
+      <UniqueIdentifier>{14e88d29-f2e2-456e-9375-397e9a1cbdcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="module">
+      <UniqueIdentifier>{31db418e-a1e2-4819-8563-2fbb7fa80f3d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\hello.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseModule.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WugongModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="TongheModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\wugong.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="FightManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MapManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\tonghe.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\object.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="cell.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseModule.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WugongModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="TongheModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FightManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MapManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectModule.h">
+      <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="Cell.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

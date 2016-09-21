@@ -1,0 +1,10 @@
+#pragma once
+#define BASEPORT	10080
+#define SERVERMGRADDR "127.0.0.1"
+#define SERVERMGRPORT 10080
+
+#define SERVERADDR "127.0.0.1"
+#define SERVERPORT 10081
+
+#define ACCOUNTADDR "127.0.0.1"
+#define ACCOUNTPORT 10082

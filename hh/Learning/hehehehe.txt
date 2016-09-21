@@ -1,0 +1,5 @@
+enum netmessage
+{
+	hello,111
+	eirjr 1.121	//	23
+};

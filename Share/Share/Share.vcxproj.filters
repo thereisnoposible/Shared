@@ -1,0 +1,314 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Singleton">
+      <UniqueIdentifier>{4b69cd29-b922-49ca-81df-5424c2021fb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helper">
+      <UniqueIdentifier>{44a70ee4-7add-4bd0-89c5-fcea6bafdbfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DataBase">
+      <UniqueIdentifier>{e2ddac40-335c-4fda-b2cd-89e590d0b752}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{5c963330-e31a-4954-9825-ee08eff76c87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetWork">
+      <UniqueIdentifier>{56fa5d53-17c8-4e03-bef9-0ad573f762ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{f875d1b7-6f82-434d-a2be-6c4bdd081504}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaEngine">
+      <UniqueIdentifier>{ed7646e4-4253-4d0b-b3af-708e3438228c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LuaEngine\lua">
+      <UniqueIdentifier>{c622f79d-ccf6-4198-a4d7-c70de74fd088}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Email">
+      <UniqueIdentifier>{9c9bcc93-2503-4077-b288-782a7bd0cb81}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Singleton.cpp">
+      <Filter>Singleton</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="DBService.cpp">
+      <Filter>DataBase</Filter>
+    </ClCompile>
+    <ClCompile Include="NetClient.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="NetService.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaEngine.cpp">
+      <Filter>LuaEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lapi.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lauxlib.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lbaselib.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lcode.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\ldblib.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\ldebug.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\ldo.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\ldump.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lfunc.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lgc.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\linit.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\liolib.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\llex.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lmathlib.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lmem.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\loadlib.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lobject.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lopcodes.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\loslib.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lparser.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lstate.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lstring.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lstrlib.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\ltable.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\ltablib.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\ltm.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lua.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\luac.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lundump.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lvm.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\lzio.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\print.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\tolua_event.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\tolua_is.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\tolua_map.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\tolua_push.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="lua\tolua_to.c">
+      <Filter>LuaEngine\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="smtp.cpp">
+      <Filter>Email</Filter>
+    </ClCompile>
+    <ClCompile Include="base64_c.cpp">
+      <Filter>Email</Filter>
+    </ClCompile>
+    <ClCompile Include="DBResult.cpp">
+      <Filter>DataBase</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Singleton.h">
+      <Filter>Singleton</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="DBService.h">
+      <Filter>DataBase</Filter>
+    </ClInclude>
+    <ClInclude Include="io_service_pool.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageHandle.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="NetClient.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="NetPack.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="NetService.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerManager.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaEngine.h">
+      <Filter>LuaEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lapi.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lauxlib.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lcode.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\ldebug.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\ldo.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lfunc.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lgc.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\llex.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\llimits.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lmem.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lobject.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lopcodes.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lparser.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lstate.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lstring.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\ltable.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\ltm.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lua.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\luaconf.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lualib.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lundump.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lvm.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\lzio.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\tolua_event.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="lua\tolua++.h">
+      <Filter>LuaEngine\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="smtp.h">
+      <Filter>Email</Filter>
+    </ClInclude>
+    <ClInclude Include="base64_c.h">
+      <Filter>Email</Filter>
+    </ClInclude>
+    <ClInclude Include="DBResult.h">
+      <Filter>DataBase</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lua\Makefile">
+      <Filter>LuaEngine\lua</Filter>
+    </None>
+  </ItemGroup>
+</Project>

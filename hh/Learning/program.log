@@ -1,0 +1,65 @@
+1458202548 ERROR sub1 : sub1 error
+1458202548 WARN sub1 : sub1 warn
+1458202548 ERROR sub1 : Streamed sub1 error
+1458202548 WARN sub1 : Streamed sub1 warn
+1458202551 ERROR sub1 : sub1 error
+1458202551 WARN sub1 : sub1 warn
+1458202551 ERROR sub1 : Streamed sub1 error
+1458202551 WARN sub1 : Streamed sub1 warn
+1458202627 ERROR sub1 : sub1 error
+1458202627 WARN sub1 : sub1 warn
+1458202627 ERROR sub1 : Streamed sub1 error
+1458202627 WARN sub1 : Streamed sub1 warn
+1458202629 ERROR sub1 : sub1 error
+1458202629 WARN sub1 : sub1 warn
+1458202629 ERROR sub1 : Streamed sub1 error
+1458202629 WARN sub1 : Streamed sub1 warn
+1458202700 ERROR sub1 : sub1 error
+1458202700 WARN sub1 : sub1 warn
+1458202700 ERROR sub1 : Streamed sub1 error
+1458202700 WARN sub1 : Streamed sub1 warn
+1458202782 ERROR sub1 : sub1 error
+1458202782 WARN sub1 : sub1 warn
+1458202782 ERROR sub1 : Streamed sub1 error
+1458202782 WARN sub1 : Streamed sub1 warn
+1458203413 ERROR sub1 : sub1 error
+1458203413 WARN sub1 : sub1 warn
+1458203413 ERROR sub1 : Streamed sub1 error
+1458203413 WARN sub1 : Streamed sub1 warn
+1458203430 ERROR sub1 : sub1 error
+1458203430 WARN sub1 : sub1 warn
+1458203430 ERROR sub1 : Streamed sub1 error
+1458203430 WARN sub1 : Streamed sub1 warn
+1458203433 ERROR sub1 : sub1 error
+1458203433 WARN sub1 : sub1 warn
+1458203433 ERROR sub1 : Streamed sub1 error
+1458203433 WARN sub1 : Streamed sub1 warn
+1458203434 ERROR sub1 : sub1 error
+1458203434 WARN sub1 : sub1 warn
+1458203434 ERROR sub1 : Streamed sub1 error
+1458203434 WARN sub1 : Streamed sub1 warn
+1458203436 ERROR sub1 : sub1 error
+1458203436 WARN sub1 : sub1 warn
+1458203436 ERROR sub1 : Streamed sub1 error
+1458203436 WARN sub1 : Streamed sub1 warn
+1458203437 ERROR sub1 : sub1 error
+1458203437 WARN sub1 : sub1 warn
+1458203437 ERROR sub1 : Streamed sub1 error
+1458203437 WARN sub1 : Streamed sub1 warn
+1458203438 ERROR sub1 : sub1 error
+1458203438 WARN sub1 : sub1 warn
+1458203438 ERROR sub1 : Streamed sub1 error
+1458203438 WARN sub1 : Streamed sub1 warn
+1458203439 ERROR sub1 : sub1 error
+1458203439 WARN sub1 : sub1 warn
+1458203439 ERROR sub1 : Streamed sub1 error
+1458203439 WARN sub1 : Streamed sub1 warn
+1458203629 ERROR sub1 : sub1 error
+1458203629 WARN sub1 : sub1 warn
+1458203629 ERROR sub1 : Streamed sub1 error
+1458203629 WARN sub1 : Streamed sub1 warn
+1458204340 DEBUG sub1.sub2 : Hiding solar panels
+1458204340 ERROR sub1.sub2 : Solar panels are blocked
+1458204340 DEBUG sub1.sub2 : Applying protective shield
+1458204340 WARN sub1.sub2 : Unfolding protective shield
+1458204340 INFO sub1.sub2 : Solar panels are shielded
