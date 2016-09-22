@@ -88,7 +88,7 @@ void Client::run(double diff)
 {
 	m_manager->update();
 
-	m_pTimerManager->Update(diff);
+	m_pTimerManager->Update();
 }
 
 void Client::run_fight()
@@ -667,7 +667,7 @@ void Client::get_challenge_response(http::http_response& response)
 		int trank = value["data"]["chAvailRanks"][1].asInt();
 		int tid = 0;
 
-		for (int i = 0; i < value["data"]["chRanks"].size(); i++)
+		for (int i = 0; i < (int)value["data"]["chRanks"].size(); i++)
 		{
 			if (value["data"]["chRanks"][i]["rank"].asInt() == trank)
 				tid = value["data"]["chRanks"][i]["uid"].asInt();
@@ -809,7 +809,7 @@ void Client::getHero_response(http::http_response& response)
 	{
 		std::map<int, int> mm;
 		Json::Value explores = value["data"]["explores"];
-		for (int i = 0; i < explores.size(); i++)
+		for (int i = 0; i < (int)explores.size(); i++)
 		{
 			if (explores[i]["todayTimes"].asInt() == 0)
 				mm[explores[i]["mid"].asInt()] = 0;

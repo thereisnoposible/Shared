@@ -9,7 +9,7 @@ class Comparator
 public:
 	bool operator()(const Timer* a, const Timer* b)
 	{
-		return a->time(0) > b->time(0);
+		return a->time() > b->time();
 	}
 };
 
@@ -18,7 +18,8 @@ class TimerManager : public Singleton<TimerManager>
 public:
 	TimerManager() : _interval(0)
 	{
-
+		_create_time = std::chrono::steady_clock::now();
+		_update_time = _create_time;
 	}
 	~TimerManager()
 	{
@@ -29,13 +30,15 @@ public:
 		}
 	}
 
-	void Update(double diff)
+	void Update()
 	{
-		_interval += diff;
-		while (!Timers.empty() && (Timers.back()->CouldUpdate(_interval) || Timers.back()->IsRelease()))
+		_update_time = std::chrono::steady_clock::now();
+		std::chrono::duration<double> usetime = std::chrono::duration_cast<std::chrono::duration<double>>(_update_time - _create_time);
+		_interval = usetime.count();
+		while (!Timers.empty() && (Timers[0]->Passed(_interval) || Timers[0]->IsRelease()))
 		{
-			TMHANDLE pTimer = Timers.back();
-			//std::pop_heap(Timers.begin(), Timers.end(), Comparator());
+			TMHANDLE pTimer = Timers[0];
+			std::pop_heap(Timers.begin(), Timers.end(), Comparator());
 			Timers.pop_back();
 			if (!pTimer->IsRelease())
 			{
@@ -45,8 +48,7 @@ public:
 			if (!pTimer->IsRelease())
 			{
 				Timers.push_back(pTimer);
-				min_heap();
-				//std::push_heap(Timers.begin(), Timers.end(), Comparator());
+				std::push_heap(Timers.begin(), Timers.end(), Comparator());
 			}
 			else
 			{
@@ -59,16 +61,14 @@ public:
 	{
 		TMHANDLE pTimer = new IntervalTimer(Interval, _func, _interval);
 		Timers.push_back(pTimer);
-		min_heap();
-		//std::push_heap(Timers.begin(), Timers.end(), Comparator());
+		std::push_heap(Timers.begin(), Timers.end(), Comparator());
 		return pTimer;
 	}
 	TMHANDLE AddTriggerTimer(int _hour, int _minute, int _second, std::tr1::function<void(void)> _func)
 	{
 		TMHANDLE pTimer = new TriggerTimer(_hour, _minute, _second, _func, _interval);
 		Timers.push_back(pTimer);
-		//std::push_heap(Timers.begin(), Timers.end(), Comparator());
-		min_heap();
+		std::push_heap(Timers.begin(), Timers.end(), Comparator());
 		return pTimer;
 	}
 
@@ -79,31 +79,11 @@ public:
 	}
 
 private:
-	void min_heap()
-	{
-		if (Timers.size() < 2)
-			return;
-
-		int min_pos = 0;
-		int end = Timers.size() - 1;
-
-		for (int i = 1; i < Timers.size(); i++)
-		{
-			if (Timers[min_pos]->time(_interval) > Timers[i]->time(_interval))
-			{
-				min_pos = i;
-			}
-		}
-
-		if (min_pos != end)
-		{
-			TMHANDLE temp = Timers[min_pos];
-			Timers[min_pos] = Timers[end];
-			Timers[end] = temp;
-		}
-	}
 
 private:
 	std::vector<TMHANDLE> Timers;
 	double _interval;
+
+	std::chrono::steady_clock::time_point _create_time;
+	std::chrono::steady_clock::time_point _update_time;
 };

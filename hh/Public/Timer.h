@@ -8,42 +8,32 @@ class Timer
 public:
 	Timer() : bRelease(false){}
 	virtual ~Timer(){}
-	virtual void update(double diff)
+	virtual void update(double now)
 	{
-		if (CouldUpdate(diff))
+		if (Passed(now))
 		{
 			Reset();
 			func();
 		}
 	}
 
-	double time(double diff) const
+	double time() const
 	{
-		double run_time = diff - _create_interval;
-		return (_interval - (run_time - _current));
+		return _next;
 	}
 
-	bool CouldUpdate(double diff)
-	{
-		double run_time = diff - _create_interval;
-
-		return run_time - _current >= _interval;
-	}
-
+	inline bool Passed(double now) const { return now >= _next; }
 	void release(){ bRelease = true; }
 
 	bool IsRelease(){ return bRelease; }
 
 	double _interval; /**< TODO */
-	double _current; /**< TODO */
+	double _next; /**< TODO */
 	std::tr1::function<void(void)> func;
-
-	double _create_interval;
 private:
-	inline bool Passed() const { return _current >= _interval; }
 	inline void Reset()
 	{
-		_current += _interval;
+		_next += _interval;
 	}
 
 	bool bRelease;
@@ -55,8 +45,7 @@ public:
 
 	IntervalTimer(double Interval, std::tr1::function<void(void)>& _func, double now_interval = 0)
 	{
-		_create_interval = now_interval;
-		_current = 0;
+		_next = now_interval + Interval;
 		_interval = Interval;
 		func = _func;
 	}
@@ -84,11 +73,9 @@ public:
 		count -= _minute * 60;
 		count -= _second;
 		if (count < 0)	//Î´À´
-			_current = -(_interval + count);
+			_next = now_interval - count;
 		else//¹ýÈ¥
-			_current = -count;
-
-		_create_interval = now_interval;
+			_next = now_interval + _interval - count;
 	}
 	//void Update(double diff)
 	//{
