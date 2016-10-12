@@ -4,6 +4,8 @@
 #include "Helper.h"
 #include "Helper.cpp"
 #include <boost/format.hpp>
+#include "Space.h"
+#include "Entity.h"
 
 std::string chartohex(unsigned char p)
 {
@@ -13,8 +15,9 @@ std::string chartohex(unsigned char p)
 }
 
 bool bRun = true;
-
-void func(Client* client)
+Client ios(std::string("ios"));
+Client android(std::string("android"));
+void func()
 {
 	while (1)
 	{
@@ -28,7 +31,27 @@ void func(Client* client)
 			param = cmd.substr(pos + 1);
 			cmd.erase(cmd.begin() + pos, cmd.end());
 		}
-		client->fire(cmd, param);
+
+		if (cmd == "as_login")
+		{
+			ios.fire(cmd, param);
+			android.fire(cmd, param);
+			continue;
+		}
+
+		std::string sub_param;
+		pos = param.find(" ");
+		if (pos != std::string::npos)
+		{
+			sub_param = param.substr(pos + 1);
+			param.erase(param.begin() + pos, param.end());
+		}
+
+		if (cmd == "ios")
+			ios.fire(param, sub_param);
+		
+		if (cmd == "android")
+			android.fire(param, sub_param);
 		if (cmd == "exit")
 		{
 			bRun = false;
@@ -39,11 +62,11 @@ void func(Client* client)
 }
 
 int main()
-{
-	Client client;
-	std::thread pthread(func, &client);
+{	
+	std::thread pthread(func);
 
 	std::chrono::steady_clock::time_point fLast = std::chrono::steady_clock::now();
+
 	while (bRun)
 	{
 		std::chrono::steady_clock::time_point fCurr = std::chrono::steady_clock::now();
@@ -54,7 +77,8 @@ int main()
 			Sleep(1);
 			continue;
 		}
-		client.run(usetime.count());
+		ios.run(usetime.count());
+		android.run(usetime.count());
 		fLast = fCurr;
 	}
 		
