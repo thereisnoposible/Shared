@@ -4,9 +4,6 @@
 #include "Helper.h"
 #include "Helper.cpp"
 #include <boost/format.hpp>
-#include "Space.h"
-#include "Entity.h"
-#include "EntityCoordinateNode.h"
 
 std::string chartohex(unsigned char p)
 {
@@ -62,24 +59,12 @@ void func()
 
 }
 
-using namespace AOI;
-
 int main()
 {	
 	std::thread pthread(func);
 
 	std::chrono::steady_clock::time_point fLast = std::chrono::steady_clock::now();
 
-	Space space;
-	Entity entity(1);
-	entity.position(Math::Vector3(1, 1, 0));
-	space.addEntityAndEnterWorld(&entity);
-
-	Entity entity1(2);
-	entity1.position(Math::Vector3(2, 1, 0));
-	space.addEntityAndEnterWorld(&entity1);
-	entity.position(Math::Vector3(13, 1, 0));
-	entity.pEntityCoordinateNode()->update();
 	while (bRun)
 	{
 		std::chrono::steady_clock::time_point fCurr = std::chrono::steady_clock::now();

@@ -17,15 +17,12 @@ public:
 
 	virtual bool Init(){ return true; }
 
-	bool IsInitOk(){ return m_bInitOk; }
-
 	Player* GetOwner(){ return m_pOwner; }
 
 	virtual void OnLogin(){ return; }
-
+	virtual void OnLogout(){ return; }
 
 protected:
-	void setInitOk();
 
 protected:
 	std::string m_ModuleName;

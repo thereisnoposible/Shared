@@ -97,7 +97,6 @@ void NetClient::OnConnect(ConnectPtr& pConnect)
 		}
 		m_pPackData.clear();	
 	}
-	
 }
 
 void NetClient::OnDisConnect(ConnectPtr& pConnect)

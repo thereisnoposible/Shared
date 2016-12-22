@@ -9,8 +9,18 @@ Application::Application()
 	m_pNetService = new NetService(SERVERMGRPORT,4);
 	m_pTimerManager = new TimerManager();
 
-	//server.ConnectTo(m_pNetService, SERVERADDR, SERVERPORT);
-	server.ConnectTo(m_pNetService, "120.92.226.24", 80);
+	server.ConnectTo(m_pNetService, SERVERADDR, SERVERPORT);
+
+    //std::vector<NetClient> pppp;
+    //for (int i = 0; i < 70000; i++)
+    //    pppp.push_back(NetClient());
+
+    //for (int i = 0; i < 70000; i++)
+    //{
+    //    pppp[i].ConnectTo(m_pNetService, "192.168.0.21", 50000);
+    //}
+
+	//server.ConnectTo(m_pNetService, "120.92.226.24", 80);
 	m_pLogService = new LogService("Client");
 
 	client = new Client;
@@ -45,5 +55,5 @@ void Application::update(double diff)
 {
 	NetService::getInstance().update();
 
-	m_pTimerManager->Update(diff);
+	m_pTimerManager->Update();
 }

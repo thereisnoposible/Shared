@@ -43,6 +43,7 @@ namespace AOI
 
 		// 这句必须在onLeaveWorld之后， 因为可能rangeTrigger需要参考pEntityCoordinateNode
 		pEntity->uninstallCoordinateNodes(&CoordinateSystem_);
+		CoordinateSystem_.releaseNodes();
 		pEntity->onLeaveSpace(this);
 	}
 }

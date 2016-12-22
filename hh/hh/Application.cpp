@@ -23,14 +23,15 @@ Application::Application()
 
 	m_pTypeTable = new TypeTable();
 
-	m_pFightMgr = new FightManager();
-
 	m_pPlayerMgr = new PlayerManager(m_pDBService);
 
 	m_pMapMgr = new MapManager();
 
 	m_pAccount = new NetClient;
 	m_pAccount->ConnectTo(m_pNetService, ACCOUNTADDR, ACCOUNTPORT);
+
+	m_id = 1;
+	m_dbid = time(NULL) << 32;
 
 //	boost::thread maprun(boost::bind(&MapManager::CalcPlayerMove, m_pMapMgr));
 }
@@ -45,9 +46,6 @@ Application::~Application()
 
 	delete m_pTypeTable;
 	m_pTypeTable = nullptr;
-
-	delete m_pFightMgr;
-	m_pFightMgr = nullptr;
 
 	delete m_pPlayerMgr;
 	m_pPlayerMgr = nullptr;
@@ -82,7 +80,7 @@ void Application::update(double diff)
 
 	if (m_pTimerManager != nullptr)
 	{
-		m_pTimerManager->Update(diff);
+		m_pTimerManager->Update();
 	}
 
 }
@@ -104,3 +102,24 @@ NetClient& Application::GetAccountConnect()
 {
 	return *m_pAccount;
 }
+
+//-------------------------------------------------------------------------------------------
+NetClient& Application::GetDataBaseConnect()
+{
+	return *m_pDatabase;
+}
+
+#define GET_DBIDUNIQUE(unique) unique<<8
+
+int64 Application::getDBID()
+{
+	if (m_increment > 0xFFFFFF)
+	{
+		m_dbid = time(NULL);
+		m_dbid = m_dbid << 32;
+		m_increment = 0;
+	}
+
+	return (m_id | m_dbid | GET_DBIDUNIQUE(m_increment++));
+}
+#undef GET_DBIDUNIQUE

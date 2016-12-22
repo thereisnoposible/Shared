@@ -2,6 +2,9 @@
 #include "BaseFunc.h"
 #include "Application.h"
 
+#include "../new/proto/protobuf/login.pb.h"
+#include "../new/proto/protobuf/player.pb.h"
+
 Player::Player()
 {
 	registmessge();
@@ -23,6 +26,7 @@ void Player::registfunc()
 	_funcMap.insert(std::make_pair("AccountCheck", boost::bind(&Player::AccountCheck, this, _1)));
 	_funcMap.insert(std::make_pair("CreatePlayer", boost::bind(&Player::CreatePlayer, this, _1)));
 	_funcMap.insert(std::make_pair("LoginGame", boost::bind(&Player::LoginGame, this, _1)));
+	_funcMap.insert(std::make_pair("Move", boost::bind(&Player::Move, this, _1)));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -103,4 +107,12 @@ void Player::LoginGameResponse(PackPtr& pPack)
 	{
 		std::cout << response.data().id() << "\n";
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+void Player::Move(std::vector<std::string>& param)
+{
+	pm_login_game request;
+	request.set_id(Helper::StringToInt(param[1]));
+	Application::getInstance().GetServer().SendProtoBuf(GM_REQUEST_MOVE, request);
 }

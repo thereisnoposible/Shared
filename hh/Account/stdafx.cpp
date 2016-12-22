@@ -20,9 +20,11 @@
 #include "Log.cpp"
 
 #ifdef _DEBUG
-#pragma comment(lib,"../lib/libprotobuf_d.lib")
-#pragma comment(lib,"../lib/libmysql.lib")
+//#pragma comment(lib,"../lib/libgame_d.lib")
+#pragma comment(lib,"lib/libprotobuf_d.lib")
+#pragma comment(lib,"lib/libmysql.lib")
 #else
+#pragma comment(lib,"../lib/libgame.lib")
 #pragma comment(lib,"../lib/libprotobuf.lib")
 #pragma comment(lib,"../lib/libmysql.lib")
 #endif // DEBUG

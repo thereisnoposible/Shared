@@ -36,6 +36,8 @@ protected:
 
 	void HeartBeat(PackPtr& pPack);
 
+    void InsertPlayer(PlayerData& data);
+
 private:
 	std::unordered_map<std::string, ConnectPtr> m_Creating;
 	std::unordered_map<std::string, ConnectPtr> m_Loging;

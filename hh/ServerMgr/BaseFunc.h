@@ -16,6 +16,7 @@ protected:
 	void AccountCheck(std::vector<std::string>& param);
 	void CreatePlayer(std::vector<std::string>& param);
 	void LoginGame(std::vector<std::string>& param);
+	void Move(std::vector<std::string>& param);
 
 	void CreateAccountResponse(PackPtr& pPack);
 	void AccountCheckResponse(PackPtr& pPack);

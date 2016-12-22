@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
+#include <unordered_map>
 #include "Vector3.h"
+
 
 namespace AOI
 {
@@ -72,6 +74,7 @@ namespace AOI
 		AOITrigger*								pAOIHysteresisAreaTrigger_;
 
 		std::vector<EntityRef*>					aoiEntities_;
+		//std::unordered_map<int, EntityRef*>		aoiEntities_map_;
 
 		Math::Vector3							lastBasePos;
 

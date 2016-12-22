@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "Client.h"
-#include "../new/proto/protobuf/hello.pb.h"
-#include "../new/proto/protobuf/tonghe.pb.h"
-#include "../new/proto/protobuf/object.pb.h"
+#include "../new/proto/protobuf/login.pb.h"
+#include "../new/proto/protobuf/player.pb.h"
 #include "Application.h"
 
 Client::Client()

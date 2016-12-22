@@ -5,20 +5,23 @@
 
 #include <iostream>
 
+#ifndef SAFE_DELETE
 #define SAFE_DELETE(p) if(p!=NULL){delete p;p=NULL;}
+#endif // !SAFE_DELETE
 
 namespace AOI
 {
-	Entity::Entity(int id):
+	Entity::Entity(int id, EntityType type) :
 		id_(id)
 	{
 		pEntityCoordinateNode_ = new EntityCoordinateNode(this);
-
-		setWitness(new Witness);
+		if (type != EntityTypeProps)
+			setWitness(new Witness);
 	}
 	Entity::~Entity()
-	{
-		SAFE_DELETE(pEntityCoordinateNode_);
+	{      
+        SAFE_DELETE(pEntityCoordinateNode_);
+        SAFE_DELETE(pWitness_);
 	}
 
 	//-------------------------------------------------------------------------------------
@@ -47,6 +50,11 @@ namespace AOI
 		flags_ = v;
 	}
 
+	EntityType& Entity::entityType()
+	{
+		return type_;
+	}
+
 	//-------------------------------------------------------------------------------------
 	 Witness* Entity::pWitness() const
 	{
@@ -69,6 +77,7 @@ namespace AOI
 		Math::Vector3 movement = pos - position_;
 		if (movement.length() < 0.0004f)
 			return;
+		last_position_ = position_;
 		position_ = pos;
 	}
 
@@ -80,7 +89,10 @@ namespace AOI
 	void Entity::uninstallCoordinateNodes(CoordinateSystem* pCoordinateSystem)
 	{	
 		pCoordinateSystem->remove((AOI::CoordinateNode*)pEntityCoordinateNode());
-		pEntityCoordinateNode_ = new EntityCoordinateNode(this);		
+		pEntityCoordinateNode_ = new EntityCoordinateNode(this);	
+		//pWitness_->installAOITrigger();
+		//delete pEntityCoordinateNode_;
+			
 	}
 
 	EntityCoordinateNode* Entity::pEntityCoordinateNode() const
@@ -107,7 +119,17 @@ namespace AOI
 
 	void Entity::onEnteredAoI(Entity* entity)
 	{
-		std::cout << "id: " << id_ << " onEnteredAoI :" << entity->id();
+		std::cout << "id: " << id_ << " onEnteredAoI :" << entity->id() << "\n";
+	}
+
+    void Entity::onLeaveAoI(Entity* entity)
+    {
+        std::cout << "id: " << id_ << " onLeaveAoI :" << entity->id() << "\n";
+    }
+
+	std::list<int> Entity::GetWitnesses()
+	{
+		return witnesses_;
 	}
 
 	void Entity::onEnterSpace(Space* pSpace)
@@ -115,6 +137,10 @@ namespace AOI
 
 	}
 	void Entity::onLeaveSpace(Space* pSpace)
+	{
+
+	}
+	void Entity::onOtherEntityMove(Entity* entity)
 	{
 
 	}

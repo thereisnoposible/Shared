@@ -1,6 +1,18 @@
 #pragma once
 //#include "../new/proto/protobuf/hello.pb.h"
-#include "/myproject/new/proto/protobuf/hello.pb.h"
+#include "../new/proto/protobuf/player.pb.h"
+#include "../new/proto/protobuf/login.pb.h"
+#include "../new/proto/protobuf/xinfa.pb.h"
+
+typedef long long int64;
+typedef long int32;
+typedef short int16;
+typedef char int8;
+typedef unsigned long long uint64;
+typedef unsigned long uint32;
+typedef unsigned short uint16;
+typedef unsigned char uint8;
+
 struct VecPos
 {
 	int vecpos_x;
@@ -178,39 +190,7 @@ struct PlayerData
 		 jinbi = data.jinbi();
 
 		 hp = data.hp();
-		 maxhp = data.maxhp();
-		 mp = data.mp();
-		 maxmp = data.maxmp();
-
-		 liliang = data.liliang();
-		 minjie = data.minjie();
-		 sudu = data.sudu();
-		  danshi = data.danshi();
-		  jingqi = data.jingqi();
-		 meili = data.meili();
-
-		 liliang_exp = data.liliangexp();
-		 minjie_exp = data.minjieexp();
-		 sudu_exp = data.suduexp();
-		 danshi_exp = data.danshiexp();
-		 jingqi_exp = data.jingqiexp();
-		 meili_exp = data.meiliexp();
-
-		 max_liliang = data.maxliliang();
-		 max_minjie = data.maxminjie();
-		 max_sudu = data.maxsudu();
-		 max_danshi = data.maxdanshi();
-		 max_jingqi = data.maxjingqi();
-		 max_meili = data.maxmeili();
-
-		 gengu = data.gengu();
-		 wuxing = data.wuxing();
-		 fuyuan = data.fuyuan();
-
-		 lixing = data.lixing();
-		 ganxing = data.ganxing();
-
-		 xuedian = data.xuedian();
+		 maxhp = data.max_hp();
 		 name = data.name();
 	};
 
@@ -221,84 +201,67 @@ struct PlayerData
 	{
 		data.set_id(id);
 		data.set_jinbi(jinbi);
-
-		data.set_hp(hp);
-		data.set_maxhp(maxhp);
-		data.set_mp(mp);
-		data.set_maxmp(maxmp);
-
-		data.set_liliang(liliang);
-		data.set_minjie(minjie);
-		data.set_sudu(sudu);
-		data.set_danshi(danshi);
-		data.set_jingqi(jingqi);
-		data.set_meili(meili);
-
-		data.set_liliangexp(liliang_exp);
-		data.set_minjieexp(minjie_exp);
-		data.set_suduexp(sudu_exp);
-		data.set_danshiexp(danshi_exp);
-		data.set_jingqiexp(jingqi_exp);
-		data.set_meiliexp(meili_exp);
-
-		data.set_maxliliang(max_liliang);
-		data.set_maxminjie(max_minjie);
-		data.set_maxsudu(max_sudu);
-		data.set_maxdanshi(max_danshi);
-		data.set_maxjingqi(max_jingqi);
-		data.set_maxmeili(max_meili);
-
-		data.set_gengu(gengu);
-		data.set_wuxing(wuxing);
-		data.set_fuyuan(fuyuan);
-
-		data.set_lixing(lixing);
-		data.set_ganxing(ganxing);
-
-		data.set_xuedian(xuedian);
 		data.set_name(name);
+		data.set_hp(hp);
+		data.set_max_hp(maxhp);
 	};
-	unsigned int id;
-	int jinbi;
+	uint32 id;
+	uint32 jinbi;
 
-	int hp;
-	int maxhp;
-	int mp;
-	int maxmp;
+	uint32 hp;
+	uint32 maxhp;
 
-	int liliang;
-	int minjie;
-	int sudu;
-	int danshi;
-	int jingqi;
-	int meili;
-
-	int liliang_exp;
-	int minjie_exp;
-	int sudu_exp;
-	int danshi_exp;
-	int jingqi_exp;
-	int meili_exp;
-
-	int max_liliang;
-	int max_minjie;
-	int max_sudu;
-	int max_danshi;
-	int max_jingqi;
-	int max_meili;
-
-	int gengu;
-	int wuxing;
-	int fuyuan;
-
-	int lixing;
-	int ganxing;
-
-	int xuedian;
+	uint32 gengu;
 	
-	int cellid;
+	int32 cellid;
 	std::string name;
 	std::string acc_id;
+};
+
+struct Xinfa
+{
+	void fromPBMessage(const pm_xinfa& data)
+	{
+		dbid = data.dbid();
+		playerid = data.playerid();
+		id = data.id();
+		level = data.level();
+		exp = data.exp();
+	};
+
+	/**
+	* @brief		×ª»»³ÉPBMessage
+	*/
+	void toPBMessage(pm_xinfa& data)
+	{
+		data.set_dbid(dbid);
+		data.set_playerid(playerid);
+		data.set_id(id);
+		data.set_level(level);
+		data.set_exp(exp);
+	};
+
+	int64 dbid;
+	int32 playerid;
+	int32 id;
+	int32 level;
+	int32 exp;
+
+	int32 mp;
+	int32 max_mp;
+};
+
+struct TypeXinfa
+{
+	int32 id;
+	int32 add_ratio;
+	int32 add_count;
+	int32 recovery_mp_ratio;
+	int32 recovery_mp_count;
+	int32 damage_ratio;
+	int32 damage_count;
+	int32 recovery_hp_ratio;
+	int32 recovery_hp_count;
 };
 
 struct Wugong

@@ -48,7 +48,7 @@ void Application::update(double diff)
 
 	if (m_pTimerManager != nullptr)
 	{
-		m_pTimerManager->Update(diff);
+		m_pTimerManager->Update();
 	}
 
 }

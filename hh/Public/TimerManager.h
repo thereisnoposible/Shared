@@ -1,6 +1,7 @@
 #pragma once
 #include "Timer.h"
 #include <hash_map>
+#include <chrono>
 #include "Singleton.h"
 typedef  Timer* TMHANDLE;
 

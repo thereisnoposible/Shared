@@ -1,32 +1,32 @@
-#include "log4cpp/Category.hh"
-#include "log4cpp/Appender.hh"
-#include "log4cpp/FileAppender.hh"
-#include "log4cpp/OstreamAppender.hh"
-#include "log4cpp/Layout.hh"
-#include "log4cpp/BasicLayout.hh"
-#include "log4cpp/Priority.hh"
+//#include "log4cpp/Category.hh"
+//#include "log4cpp/Appender.hh"
+//#include "log4cpp/FileAppender.hh"
+//#include "log4cpp/OstreamAppender.hh"
+//#include "log4cpp/Layout.hh"
+//#include "log4cpp/BasicLayout.hh"
+//#include "log4cpp/Priority.hh"
 #include "AStar.h"
-
+#include <iostream>
 #include "include/v8.h"
 
 #ifdef _DEBUG
-	#pragma comment(lib,"log4cppD.lib")
+	//#pragma comment(lib,"log4cppD.lib")
 #else
 	#pragma comment(lib,"log4cppLIB.lib")
 #endif // DEBUG
 
 #ifdef _DEBUG
-#pragma comment(lib,"v8.lib")
+//#pragma comment(lib,"v8.lib")
 #else
 #pragma comment(lib,"v8_d.lib")
 #endif // DEBUG
 
 using namespace v8;
 
-#include <log4cpp/Category.hh>
-#include <log4cpp/PropertyConfigurator.hh>
-
-#include "../MyMessageProc/MyMessageProc.h"
+//#include <log4cpp/Category.hh>
+//#include <log4cpp/PropertyConfigurator.hh>
+//
+//#include "../MyMessageProc/MyMessageProc.h"
 #include <windows.h>
 #include <TlHelp32.h>
 
@@ -269,6 +269,9 @@ int LoadConfig(char* src,char* dst)
 	{
 		for (int i = 0; i < sAparam.size(); i++)
 		{
+            if (sAparam[i].find("//-") != std::string::npos)
+                continue;
+
 			sAparam[i].replace(1, 0, "\"");
 
 			int res = sAparam[i].find("=", 0);
@@ -319,36 +322,36 @@ int LoadConfig(char* src,char* dst)
 int main(int argc, char* argv[])
 {
 
-	v8::V8::Initialize();
-	//v8::Isolate* isolate = v8::Isolate::New();v8::V8::SetFlagsFromCommandLine(&argc, argv, true);
-	printf("version: %s\n", v8::V8::GetVersion());
+	//v8::V8::Initialize();
+	////v8::Isolate* isolate = v8::Isolate::New();v8::V8::SetFlagsFromCommandLine(&argc, argv, true);
+	//printf("version: %s\n", v8::V8::GetVersion());
 
-	v8::Isolate* isolate = v8::Isolate::GetCurrent();
-	{
-		// 创建一个句柄作用域 ( 在栈上 )
-		HandleScope handle_scope(isolate);
-		// 创建一个新的上下文对象
-		v8::Handle<v8::Context> context = Context::New(isolate);
-		if (context.IsEmpty())
-		{
-			fprintf(stderr, "Error creating context\n");
-			return 1;
-		}
-		context->Enter();
-		// 创建一个字符串对象，字符串对象被 JS 引擎
-		// 求值后，结果为'Hello, World!2013'
-		//Handle<String> source = String::New("'hello,World!'+(2012+1)");
-		// 编译字符串对象为脚本对象
-		//Handle<Script> script = Script::Compile(source);
-		// 执行脚本，获取结果
-		//Handle <Value> result = script->Run();
-		// 转换结果为字符串
-		//String::AsciiValue ascii(result);
-		//printf("%s\n", *ascii);
-		context->Exit();
-	}
-	v8::V8::Dispose();
-	return 0;
+	//v8::Isolate* isolate = v8::Isolate::GetCurrent();
+	//{
+	//	// 创建一个句柄作用域 ( 在栈上 )
+	//	HandleScope handle_scope(isolate);
+	//	// 创建一个新的上下文对象
+	//	v8::Handle<v8::Context> context = Context::New(isolate);
+	//	if (context.IsEmpty())
+	//	{
+	//		fprintf(stderr, "Error creating context\n");
+	//		return 1;
+	//	}
+	//	context->Enter();
+	//	// 创建一个字符串对象，字符串对象被 JS 引擎
+	//	// 求值后，结果为'Hello, World!2013'
+	//	//Handle<String> source = String::New("'hello,World!'+(2012+1)");
+	//	// 编译字符串对象为脚本对象
+	//	//Handle<Script> script = Script::Compile(source);
+	//	// 执行脚本，获取结果
+	//	//Handle <Value> result = script->Run();
+	//	// 转换结果为字符串
+	//	//String::AsciiValue ascii(result);
+	//	//printf("%s\n", *ascii);
+	//	context->Exit();
+	//}
+	//v8::V8::Dispose();
+	//return 0;
 
 	//LARGE_INTEGER nFreq;
 
@@ -424,7 +427,7 @@ int main(int argc, char* argv[])
 	//	}
 	//}
 
-	//LoadConfig("NetMessage.h","NetMessage.js");
+	LoadConfig("NetMessage.h","NetMessage.js");
 	
 
 	//std::shared_ptr<POS>& best = getBestPOS();

@@ -33,17 +33,17 @@
     <ClCompile Include="Client.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\new\proto\protobuf\hello.pb.cc">
-      <Filter>message</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\new\proto\protobuf\tonghe.pb.cc">
-      <Filter>message</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\new\proto\protobuf\object.pb.cc">
-      <Filter>message</Filter>
-    </ClCompile>
     <ClCompile Include="BaseFunc.cpp">
       <Filter>function</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\login.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\player.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\xinfa.pb.cc">
+      <Filter>message</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

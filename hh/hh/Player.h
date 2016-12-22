@@ -5,6 +5,7 @@
 #define ON_PLAYER_EVENTRANGE(eid_s,eid_e,func) m_pOwner->RegisterEventRange(eid_s,eid_e,boost::bind(&func,this,_1))
 
 #include "g3dlite/G3D/Vector3.h"
+#include "aoi/Entity.h"
 typedef G3D::Vector3							Position3D;
 typedef G3D::Vector3							Vector3;
 
@@ -27,7 +28,7 @@ struct Direction3D																										// 表示方向位置变量类型
 	Vector3 dir;
 };
 
-class Player
+class Player :public AOI::Entity
 {
 public:
 	typedef MessageHandle<PackPtr> NetMsgHandle;
@@ -37,11 +38,18 @@ public:
 		psOnline,
 		psOffline,
 	};
+
+	enum PlayerStatus
+	{
+		psFree,
+		psDazuo,
+		psTiaoxi,
+	};
 public:
 	
-
 	Player(PlayerData& p);
 	~Player();
+
 	void OnPlyaerLogin(ConnectPtr& conn);
 	void OnPlyaerLogout();
 	void AddModule(BaseModule* pModule);
@@ -56,6 +64,9 @@ public:
 
 	void SetPlayerState(PlayerState _state);
 	PlayerState GetPlayerState();
+	void SetPlayerStatus(PlayerStatus _status);
+	PlayerStatus GetPlayerStatus();
+
 	void AddProp(PropItem& item);	
 	int GetPlayerID();
 	PlayerData& GetPlayerData();
@@ -65,19 +76,18 @@ public:
 	int GetXuedian();
 	void Addxuedian(int i);
 	void SetPlayerID(int id);
-	void UseMedicine(PropItem& temp);
 	std::string GetPlayerAddress();
 
-	void OnPlayerMove(void* param);
+	int32 GetGengu();
+	void AddHP(int32 num);
+
 	ConnectPtr& GetConnect(){ return m_pConnect; }
 
+	void onOtherEntityMove(Entity* entity);
 
-	Position3D currpos;
-	Position3D dstpos;
-	Direction3D direction;
 	int speed;
 protected:
-
+	void processRequestMove(PackPtr& pPack);
 private:
 	PlayerData _playerdata;
 	std::chrono::steady_clock::time_point starttime;
@@ -91,4 +101,5 @@ private:
 	ConnectPtr m_pConnect;
 
 	PlayerState state;
+	PlayerStatus status;
 };

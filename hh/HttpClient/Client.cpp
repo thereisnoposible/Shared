@@ -27,6 +27,7 @@ void Client::registmessage()
 {
 	m_message["as_login"] = std::bind(&Client::as_login, this, std::placeholders::_1);
 	m_message["set_mode"] = std::bind(&Client::set_mode, this, std::placeholders::_1);
+    m_message["set_fight"] = std::bind(&Client::set_fight, this, std::placeholders::_1);
 
 	codestr[NOON_POWER] = "无体力";
 	codestr[NOON_ACCESS] = "之前小节未战斗";
@@ -61,9 +62,9 @@ Client::Client(std::string& plat)
 	m_eat3 = m_pTimerManager->AddTriggerTimer(21, 1, 0, std::bind(&Client::request_eat, this));
 	m_signin = m_pTimerManager->AddTriggerTimer(0, 1, 0, std::bind(&Client::signin, this));
 
-	m_carddraw2 = m_pTimerManager->AddIntervalTimer(60 * 60, std::bind(&Client::CardDraw, this, 2));
-	m_carddraw3 = m_pTimerManager->AddIntervalTimer(60 * 60, std::bind(&Client::CardDraw, this, 3));
-	m_carddraw5 = m_pTimerManager->AddIntervalTimer(60 * 60, std::bind(&Client::CardDraw, this, 5));
+	m_carddraw2 = m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 2));
+	m_carddraw3 = m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 3));
+	m_carddraw5 = m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 5));
 	
 
 	m_hero = NULL;
@@ -73,6 +74,59 @@ Client::Client(std::string& plat)
 	platform_ = "ios";
 	if (plat == "android")
 		platform_ = plat;
+
+    maf[18] = 970;
+    maf[19] = 1100;
+    maf[21] = 1500;
+    maf[22] = 1700;
+    maf[24] = 2100;
+    maf[25] = 2300;
+    maf[30] = 3300;
+    maf[33] = 3900;
+    maf[34] = 4100;
+    maf[36] = 4500;
+    maf[37] = 4700;
+    maf[40] = 5300;
+
+    //fCurr = std::chrono::steady_clock::now();
+    //for (int i = 0; i < 10000; i++)
+    //{
+    //    http::http_request request;
+    //    if (platform_ == "ios")
+    //    {
+    //        request.type = HTTP_POST;
+    //        request.url = "/webreward";
+    //        request.host = "192.168.0.232:1234";
+    //        request.head["Content-Type"] = "application/x-www-form-urlencoded";
+    //        request.head["User-Agent"] = "Dalvik/1.6.0 (IOS; U; iphone 6.1)";
+    //        request.head["User-Agent"] = "PL.APPSTORE.CN/223 CFNetwork/758.2.8 Darwin/15.0.0";
+    //        request.head["Connection"] = "Keep-Alive";
+    //        request.head["Keep-Alive"] = "timeout= 5,max = 0";
+    //        request.head["Accept-Encoding"] = "gzip, deflate";
+
+    //        request.body = "{\"data\":1,\"playerid\":28848,\"token\":\"a2dec883c64646e49814aa16a912852c\"}";
+    //        std::stringstream ss;
+    //        ss << request.body.size();
+    //        request.head["Content-Length"] = ss.str();
+
+    //        m_manager->post(request, std::bind(&Client::webreward_response, this, std::placeholders::_1));
+    //    }
+    //}
+}
+
+void Client::webreward_response(http::http_response& response)
+{
+    static int count = 0;
+    count++;
+
+    if (count == 10000)
+    {
+        std::chrono::steady_clock::time_point fLast = std::chrono::steady_clock::now();
+        std::chrono::duration<double> usetime = std::chrono::duration_cast<std::chrono::duration<double>>(fLast - fCurr);
+
+        std::cout << usetime.count();
+    }
+
 }
 
 Client::~Client()
@@ -111,6 +165,7 @@ void Client::run(double diff)
 	m_manager->update();
 
 	m_pTimerManager->Update();
+    
 }
 
 void Client::run_fight()
@@ -133,6 +188,15 @@ void Client::run_fight()
 				mid -= 1;
 		}
 		mid += 1;
+
+        if (mid % 100 > 10)
+        {
+            Chapter temp;
+            temp.cid = mid / 100 + 1;
+            m_pChapter[temp.cid] = temp;
+            mid = temp.cid * 100 + 1;
+        }
+
 		fight(mid);	
 	}
 	//3星
@@ -157,6 +221,34 @@ void Client::run_fight()
 	{
 		fight(map_high * 100 + map_low);
 	}
+
+    if (fight_mode == 4)
+    {
+        std::map<int, int>::iterator it = maf.begin();
+        for (; it != maf.end(); ++it)
+        {
+            auto cpit = m_pChapter.find(it->first);
+            if (cpit != m_pChapter.end())
+            {
+                if (cpit->second.pres >= it->second)
+                    continue;
+
+                std::map<int, Explore>::iterator exit = cpit->second.explores.begin();
+                for (; exit != cpit->second.explores.end(); ++exit)
+                {
+                    if (exit->second.todayTimes < 5)
+                    {
+                        fight(exit->second.mid);
+                        cpit->second.pres++;
+                        return;
+                    }
+                }
+
+            }
+        }
+       
+
+    }
 }
 
 void Client::fire(std::string& cmd, std::string& param)
@@ -377,7 +469,9 @@ void Client::loggedin_response(http::http_response& response)
 		request.url += ios_deviceid;
 		request.url += "&et=iPhone6,2_Darwin_15.0.0&t=";
 		request.url += token;
-		request.url += "&uid=&plat_lj=&plat_lj_uid=&transfer=&v=1.0.7&plat=100000";
+		request.url += "&uid=&plat_lj=&plat_lj_uid=&transfer=&v=";
+        request.url += version;
+        request.url += "&plat=100000";
 		request.host = "pl-game.thedream.cc";
 		request.head["Accept"] = "*/*";
 
@@ -390,7 +484,9 @@ void Client::loggedin_response(http::http_response& response)
 		request.url += android_deviceid;
 		request.url += "&et=SM-G900F_19_4.4.2&t=";
 		request.url += token;
-		request.url += "&uid=&plat_lj=&plat_lj_uid=&transfer=&v=1.0.7&plat=103000";
+        request.url += "&uid=&plat_lj=&plat_lj_uid=&transfer=&v=";
+        request.url += version;
+        request.url += "&plat=103000";
 		request.host = "pl-game.thedream.cc";
 		request.head["Accept"] = "*/*";
 
@@ -440,10 +536,18 @@ void Client::login_cb_response(http::http_response& response)
 	request.url += expire;
 	request.url += "&s=";
 	request.url += sig;
-	if (platform_ == "ios")
-		request.url += "&plat_lj=&v=1.0.7&&sys=ios&plat=100000";
-	else
-		request.url += "&plat_lj=&v=1.0.7&&sys=android&plat=103000";
+    if (platform_ == "ios")
+    {
+        request.url += "&plat_lj=&v=";
+        request.url += version;
+        request.url += "&&sys=ios&plat=100000";
+    }
+    else
+    {
+        request.url += "&plat_lj=&v=";
+        request.url += version;
+        request.url += "&&sys=android&plat=103000";
+    }
 	request.host = "pl-game.thedream.cc";
 	request.head["Accept"] = "*/*";
 	request.pend_flag = "0\r\n\r\n";
@@ -481,7 +585,9 @@ void Client::request_player_data()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = " /s20042/port/interface.php?s=User&m=get&a={}&v=1.0.7&sys=";
+    request.url = " /s20042/port/interface.php?s=User&m=get&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -528,6 +634,8 @@ void Client::init()
 	buyPow();
 	CalendarSign();
   	startSail();
+    worldBoss();
+    shared();
 	m_step = m_pTimerManager->AddIntervalTimer(0.2, std::bind(&Client::checkStep, this));
 }
 
@@ -564,7 +672,9 @@ void Client::request_init_data()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=System&m=init&a=%7B%7D&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=System&m=init&a=%7B%7D&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -588,7 +698,9 @@ void Client::get_fight_map()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Explore&m=getC&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Explore&m=getC&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -632,7 +744,9 @@ void Client::get_fight_map_sub(int cid)
 	request.type = HTTP_GET;
 	request.url = "/s20042/port/interface.php?s=Explore&m=get&a={\"cid\":";
 	request.url += Helper::IntToString(cid);
-	request.url += "}&v=1.0.7&sys=";
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -689,7 +803,9 @@ void Client::fight(int map)
 	request.type = HTTP_GET;
 	request.url = "/s20042/port/interface.php?s=Explore&m=exec&a={\"mid\":\"";
 	request.url += Helper::IntToString(map);
-	request.url += "\"}&v=1.0.7&sys=";
+    request.url += "\"}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -703,8 +819,6 @@ void Client::playgame_response(int map, Json::Value& value)
 	{
 		std::string codess = value["code"].asString();
 		int code = Helper::StringToInt(codess);
-
-		std::cout << Helper::Timet2String(time(NULL)) << ": play code:" << code << "\n";
 
 		switch (code)
 		{
@@ -774,6 +888,17 @@ void Client::set_mode(std::string& param)
 	}
 }
 
+void Client::set_fight(std::string& param)
+{
+    std::vector<std::string> vec;
+    Helper::SplitString(param, " ", vec);
+    if (vec.size() < 1)
+        return;
+
+    fight_low = Helper::StringToInt(vec[0]);
+    fight_high = Helper::StringToInt(vec[1]);
+}
+
 void Client::get_challenge()
 {
 	if (m_challenge == NULL)
@@ -783,7 +908,9 @@ void Client::get_challenge()
 
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Challenge&m=init&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Challenge&m=init&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -813,7 +940,9 @@ void Client::get_challenge_response(Json::Value& value)
 		request.url += Helper::IntToString(trank);
 		request.url += ",\"tid\":";
 		request.url += Helper::IntToString(tid);
-		request.url += "}&v=1.0.7&sys=";
+        request.url += "}&v=";
+        request.url += version;
+        request.url += "&sys=";
 		request.url += platform_;
 		request.host = "pl-game.thedream.cc";
 		request.head["Cookie"] = cookie;
@@ -829,8 +958,6 @@ void Client::challenge_response(Json::Value& value)
 	{
 		std::string codess = value["code"].asString();
 		int code = Helper::StringToInt(codess);
-
-		std::cout << Helper::Timet2String(time(NULL)) << ": challenge code:" << code << "\n";
 
 		switch (code)
 		{
@@ -853,7 +980,9 @@ void Client::request_eat()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Activity&m=eat&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Activity&m=eat&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -864,8 +993,6 @@ void Client::request_eat()
 
 void Client::request_eat_response(Json::Value& value)
 {
-	std::cout << Helper::Timet2String(time(NULL)) << ": eat code:" << value["code"].asString() << "\n";
-
 	if (Helper::StringToInt(value["code"].asString()) == 0)
 	{
 		pow = value["data"]["user"]["pow"].asInt();
@@ -881,7 +1008,9 @@ void Client::getHero()
 
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Explore&m=getHero&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Explore&m=getHero&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -892,8 +1021,6 @@ void Client::getHero()
 
 void Client::getHero_response(Json::Value& value)
 {
-	std::cout << Helper::Timet2String(time(NULL)) << ": getHero code:" << value["code"].asString() << "\n";
-
 	if (Helper::StringToInt(value["code"].asString()) == 0)
 	{
 		std::map<int, int> mm;
@@ -915,7 +1042,9 @@ void Client::getHero_response(Json::Value& value)
 		request.type = HTTP_GET;
 		request.url = "/s20042/port/interface.php?s=Explore&m=exec&a={\"mid\":\"";
 		request.url += Helper::IntToString(mm.begin()->first);
-		request.url += "\"}&v=1.0.7&sys=";
+        request.url += "\"}&v=";
+        request.url += version;
+        request.url += "&sys=";
 		request.url += platform_;
 		request.host = "pl-game.thedream.cc";
 		request.head["Cookie"] = cookie;
@@ -928,7 +1057,9 @@ void Client::startTower()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Tower&m=start&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Tower&m=start&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -949,7 +1080,9 @@ void Client::startTowerFight()
 	}
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Tower&m=fight&a={\"lv\":3}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Tower&m=fight&a={\"lv\":3}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -959,8 +1092,6 @@ void Client::startTowerFight()
 }
 void Client::startTowerFight_response(Json::Value& value)
 {
-	std::cout << Helper::Timet2String(time(NULL)) << ": TowerFight code:" << value["code"].asString() << "\n";
-
 	if (TOWER_DIE == Helper::StringToInt(value["code"].asString()))
 	{
 		m_pTimerManager->RemoveTimer(m_tower);
@@ -979,7 +1110,9 @@ void Client::startTowerFight_response(Json::Value& value)
 			request.type = HTTP_GET;
 			request.url = "/s20042/port/interface.php?s=Tower&m=setBuff&a={\"id\":";
 			request.url += Helper::IntToString(id);
-			request.url+= "}&v=1.0.7&sys=";
+            request.url += "}&v=";
+            request.url += version;
+            request.url += "&sys=";
 			request.url += platform_;
 			request.host = "pl-game.thedream.cc";
 			request.head["Cookie"] = cookie;
@@ -996,6 +1129,138 @@ void Client::startTowerFight_response(Json::Value& value)
 	}
 }
 
+void Client::worldBoss()
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=WorldBoss&m=get&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::bind(&Client::worldBoss_response, this, std::placeholders::_1));
+}
+
+void Client::worldBoss_response(Json::Value& value)
+{
+    if (value["data"]["worldBoss"]["playNum"].asInt() >= 3)
+        return;
+
+    startWorldBoss();
+
+}
+
+void Client::startWorldBoss()
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=WorldBoss&m=start&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::bind(&Client::startWorldBoss_response, this, std::placeholders::_1));
+}
+
+void Client::startWorldBoss_response(Json::Value& value)
+{
+    if (platform_ != "ios")
+        return;
+
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=WorldBoss&m=play&a={\"damages\":[";
+    int loop_count = Helper::GetRandom(69,72);
+    for (int i = 0; i < loop_count; i++)
+    {
+        double range = Helper::GetRandom(0.0, 1.0);
+        int fight_value = fight_low;
+        if (range > 0.8)
+        {
+            fight_value = fight_high;
+        }
+        if (i == 0)
+            fight_value = fight_high;
+
+        request.url += Helper::IntToString(fight_value);
+        if (i != loop_count - 1)
+            request.url += ",";
+    }
+    request.url += "],\"sign\":\"5a8f8013288c5e45ff1620ded5fe28f4\"}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::bind(&Client::playWorldBoss_response, this, std::placeholders::_1));
+}
+
+void Client::playWorldBoss_response(Json::Value& value)
+{
+    worldBoss();
+}
+
+void Client::shared()
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Activity&m=share&a={\"sign\":\"f40e667a047e7b16da7f3204b3760bd5\",\"ts\":";
+    request.url+=Helper::IntToString(time(NULL));
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::bind(&Client::shared_response, this, std::placeholders::_1));
+}
+
+void Client::shared_response(Json::Value& value)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Activity&m=shareZh&a={\"sign\":\"20d1b33f523e52b57e03b5dfb575cf47\",\"ts\":";
+    request.url += Helper::IntToString(time(NULL));
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+
+    static int ios_count = 0;
+    static int android_count = 0;
+
+    if (platform_ == "ios")
+    {
+        ios_count++;
+        if (ios_count > 3)
+            return;
+    }
+
+    if (platform_ == "android")
+    {
+        android_count++;
+        if (android_count > 3)
+            return;
+    }
+
+    shared();
+}
+
 void Client::startSail()
 {
 	if (m_sailing == NULL)
@@ -1005,7 +1270,9 @@ void Client::startSail()
 
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=startSail&a={\"level\":2}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=startSail&a={\"level\":3}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1023,7 +1290,9 @@ void Client::boat()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=boat&a={\"boatId\":1}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=boat&a={\"boatId\":1}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1041,7 +1310,9 @@ void Client::sailing()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=sailing&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=sailing&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1051,8 +1322,6 @@ void Client::sailing()
 }
 void Client::sailing_response(Json::Value& value)
 {
-	std::cout << Helper::Timet2String(time(NULL)) << ": sailing code:" << value["code"].asString() << "\n";
-
 	if (SAILING_OVER == Helper::StringToInt(value["code"].asString()))
 	{
 		m_pTimerManager->RemoveTimer(m_sailing);
@@ -1062,25 +1331,36 @@ void Client::sailing_response(Json::Value& value)
 	if (Helper::StringToInt(value["code"].asString()) == 0)
 	{
 		Json::Value weeklyActivity = value["data"]["weeklyActivity"];
-		
-		switch (weeklyActivity["sail_type"].asInt())
-		{
-		case 2:
-			sailing_type2();
-			break;
-		case 3:
-			sailing_type3();
-			break;
-		case 5:
-			sailing_type5();
-			break;
-		case 6:
-			sailing_type6();
-			break;
-		default:
-			std::cout << "sail_type:" << weeklyActivity["sail_type"].asInt() << "\n";
-			break;
-		}
+
+        //sailing
+        int pos = 0;
+
+
+            if (weeklyActivity["type"].asInt() == 2)
+            {
+                switch (weeklyActivity["sail_type"].asInt())
+                {
+                case 0:
+                    sailing();
+                    break;
+                case 2:
+                    sailing_type2();
+                    break;
+                case 3:
+                    sailing_type3();
+                    break;
+                case 5:
+                    sailing_type5();
+                    break;
+                case 6:
+                    sailing_type6();
+                    break;
+                default:
+                    std::cout << "sail_type:" << weeklyActivity["sail_type"].asInt() << "\n";
+                    break;
+                }
+            }
+        
 	}
 }
 
@@ -1088,7 +1368,9 @@ void Client::sailing_type2()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=pirate&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=pirate&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1100,7 +1382,9 @@ void Client::sailing_type3()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=island&a={\"isBattle\":true}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=island&a={\"isBattle\":true}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1112,7 +1396,9 @@ void Client::sailing_type5()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=pk&a={\"isBattle\":true}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=pk&a={\"isBattle\":true}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1124,7 +1410,9 @@ void Client::sailing_type6()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=hill&a={\"isDouble\":false}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=hill&a={\"isDouble\":false}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1170,10 +1458,18 @@ void Client::checkStep()
 	case REMOVE_TIMER:
 		if (m_step != NULL)
 		{
-			m_pTimerManager->RemoveTimer(m_step);
-			m_step = NULL;
+			m_pTimerManager->RemoveTimer(m_step);            
 		}
+        step_ = CHECKSTEP;
+        m_step = m_pTimerManager->AddTriggerTimer(0, 1, 0, std::bind(&Client::checkStep, this));
 		break;
+    case CHECKSTEP:
+        if (m_step != NULL)
+        {
+            m_pTimerManager->RemoveTimer(m_step);          
+        }
+        step_ = INIT;
+        m_step = m_pTimerManager->AddIntervalTimer(1, std::bind(&Client::checkStep, this));
 	default:
 		break;
 	}
@@ -1186,7 +1482,9 @@ void Client::delete_friend()
 
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Friend&m=deleteFriends&a={\"fid\":1021,\"fids\":[1021]}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Friend&m=deleteFriends&a={\"fid\":1021,\"fids\":[1021]}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1210,7 +1508,9 @@ void Client::add_friend()
 
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Friend&m=sendRequest&a={\"fid\":1021}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Friend&m=sendRequest&a={\"fid\":1021}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1234,7 +1534,9 @@ void Client::get_new()
 
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Friend&m=getNewRequest&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Friend&m=getNewRequest&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1258,7 +1560,9 @@ void Client::accept_add_friend()
 
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Friend&m=accept&a={\"fid\":1743}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Friend&m=accept&a={\"fid\":1743}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1282,7 +1586,9 @@ void Client::send_power()
 
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Friend&m=sendGift&a={\"fid\":1021}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Friend&m=sendGift&a={\"fid\":1021}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1310,7 +1616,9 @@ void Client::accept_power()
 
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Friend&m=receiveAndSendGiftAll&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Friend&m=receiveAndSendGiftAll&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1325,14 +1633,15 @@ void Client::accept_power_response(Json::Value& value)
 {
 	static int count = 0;
 	step_ = ACCEPT_POWER_RESPONSE;
-	std::cout << "accept_power_response by ios   count:" << ++count << "\n";
 }
 
 void Client::signin()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Activity&m=signIn&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Activity&m=signIn&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1345,7 +1654,9 @@ void Client::onlineGift()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Activity&m=onlineGift&a={}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Activity&m=onlineGift&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1358,7 +1669,9 @@ void Client::buyPow()
 {
 	http::http_request request;
 	request.type = HTTP_GET;
-	request.url = "/s20042/port/interface.php?s=Mall&m=buyPow&a={\"num\":1}&v=1.0.7&sys=";
+    request.url = "/s20042/port/interface.php?s=Mall&m=buyPow&a={\"num\":1}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1375,7 +1688,9 @@ void Client::CalendarSign()
 	request.type = HTTP_GET;
 	request.url = "/s20042/port/interface.php?s=Activity&m=CalendarSign&a={\"id\":";
 	request.url += Helper::IntToString(tmNow.tm_mday);
-	request.url += "}&v=1.0.7&sys=";
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;
@@ -1392,7 +1707,9 @@ void Client::CardDraw(int type)
 	request.type = HTTP_GET;
 	request.url = "/s20042/port/interface.php?s=Card&m=draw&a={\"cost\":0,\"type\":";
 	request.url += Helper::IntToString(type);
-	request.url += "}&v=1.0.7&sys=";
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
 	request.url += platform_;
 	request.host = "pl-game.thedream.cc";
 	request.head["Cookie"] = cookie;

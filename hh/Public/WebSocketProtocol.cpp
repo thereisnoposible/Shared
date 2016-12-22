@@ -250,7 +250,7 @@ int WebSocketProtocol::makeFrame(NetPack* pInPacket, NetPack * pOutPacket, Frame
 //
 //	if (NETWORK_MESSAGE_MAX_SIZE < msg_payload_length)
 //	{
-//		WARNING_MSG(fmt::format("WebSocketProtocol::getFrame: msglen exceeds the limit! msglen=({}), maxlen={}.\n",
+//		WARNING_MSG(boost::format("WebSocketProtocol::getFrame: msglen exceeds the limit! msglen=({}), maxlen={}.\n",
 //			msg_payload_length, NETWORK_MESSAGE_MAX_SIZE));
 //
 //		frameType = ERROR_FRAME;

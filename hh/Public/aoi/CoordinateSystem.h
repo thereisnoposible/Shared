@@ -18,6 +18,7 @@ namespace AOI
 		bool remove(CoordinateNode* pNode);
 		bool removeReal(CoordinateNode* pNode);
 		void removeDelNodes();
+		void releaseNodes();
 
 		/**
 		当某个节点有变动时，需要更新它在list中的
@@ -42,6 +43,8 @@ namespace AOI
 
 		std::list<CoordinateNode*> dels_;
 		size_t dels_count_;
+
+		std::list<CoordinateNode*> releases_;
 
 		int updating_;
 	};

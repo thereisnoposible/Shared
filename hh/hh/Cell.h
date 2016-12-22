@@ -13,8 +13,8 @@ public:
 
 	void OnPlayerMove(Player*);
 
-	void OnAddPlayer(Player*);
-	void OnRemovePlayer(Player*);
+	void OnAddEntity(AOI::Entity*);
+	void OnRemoveEntity(AOI::Entity*);
 	void update();
 
 	void BrocastPlayerMessage(Player*, void(Player::*pfunc)(void*),void* param);

@@ -73,7 +73,7 @@ bool DBService::Open(const char* host, const char* user, const char* passwd, con
 	return true;
 }
 
-bool DBService::syncQuery(std::string sql, DBResult& pResult)
+bool DBService::syncQuery(std::string&& sql, DBResult& pResult)
 {
 	int result = mysql_real_query(mysql, sql.c_str(), sql.size());
 	if (result != 0)
@@ -86,12 +86,12 @@ bool DBService::syncQuery(std::string sql, DBResult& pResult)
 	return pResult.pResult != nullptr;
 }
 
-bool DBService::syncExcute(std::string sql)
+bool DBService::syncExcute(std::string&& sql)
 {
-	return mysql_real_query(mysql, sql.c_str(), sql.length()) != 0;
+	return mysql_real_query(mysql, sql.c_str(), sql.length()) == 0;
 }
 
-void DBService::asynQuery(unsigned int key, std::string sql, std::function<void(DBResult& result)> func)
+void DBService::asynQuery(unsigned int key, std::string&& sql, std::function<void(DBResult& result)> func)
 {
 	SqlCommond cmd;
 	cmd.sql = sql;
@@ -100,7 +100,7 @@ void DBService::asynQuery(unsigned int key, std::string sql, std::function<void(
 	vecThread[key%vecThread.size()]->addQuerySql(cmd);
 }
 
-void DBService::asynExcute(unsigned int key, std::string sql, std::function<void(DBResult& result)> func)
+void DBService::asynExcute(unsigned int key, std::string&& sql, std::function<void(DBResult& result)> func)
 {
 	SqlCommond cmd;
 	cmd.sql = sql;

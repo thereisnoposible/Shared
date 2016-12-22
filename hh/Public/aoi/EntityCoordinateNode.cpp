@@ -336,7 +336,7 @@ namespace AOI
 		std::vector<CoordinateNode*>::iterator iter = watcherNodes_.begin();
 		for (; iter != watcherNodes_.end(); ++iter)
 		{
-			(*iter)->onParentRemove(this);
+			//(*iter)->onParentRemove(this);
 		}
 
 		CoordinateNode::onRemove();

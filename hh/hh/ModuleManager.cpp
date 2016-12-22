@@ -1,16 +1,11 @@
 #include "stdafx.h"
 #include "ModuleManager.h"
-#include "WugongModule.h"
-#include "TongheModule.h"
 #include "Player.h"
-#include "ObjectModule.h"
 
 ModuleManager* Singleton<ModuleManager>::single = NULL;
 ModuleManager::ModuleManager()
 {
-	new WugongFactory();
-	new TongheFactory();
-	new ObjectFactory();
+
 }
 ModuleManager::~ModuleManager()
 {

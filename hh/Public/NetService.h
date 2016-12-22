@@ -18,7 +18,7 @@
 #include "io_service_pool.h"
 #include "WebSocketProtocol.h"
 #include "Helper.h"
-
+#include <iostream>
 
 typedef std::shared_ptr<NetPack> PackPtr;
 typedef std::shared_ptr<NetConnect> ConnectPtr;
@@ -56,10 +56,7 @@ public:
 	}
 	~NetConnect()
 	{
-		//if (_pSocket.get() != nullptr)
-		//{
-			CloseSocket();
-		//}
+
 	}
 
 	//const std::string& GetReadBuffer()
@@ -396,6 +393,9 @@ public:
 			{
 				return;
 			}
+			//static unsigned long long total = 0;
+			//total += bytes_transferred;
+			//std::cout << Helper::Timet2String(time(NULL)) << " write buffer:" << bytes_transferred << " total:" << total << "\n";
 		}
 
 		void handle_close()

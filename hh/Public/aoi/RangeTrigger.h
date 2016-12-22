@@ -13,6 +13,7 @@ namespace AOI
 		bool install();
 		bool uninstall();
 		bool reinstall(CoordinateNode* pCoordinateNode);
+		inline bool isInstalled() const;
 
 		void range(float xz, float y);
 		float range_xz() const;

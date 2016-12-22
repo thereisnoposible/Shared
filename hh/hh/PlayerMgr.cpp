@@ -1,10 +1,11 @@
 #include "stdafx.h"
 #include "PlayerMgr.h"
-#include "../new/proto/protobuf/hello.pb.h"
 #include "Player.h"
 #include "ModuleManager.h"
 #include "MapManager.h"
 #include "Application.h"
+#include "../new/proto/protobuf/login.pb.h"
+#include "../new/proto/protobuf/player.pb.h"
 
 PlayerManager* Singleton<PlayerManager>::single = nullptr;
 //-------------------------------------------------------------------------------------------
@@ -63,7 +64,7 @@ void PlayerManager::loadPlayer()
 	_unique_player = 0;
 	std::string sql = "select * from player";
 	DBResult result;
-	m_pDBService->syncQuery(sql, result);
+	m_pDBService->syncQuery(std::move(sql), result);
 
 	while (!result.eof())
 	{
@@ -74,39 +75,7 @@ void PlayerManager::loadPlayer()
 		pData.jinbi = result.getIntField("jinbi");
 
 		pData.hp = result.getIntField("hp");
-		pData.maxhp = result.getIntField("maxhp");
-		pData.mp = result.getIntField("mp");
-		pData.maxmp = result.getIntField("maxmp");
-
-		pData.liliang = result.getIntField("liliang");
-		pData.minjie = result.getIntField("minjie");
-		pData.sudu = result.getIntField("sudu");
-		pData.danshi = result.getIntField("danshi");
-		pData.jingqi = result.getIntField("jingqi");
-		pData.meili = result.getIntField("meili");
-
-		pData.liliang_exp = result.getIntField("liliang_exp");
-		pData.minjie_exp = result.getIntField("minjie_exp");
-		pData.sudu_exp = result.getIntField("sudu_exp");
-		pData.danshi_exp = result.getIntField("danshi_exp");
-		pData.jingqi_exp = result.getIntField("jingqi_exp");
-		pData.meili_exp = result.getIntField("meili_exp");
-
-		pData.max_liliang = result.getIntField("max_liliang");
-		pData.max_minjie = result.getIntField("max_minjie");
-		pData.max_sudu = result.getIntField("max_sudu");
-		pData.max_danshi = result.getIntField("max_danshi");
-		pData.max_jingqi = result.getIntField("max_jingqi");
-		pData.max_meili = result.getIntField("max_meili");
-
-		pData.gengu = result.getIntField("gengu");
-		pData.wuxing = result.getIntField("wuxing");
-		pData.fuyuan = result.getIntField("fuyuan");
-
-		pData.lixing = result.getIntField("lixing");
-		pData.ganxing = result.getIntField("ganxing");
-
-		pData.xuedian = result.getIntField("xuedian");
+		pData.maxhp = result.getIntField("max_hp");
 
 		pData.cellid = result.getIntField("cellid");
 		pData.name = result.getStringField("name");
@@ -160,8 +129,7 @@ void PlayerManager::onPlayerMessage(PackPtr& pPack)
 		{
 			std::unordered_map<unsigned int, Player*>::iterator playerit = accit->second.find(it->second.playerid);
 			playerit->second->FireNetMsg(pPack->getMessageId(), pPack);
-		}
-		
+		}	
 	}
 }
 
@@ -312,10 +280,12 @@ void PlayerManager::CreatePlayer(PackPtr& pPack)
 	
 	response.set_result(0);
 	PlayerData pData;
-	pData.id = _unique_player++;
+	pData.id = ++_unique_player;
 	pData.name = request.player_name();
 	pData.acc_id = sit->second.acc_id;
 	InitPlayer(pData);	
+
+    InsertPlayer(pData);
 
 	Player* p = new Player(pData);
 	ModuleManager::getInstance().CreateRoleModule(p);
@@ -334,29 +304,6 @@ void PlayerManager::InitPlayer(PlayerData& player)
 {
 	player.hp = 150;
 	player.maxhp = 150;
-	player.mp = 100;
-	player.maxmp = 100;
-
-	player.liliang = 5;
-	player.minjie = 5;
-	player.sudu = 5;
-	player.danshi = 5;
-	player.jingqi = 5;
-	player.meili = 5;
-
-	player.max_liliang = Helper::GetRandom(5,100);
-	player.max_minjie = Helper::GetRandom(5, 100);
-	player.max_sudu = Helper::GetRandom(5, 100);
-	player.max_danshi = Helper::GetRandom(5, 100);
-	player.max_jingqi = Helper::GetRandom(5, 100);
-	player.max_meili = Helper::GetRandom(5, 100);
-
-	player.gengu = Helper::GetRandom(5, 100);
-	player.wuxing = Helper::GetRandom(5, 100);
-	player.fuyuan = Helper::GetRandom(5, 100);
-
-	player.lixing = Helper::GetRandom(5, 100);
-	player.ganxing = 100 - player.lixing;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -369,4 +316,20 @@ void PlayerManager::HeartBeat(PackPtr& pPack)
 
 	response.set_currtime((int)time(NULL));
 	pPack->m_Connect->SendBuffer(GM_CLIENT_HEARTBEAT_RESPONSE, response, 0);
+}
+
+//-------------------------------------------------------------------------------------------
+void PlayerManager::InsertPlayer(PlayerData& data)
+{
+    std::stringstream ss;
+    ss << "insert into player(accid,id,jinbi,hp,maxhp,cellid,name) values(";
+    ss << "'" << data.acc_id << "',";
+    ss << data.id << ",";
+    ss << data.jinbi << ",";
+    ss << data.hp << ",";
+    ss << data.maxhp << ",";
+    ss << data.cellid << ",";
+    ss << "'" << data.name << "')";
+
+    m_pDBService->asynExcute(data.id, ss.str(), std::function<void(DBResult&)>());
 }

@@ -149,37 +149,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AOITrigger.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="connect.cpp" />
     <ClCompile Include="connect_manager.cpp" />
-    <ClCompile Include="CoordinateSystem.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="EntityCoordinateNode.cpp" />
-    <ClCompile Include="EntityRef.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="RangeTrigger.cpp" />
-    <ClCompile Include="RangeTriggerNode.cpp" />
-    <ClCompile Include="Space.cpp" />
-    <ClCompile Include="Witness.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AOITrigger.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="connect.h" />
     <ClInclude Include="connect_manager.h" />
-    <ClInclude Include="CoordinateSystem.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="EntityCoordinateNode.h" />
-    <ClInclude Include="EntityRef.h" />
     <ClInclude Include="game_struct.h" />
     <ClInclude Include="http_define.h" />
-    <ClInclude Include="CoordinateNode.h" />
-    <ClInclude Include="RangeTrigger.h" />
-    <ClInclude Include="RangeTriggerNode.h" />
-    <ClInclude Include="Space.h" />
-    <ClInclude Include="Vector3.h" />
-    <ClInclude Include="Witness.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -27,9 +27,6 @@
     <ClCompile Include="Application.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\new\proto\protobuf\hello.pb.cc">
-      <Filter>message</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerMgr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -45,35 +42,26 @@
     <ClCompile Include="BaseModule.cpp">
       <Filter>头文件</Filter>
     </ClCompile>
-    <ClCompile Include="WugongModule.cpp">
-      <Filter>module</Filter>
-    </ClCompile>
-    <ClCompile Include="TongheModule.cpp">
-      <Filter>module</Filter>
-    </ClCompile>
     <ClCompile Include="Log.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\new\proto\protobuf\wugong.pb.cc">
-      <Filter>message</Filter>
-    </ClCompile>
-    <ClCompile Include="FightManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MapManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\new\proto\protobuf\tonghe.pb.cc">
-      <Filter>message</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectModule.cpp">
-      <Filter>module</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\new\proto\protobuf\object.pb.cc">
-      <Filter>message</Filter>
-    </ClCompile>
     <ClCompile Include="cell.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\login.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\player.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="XinfaModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\xinfa.pb.cc">
+      <Filter>message</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,26 +83,17 @@
     <ClInclude Include="BaseModule.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="WugongModule.h">
-      <Filter>module</Filter>
-    </ClInclude>
-    <ClInclude Include="TongheModule.h">
-      <Filter>module</Filter>
-    </ClInclude>
     <ClInclude Include="Log.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="FightManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MapManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ObjectModule.h">
-      <Filter>module</Filter>
-    </ClInclude>
     <ClInclude Include="Cell.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="XinfaModule.h">
+      <Filter>module</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

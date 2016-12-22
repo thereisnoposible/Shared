@@ -37,10 +37,10 @@ public:
 	bool Open(const char* host, const char* user, const char* passwd, const char* db,
 		unsigned int port = 3306, const char* charset = "utf8", unsigned long flag = 0);
 
-	bool syncQuery(std::string sql, DBResult& pResult);
-	bool syncExcute(std::string sql);
-	void asynQuery(unsigned int, std::string sql, std::function<void(DBResult& result)> func);
-	void asynExcute(unsigned int, std::string sql, std::function<void(DBResult& result)> func);
+	bool syncQuery(std::string&& sql, DBResult& pResult);
+	bool syncExcute(std::string&& sql);
+	void asynQuery(unsigned int, std::string&& sql, std::function<void(DBResult& result)> func);
+	void asynExcute(unsigned int, std::string&& sql, std::function<void(DBResult& result)> func);
 	const char* getError();
 
 	void OnGetResult(SqlCommond&);

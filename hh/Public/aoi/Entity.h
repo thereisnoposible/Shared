@@ -14,10 +14,17 @@ namespace AOI
 	class Witness;
 	class Space;
 
+	enum EntityType
+	{
+		EntityTypePlayer,
+		EntityTypeProps,
+		EntityTypeNpc,
+	};
+
 	class Entity
 	{
 	public:
-		Entity(int id);
+		Entity(int id, EntityType type);
 		~Entity();
 		Math::Vector3& position();
 		void position(Math::Vector3& pos);
@@ -31,8 +38,10 @@ namespace AOI
 		/**
 		进入离开space等回调
 		*/
-		void onEnterSpace(Space* pSpace);
-		void onLeaveSpace(Space* pSpace);
+		virtual void onEnterSpace(Space* pSpace);
+		virtual void onLeaveSpace(Space* pSpace);
+
+		virtual void onOtherEntityMove(Entity* entity);
 
 		/**
 		观察者
@@ -52,24 +61,32 @@ namespace AOI
 		*/
 		void delWitnessed(Entity* entity);
 
+		std::list<int> GetWitnesses();
+
 		int id();
 		void id(int v);
 
 		unsigned int flags();
 		void flags(unsigned int v);
 
+		EntityType& entityType();
+
 		/**
 		一个entity进入了AOI区域
 		*/
-		void onEnteredAoI(Entity* entity);
+		virtual void onEnteredAoI(Entity* entity);
+
+        virtual void onLeaveAoI(Entity* entity);
 
 	private:
 		int id_;
 		unsigned int											flags_;
+		EntityType type_;
 
 		EntityCoordinateNode* pEntityCoordinateNode_;
 		CoordinateSystem* pCoordinateSystem_;
 		Math::Vector3 position_;
+		Math::Vector3 last_position_;
 
 		// 是否被任何观察者监视到
 		std::list<int>											witnesses_;

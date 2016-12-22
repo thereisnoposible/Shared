@@ -43,3 +43,9 @@ enum EQuipmentSubType
 	ARMOR,
 	EquipmentSubTypeEnd,
 };
+
+enum NpcFunctionType
+{
+	JINENGSHI,		//技能ID，技能最大等级
+	DAOJUSHANG,		//道具ID，道具售价
+};

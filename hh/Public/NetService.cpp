@@ -91,6 +91,7 @@ void NetService::update()
 			(*setit)->OnDisConnect(newDisConnect[i]);
 		}
 		_connectMap.erase(newDisConnect[i]);
+		newDisConnect[i]->CloseSocket();
 	}
 	newDisConnect.clear();
 	disconnlock.unlock();

@@ -27,6 +27,7 @@ enum friendStep
 	ACCEPT_POWER_RESPONSE = INIT,
 
 	REMOVE_TIMER = -1,
+    CHECKSTEP = -2,
 };
 
 class Client
@@ -36,6 +37,8 @@ public:
 	~Client();
 	void run(double diff);
 	void fire(std::string& cmd, std::string& param);
+
+    void webreward_response(http::http_response& response);
 protected:
 	void registmessage();
 
@@ -64,6 +67,7 @@ protected:
 	void request_player_data_response(Json::Value& value);
 
 	void set_mode(std::string& param);
+    void set_fight(std::string& param);
 	void fight(int map);
 
 	std::string parse(std::string& temp);
@@ -86,6 +90,17 @@ protected:
 	void buyPow();
 	void CalendarSign();
 	void CardDraw(int type);
+
+    void worldBoss();
+    void worldBoss_response(Json::Value& value);
+    void startWorldBoss();
+    void startWorldBoss_response(Json::Value& value);
+    void playWorldBoss_response(Json::Value& value);
+    void worldBossReward();
+    void worldBossReward_response(Json::Value& value);
+
+    void shared();
+    void shared_response(Json::Value& value);
 
 	void startSail();
 	void startSail_response(Json::Value& value);
@@ -117,6 +132,9 @@ protected:
 	void accept_power();
 	void accept_power_response(Json::Value& value);
 
+    std::chrono::steady_clock::time_point fCurr;
+
+
 private:
 	http::connect_manager* m_manager;
 	std::unordered_map<std::string, std::function<void(std::string&)>> m_message;
@@ -132,6 +150,7 @@ private:
 
 	std::string ios_deviceid = "B5028106-12E3-483D-99BC-3E180138F779";
 	std::string android_deviceid = "127468846146468";
+    std::string version = "1.0.8";
 
 	int endurance;	//ƒÕ¡¶
 	int pow;		//ÃÂ¡¶
@@ -165,4 +184,9 @@ private:
 	int map_low;
 
 	static friendStep step_;
+
+    int fight_high = 17039;// 15920;
+    int fight_low = 13941;// 13025;
+
+    std::map<int, int> maf;
 };

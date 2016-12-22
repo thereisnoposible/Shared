@@ -2,88 +2,69 @@
 #include "MapManager.h"
 #include "Player.h"
 #include "Cell.h"
+#include "aoi/Space.h"
 MapManager* Singleton<MapManager>::single = nullptr;
 
 MapManager::MapManager()
 {
-	InitialCell();
-	m_Update = TimerManager::getInstance().AddIntervalTimer(0.5, boost::bind(&MapManager::Update, this));
+
 }
 
 MapManager::~MapManager()
 {
-	if (m_Update != nullptr)
+	std::unordered_map<int32, AOI::Space*>::iterator it = m_SpaceMap.begin();
+	for (; it != m_SpaceMap.end(); ++it)
 	{
-		TimerManager::getInstance().RemoveTimer(m_Update);
-		m_Update = nullptr;
-	}
-
-	for (int i = 0; i <= 100; ++i)
-	{
-		if (m_CellMap[i] != nullptr)
-		{
-			delete m_CellMap[i];
-			m_CellMap[i] = nullptr;
-		}
+		delete it->second;
 	}
 }
 
-void MapManager::InitialCell()
+AOI::Entity* MapManager::FindEntity(int32 id)
 {
-	for (int i = 1; i <= 100; ++i)
-	{
-		m_CellMap[i] = new Cell(i);
-	}
-}
-
-void MapManager::Update()
-{
-	std::unordered_map<int, Cell*>::iterator it = m_CellMap.begin();
-	for (; it != m_CellMap.end(); ++it)
-	{
-		it->second->update();
-	}
-}
-
-void MapManager::AddPlayer(Player* player)
-{
-	std::unordered_map<int, Cell*>::iterator it = m_CellMap.find(player->GetCellID());
-	if (it != m_CellMap.end())
-	{
-		it->second->OnAddPlayer(player);
-	}
-	else
-	{
-		m_CellMap[1]->OnAddPlayer(player);
-	}
-}
-
-void  MapManager::DeletePlayer(Player* pPlayer)
-{
-	std::unordered_map<int, Cell*>::iterator it = m_CellMap.find(pPlayer->GetCellID());
-	if (it != m_CellMap.end())
-	{
-		it->second->OnRemovePlayer(pPlayer);
-	}
-}
-
-Cell* MapManager::GetCell(int id)
-{
-	Cell* pItem = NULL;
-	std::unordered_map<int,Cell*>::iterator it = m_CellMap.find(id);
-	if (it != m_CellMap.end())
+	AOI::Entity* pItem = nullptr;
+	std::unordered_map<int32, AOI::Entity*>::iterator it = m_Entities.find(id);
+	if (it != m_Entities.end())
 	{
 		pItem = it->second;
 	}
 	return pItem;
 }
 
-void MapManager::BrocastPlayerMessage(Player*player, void (Player::*pfunc)(void*), void* param)
+void MapManager::AddEntity(int32 space_id, AOI::Entity* entity)
 {
-	std::unordered_map<int, Cell*>::iterator it = m_CellMap.find(player->GetCellID());
-	if (it != m_CellMap.end())
+	std::unordered_map<int32, AOI::Space*>::iterator it = m_SpaceMap.find(space_id);
+	if (it != m_SpaceMap.end())
 	{
-		Cell* pCell = it->second;
-		pCell->BrocastPlayerMessage(player, pfunc, param);
+		it->second->addEntityAndEnterWorld(entity);
 	}
+	else
+	{
+		AOI::Space* space = new AOI::Space();
+		space->addEntityAndEnterWorld(entity);
+		m_SpaceMap[space_id] = space;
+	}
+
+	m_Entities[entity->id()] = entity;
+}
+
+void MapManager::DeleteEntity(int32 space_id, AOI::Entity* entity)
+{
+	std::unordered_map<int32, AOI::Space*>::iterator it = m_SpaceMap.find(space_id);
+	if (it != m_SpaceMap.end())
+	{
+		it->second->removeEntity(entity);
+	}
+
+	m_Entities.erase(entity->id());
+}
+
+AOI::Space* MapManager::GetSpace(int32 id)
+{
+	AOI::Space* pItem = NULL;
+	std::unordered_map<int32, AOI::Space*>::iterator it = m_SpaceMap.find(id);
+	if (it != m_SpaceMap.end())
+	{
+		pItem = it->second;
+	}
+	return pItem;
 }

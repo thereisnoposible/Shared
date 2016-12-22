@@ -10,6 +10,8 @@ namespace AOI
 		RangeTriggerNode::RangeTriggerNode(RangeTrigger* pRangeTrigger, float xz, float y);
 		~RangeTriggerNode();
 
+        void onTriggerUninstall();
+
 
 		void range(float xz, float y);
 		void old_range(float xz, float y);
@@ -31,9 +33,9 @@ namespace AOI
 		bool isInYRange(CoordinateNode * pNode);
 		bool isInZRange(CoordinateNode * pNode);
 
-		bool wasInXRange(CoordinateNode * pNode);
-		bool wasInYRange(CoordinateNode * pNode);
-		bool wasInZRange(CoordinateNode * pNode);
+        bool wasInXRange(CoordinateNode * pNode, bool isfront);
+        bool wasInYRange(CoordinateNode * pNode, bool isfront);
+        bool wasInZRange(CoordinateNode * pNode, bool isfront);
 
 		virtual void resetOld(){
 			CoordinateNode::resetOld();
@@ -44,6 +46,7 @@ namespace AOI
 		/**
 		¸¸½ÚµãÉ¾³ý
 		*/
+        virtual void onRemove();
 		virtual void onParentRemove(CoordinateNode* pParentNode);
 
 		/**

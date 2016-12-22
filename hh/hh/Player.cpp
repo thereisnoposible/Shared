@@ -3,13 +3,17 @@
 #include <stdlib.h>
 #include "sourceMap.h"
 #include "PlayerMgr.h"
-#include "ObjectModule.h"
 #include "MapManager.h"
 
-Player::Player(PlayerData& p) : _UniqueCount(0), speed(10)
+Player::Player(PlayerData& p) : _UniqueCount(0), speed(10), AOI::Entity(p.id, AOI::EntityTypePlayer)
 {
 	starttime = std::chrono::steady_clock::now();
 	_playerdata = p;
+	status = PlayerStatus::psFree;
+
+
+	RegisterNetMsgHandle(GM_REQUEST_MOVE, std::bind(&Player::processRequestMove, this, std::placeholders::_1));
+
 }
 Player::~Player()
 {
@@ -36,6 +40,16 @@ Player::PlayerState Player::GetPlayerState()
 	return state;
 }
 
+void Player::SetPlayerStatus(PlayerStatus _status)
+{
+	status = _status;
+}
+
+Player::PlayerStatus Player::GetPlayerStatus()
+{
+	return status;
+}
+
 //void Player::SetConnect(boost::shared_ptr<NetConnect>& conn)
 //{
 	
@@ -45,24 +59,30 @@ void Player::OnPlyaerLogin(ConnectPtr& conn)
 {
 	if (state == PlayerState::psOffline)
 	{
-		MapManager::getInstance().AddPlayer(this);
+		MapManager::getInstance().AddEntity(GetCellID(), this);
 	}
 	m_pConnect = conn;
 	state = PlayerState::psOnline;
+
+	auto it = m_pModuleMap.begin();
+	for (; it != m_pModuleMap.end(); it++)
+		it->second->OnLogin();
 }
 
 void Player::OnPlyaerLogout()
 {
-	MapManager::getInstance().DeletePlayer(this);
+	MapManager::getInstance().DeleteEntity(GetCellID(), this);
 	m_pConnect = ConnectPtr();
 	state = PlayerState::psOffline;
+
+	auto it = m_pModuleMap.begin();
+	for (; it != m_pModuleMap.end(); it++)
+		it->second->OnLogout();
 }
 
 void Player::AddProp(PropItem& item)
 {
-	ObjectModule* pModule = dynamic_cast<ObjectModule*>(GetModule(OBJECT));
 
-	pModule->addPropItem(item);
 }
 
 //---------------------------------------------------------------------------
@@ -107,31 +127,6 @@ BaseModule* Player::GetModule(std::string modulename)
 		pModule = it->second;
 	return pModule;
 }
-
-//void Player::Init()
-//{
-//	auto it = m_pModuleMap.begin();
-//	for (; it != m_pModuleMap.end(); it++)
-//		it->second->Init();
-//}
-//
-//void Player::OnModuleInitOk()
-//{
-//	bool bOk = true;
-//	auto it = m_pModuleMap.begin();
-//	for (; it != m_pModuleMap.end(); it++)
-//	{
-//		if (!it->second->IsInitOk())
-//		{
-//			bOk = false;
-//			break;
-//		}
-//	}
-//	if (bOk)
-//	{
-//		PlayerManager::getInstance().PlayerLogin(this);
-//	}
-//}
 int Player::GetPlayerID()
 {
 	return _playerdata.id;
@@ -146,30 +141,9 @@ PlayerData& Player::GetPlayerData()
 	return _playerdata;
 }
 
-void Player::UseMedicine(PropItem& temp)
-{
-	const PropType* pItem = TypeTable::getInstance().GetPropType(temp.id);
-	CHECKERRORANDRETURN(pItem != nullptr);
-
-	if (pItem->type != MEDICINE)
-		return;
-
-	_playerdata.hp += temp.yaowu.addhp;
-	_playerdata.mp += temp.yaowu.addmp;
-
-	if (_playerdata.hp > _playerdata.maxhp)
-		_playerdata.hp = _playerdata.maxhp;
-	if (_playerdata.mp > _playerdata.maxmp)
-		_playerdata.mp = _playerdata.maxmp;
-}
-
 std::string Player::GetPlayerAddress()
 {
 	return m_pConnect.get() != nullptr ? m_pConnect->GetAddress() : "";
-}
-int Player::GetXuedian()
-{
-	return _playerdata.xuedian;
 }
 int Player::GetCellID()
 {
@@ -179,28 +153,40 @@ void Player::SetCellID(int id)
 {
 	_playerdata.cellid = id;
 }
-void Player::Addxuedian(int i)
+
+int32 Player::GetGengu()
 {
-	_playerdata.xuedian += i;
+	return _playerdata.gengu;
+}
+
+void Player::AddHP(int32 num)
+{
+	_playerdata.hp += num;
+	if (_playerdata.hp > _playerdata.maxhp)
+		_playerdata.hp = _playerdata.maxhp;
 }
 
 //-------------------------------------------------------------------------------------------
-void Player::OnPlayerMove(void* param)
+void Player::processRequestMove(PackPtr& pPack)
 {
-	Player* player = (Player*)param;
+	Math::Vector3 pos;
+	pos.x = 2;
+	pos.y = 2;
+	pos.z = 0;
+	position(position() + pos);
+	pEntityCoordinateNode()->update();
 
-	Json::FastWriter write;
-	Json::Value value;
-	value["playerid"] = player->GetPlayerID();
-	value["currpos_x"] = player->currpos.x;
-	value["currpos_y"] = player->currpos.y;
-	value["dstpos_x"] = player->dstpos.x;
-	value["dstpos_y"] = player->dstpos.y;
+	std::list<int>& Witnesses = GetWitnesses();
+	for (auto it = Witnesses.begin(); it != Witnesses.end(); ++it)
+	{
+		Entity* pEntity = MapManager::getInstance().FindEntity(*it);
+		pEntity->onOtherEntityMove(this);
+	}	
+}
 
-	std::string str;
-	str = write.write(value);
-
-	m_pConnect->Send(GM_NOTIFY_MOVEING, str.c_str(),str.size(), GetPlayerID());
+void Player::onOtherEntityMove(Entity* entity)
+{
+    std::cout << _playerdata.id << "currpos "<<position().x<<": player " << entity->id() << " move " << "curr pos:" << entity->position().x << "\n";
 }
 
 //-------------------------------------------------------------------------------------------

@@ -2,26 +2,25 @@
 #include<unordered_map>
 #include "TimerManager.h"
 
-class Cell;
+namespace AOI
+{
+	class Entity;
+	class Space;
+}
+
 class MapManager : public Singleton<MapManager>
 {
 public:
 	MapManager();
 	~MapManager();
 
-	void InitialCell();
+	AOI::Entity* FindEntity(int32 id);
 
-	void AddPlayer(Player*);
-	void DeletePlayer(Player*);
+	void AddEntity(int32 cellid, AOI::Entity*);
+	void DeleteEntity(int32 cellid, AOI::Entity*);
 
-	void Update();
-
-	Cell* GetCell(int id);
-
-	void BrocastPlayerMessage(Player*, void (Player::*pfunc)(void*),void* param);
+	AOI::Space* GetSpace(int32 id);
 private:
-	boost::mutex _mutex;
-	std::unordered_map<int, Cell*> m_CellMap;
-
-	TMHANDLE m_Update;
+	std::unordered_map<int32, AOI::Space*> m_SpaceMap;
+	std::unordered_map<int32, AOI::Entity*> m_Entities;
 };

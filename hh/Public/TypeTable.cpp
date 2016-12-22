@@ -1,94 +1,68 @@
 #include "TypeTable.h"
 
+#include "DBService.h"
+#include <iostream>
 TypeTable* Singleton<TypeTable>::single = nullptr;
 TypeTable::TypeTable()
 {
 	loadAllTable();
+	
+
+	m_pDBService = new DBService(1);
+	if (!m_pDBService->Open("192.168.0.222", "guest", "123456", "smh_type_yf"))
+	{
+		std::cout << "open smh_type_yf failed\n";
+	}
+
+	FindAllTypeTable();
 }
 
 TypeTable::~TypeTable()
 {
+	if (m_pDBService != nullptr)
+		delete m_pDBService;
+	
+}
 
+void TypeTable::FindAllTypeTable()
+{
+	DBResult result;
+	m_pDBService->syncQuery("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'smh_type_yf'", result);
+	//while (!result.eof())
+	{
+		DataBucket temp;
+
+	}
 }
 
 void TypeTable::loadAllTable()
 {
-	loadTypeProp();
-	loadTypeWugong();
-	loadTypeWugongLevelUp();
+	loadTypeXinfa();
 }
 
-void TypeTable::loadTypeProp()
+void TypeTable::loadTypeXinfa()
 {
-	PropType item;
+	TypeXinfa item;
 	item.id = 1;
-	item.type = CURRENCY;
-	item.baccumulate = false;
-	_propMap.insert(std::make_pair(item.id, item));
-	for (int i = 1; i < 100; i++)
-	{
-		item.id = i + 1;
-		item.type = EQUIPMENT;
-		item.sub_type = (i+1) % (EquipmentSubTypeEnd);
-		_propMap.insert(std::make_pair(item.id, item));
-		item.baccumulate = false;
-	}
+	item.add_ratio = 1;
+	item.add_count = 1;
+	item.recovery_mp_ratio = 1;
+	item.recovery_mp_count = 1;
+	item.damage_ratio = 1;
+	item.damage_count = 1;
+	item.recovery_hp_ratio = 1;
+	item.recovery_hp_count = 1;
+
+	_typeXinfa[item.id] = item;
 }
 
-const PropType* TypeTable::GetPropType(int id)
+const TypeXinfa* TypeTable::getTypeXinfa(int32 id)
 {
-	PropType* pItem = nullptr;
-	std::hash_map<int, PropType>::iterator it = _propMap.find(id);
-	if (it != _propMap.end())
+	const TypeXinfa* pItem = NULL;
+	std::unordered_map<int32, TypeXinfa>::iterator it = _typeXinfa.find(id);
+	if (it != _typeXinfa.end())
+	{
 		pItem = &it->second;
-	return pItem;
-}
-
-void TypeTable::loadTypeWugong()
-{
-	for (int i = 0; i < 4; i++)
-	{
-		WugongType item;
-		item.id = i+1;
-		item.type = WAIGONG;
-		item.quality = i;
-		_wugongMap.insert(std::make_pair(i, item));
-	}
-}
-
-const WugongType* TypeTable::GetWugongType(int id)
-{
-	WugongType* pItem = nullptr;
-	std::hash_map<int, WugongType>::iterator it = _wugongMap.find(id);
-	if (it != _wugongMap.end())
-		pItem = &it->second;
-	return pItem;
-}
-
-void TypeTable::loadTypeWugongLevelUp()
-{	
-	for (int i = 0; i < 10; i++)
-	{
-		std::hash_map<int,WugongLevelUpType> itemMap;
-		WugongLevelUpType item;
-		item.quality = i;
-		item.needxuedian = i * 100;
-		for (int j = 0; j < 10; j++)
-		{
-			item.level = j;
-			itemMap.insert(std::make_pair(item.level, item));
-		}
-		_wugongLevelUpMap.insert(std::make_pair(item.quality, itemMap));
-	}
-}
-const WugongLevelUpType* TypeTable::GetWugongLevelUpType(int quality, int level)
-{
-	WugongLevelUpType* pItem = nullptr;
-	auto it = _wugongLevelUpMap.find(quality);
-	if (it != _wugongLevelUpMap.end())
-	{
-		auto levelit = it->second.find(level);
-		pItem = &levelit->second;
 	}
 	return pItem;
 }

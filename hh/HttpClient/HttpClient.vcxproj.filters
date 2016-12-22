@@ -36,33 +36,6 @@
     <ClCompile Include="Client.cpp">
       <Filter>头文件</Filter>
     </ClCompile>
-    <ClCompile Include="EntityCoordinateNode.cpp">
-      <Filter>aoi</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>aoi</Filter>
-    </ClCompile>
-    <ClCompile Include="Space.cpp">
-      <Filter>aoi</Filter>
-    </ClCompile>
-    <ClCompile Include="CoordinateSystem.cpp">
-      <Filter>aoi</Filter>
-    </ClCompile>
-    <ClCompile Include="RangeTrigger.cpp">
-      <Filter>aoi</Filter>
-    </ClCompile>
-    <ClCompile Include="RangeTriggerNode.cpp">
-      <Filter>aoi</Filter>
-    </ClCompile>
-    <ClCompile Include="AOITrigger.cpp">
-      <Filter>aoi</Filter>
-    </ClCompile>
-    <ClCompile Include="Witness.cpp">
-      <Filter>aoi</Filter>
-    </ClCompile>
-    <ClCompile Include="EntityRef.cpp">
-      <Filter>aoi</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="connect.h">
@@ -79,39 +52,6 @@
     </ClInclude>
     <ClInclude Include="game_struct.h">
       <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityCoordinateNode.h">
-      <Filter>aoi</Filter>
-    </ClInclude>
-    <ClInclude Include="CoordinateNode.h">
-      <Filter>aoi</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>aoi</Filter>
-    </ClInclude>
-    <ClInclude Include="Space.h">
-      <Filter>aoi</Filter>
-    </ClInclude>
-    <ClInclude Include="CoordinateSystem.h">
-      <Filter>aoi</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.h">
-      <Filter>math</Filter>
-    </ClInclude>
-    <ClInclude Include="Witness.h">
-      <Filter>aoi</Filter>
-    </ClInclude>
-    <ClInclude Include="RangeTrigger.h">
-      <Filter>aoi</Filter>
-    </ClInclude>
-    <ClInclude Include="RangeTriggerNode.h">
-      <Filter>aoi</Filter>
-    </ClInclude>
-    <ClInclude Include="AOITrigger.h">
-      <Filter>aoi</Filter>
-    </ClInclude>
-    <ClInclude Include="EntityRef.h">
-      <Filter>aoi</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

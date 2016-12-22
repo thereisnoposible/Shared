@@ -4,28 +4,47 @@
 #include <hash_map>
 #include "Struct.h"
 #include "Enum.h"
+#include <unordered_map>
+#include <string>
+
+class DataBucket
+{
+public:
+	bool PushData(std::string& name, void* data)
+	{
+		auto result = data_bucket.insert(std::make_pair(name, data));
+		return result.second;
+	}
+
+	void* GetData(std::string&name)
+	{
+		void* p = nullptr;
+		auto it = data_bucket.find(name);
+		if (it != data_bucket.end())
+			p = it->second;
+		return p;
+	}
+private:
+	std::unordered_map<std::string, void*> data_bucket;
+};
+
+class DBService;
 class TypeTable : public Singleton<TypeTable>
 {
 public:
 	TypeTable();
 	~TypeTable();
 
-	const WugongType* GetWugongType(int id);
+	const TypeXinfa* getTypeXinfa(int32 id);
 
-	const WugongLevelUpType* GetWugongLevelUpType(int quality,int level);
-
-	const PropType* TypeTable::GetPropType(int id);
 protected:
 	void loadAllTable();
+	void loadTypeXinfa();
 
-	void loadTypeProp();
-
-	void loadTypeWugong();
-
-	void loadTypeWugongLevelUp();
+	void FindAllTypeTable();
 
 private:
-	std::hash_map<int, WugongType> _wugongMap;
-	std::hash_map<int, std::hash_map<int, WugongLevelUpType>> _wugongLevelUpMap;
-	std::hash_map<int, PropType> _propMap;
+	std::unordered_map<int32, TypeXinfa> _typeXinfa;
+	std::unordered_map<int32, DataBucket> _typeDataBucket;
+	DBService* m_pDBService;
 };

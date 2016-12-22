@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Login.h"
 
-#include "../new/proto/protobuf/hello.pb.h"
+#include "../new/proto/protobuf/login.pb.h"
 //-------------------------------------------------------------------------------------------
 LoginManager::LoginManager()
 {
@@ -41,7 +41,7 @@ void LoginManager::loadAcc()
 	_unique_acc = 0;
 	std::string sql = "select * from account";
 	DBResult result;
-	m_pDBService->syncQuery(sql, result);
+    m_pDBService->syncQuery(std::move(sql), result);
 
 	while (!result.eof())
 	{
@@ -75,7 +75,7 @@ void LoginManager::notifyInsertAccount(int id, std::string name, std::string psw
 	ss << "'" << psw << "'" << ")";
 	std::string sql = ss.str();
 	//直接投递执行掉,后期补充安全机制
-	m_pDBService->asynExcute(0, sql, NULLFUNC);
+	m_pDBService->asynExcute(0, std::move(sql), NULLFUNC);
 }
 
 //-------------------------------------------------------------------------------------------

@@ -19,6 +19,12 @@
     <Filter Include="json">
       <UniqueIdentifier>{796cc639-3424-46bf-8134-0de5ffb28dbd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="aoi">
+      <UniqueIdentifier>{ecb4b22c-f418-4272-80ee-302df6ddc8fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rank_template">
+      <UniqueIdentifier>{8463de23-5324-4526-9ccd-b7cbfe10dca9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MessageHandle.h">
@@ -120,6 +126,42 @@
     <ClInclude Include="Config.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="aoi\AOITrigger.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\CoordinateNode.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\CoordinateSystem.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\Entity.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\EntityCoordinateNode.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\EntityRef.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\RangeTrigger.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\RangeTriggerNode.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\Space.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\Vector3.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="aoi\Witness.h">
+      <Filter>aoi</Filter>
+    </ClInclude>
+    <ClInclude Include="rank_template.h">
+      <Filter>rank_template</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NetService.cpp">
@@ -127,9 +169,6 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\new\proto\protobuf\hello.pb.cc">
-      <Filter>message</Filter>
     </ClCompile>
     <ClCompile Include="NetClient.cpp">
       <Filter>源文件</Filter>
@@ -172,6 +211,33 @@
     </ClCompile>
     <ClCompile Include="Log.cpp">
       <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="aoi\AOITrigger.cpp">
+      <Filter>aoi</Filter>
+    </ClCompile>
+    <ClCompile Include="aoi\CoordinateSystem.cpp">
+      <Filter>aoi</Filter>
+    </ClCompile>
+    <ClCompile Include="aoi\Entity.cpp">
+      <Filter>aoi</Filter>
+    </ClCompile>
+    <ClCompile Include="aoi\EntityCoordinateNode.cpp">
+      <Filter>aoi</Filter>
+    </ClCompile>
+    <ClCompile Include="aoi\EntityRef.cpp">
+      <Filter>aoi</Filter>
+    </ClCompile>
+    <ClCompile Include="aoi\RangeTrigger.cpp">
+      <Filter>aoi</Filter>
+    </ClCompile>
+    <ClCompile Include="aoi\RangeTriggerNode.cpp">
+      <Filter>aoi</Filter>
+    </ClCompile>
+    <ClCompile Include="aoi\Space.cpp">
+      <Filter>aoi</Filter>
+    </ClCompile>
+    <ClCompile Include="aoi\Witness.cpp">
+      <Filter>aoi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -159,7 +159,7 @@ namespace http
 		it = _request.head.begin();
 		for (; it != _request.head.end(); ++it)
 		{
-			ss << it->first << ":" << it->second << "\r\n";
+			ss << it->first << ": " << it->second << "\r\n";
 		}
 		ss << "\r\n";
 		if (_request.head.size() == 0)
