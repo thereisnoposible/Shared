@@ -163,6 +163,7 @@
     <ClInclude Include="AStar.h" />
     <ClInclude Include="base64.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="crashReport.h" />
     <ClInclude Include="DBResult.h" />
     <ClInclude Include="DBService.h" />
     <ClInclude Include="DBSqlThread.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="NetMessage.h" />
     <ClInclude Include="NetPack.h" />
     <ClInclude Include="NetService.h" />
+    <ClInclude Include="proto_data.h" />
     <ClInclude Include="public.h" />
     <ClInclude Include="rank_template.h" />
     <ClInclude Include="ServerIni.h" />
@@ -207,6 +209,7 @@
     <ClCompile Include="aoi\Witness.cpp" />
     <ClCompile Include="AStar.cpp" />
     <ClCompile Include="base64.cpp" />
+    <ClCompile Include="crashReport.cpp" />
     <ClCompile Include="DBResult.cpp" />
     <ClCompile Include="DBService.cpp" />
     <ClCompile Include="DBSqlThread.cpp" />
@@ -218,6 +221,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NetClient.cpp" />
     <ClCompile Include="NetService.cpp" />
+    <ClCompile Include="proto_data.cpp" />
     <ClCompile Include="TimerManager.cpp" />
     <ClCompile Include="TypeTable.cpp" />
     <ClCompile Include="WebSocketProtocol.cpp" />

@@ -1,6 +1,7 @@
 #pragma once
+#include "Initialer.h"
 
-class PlayerManager : public Singleton<PlayerManager>
+class PlayerManager : public Singleton<PlayerManager>, public Initialer
 {
 public:
 	struct Session

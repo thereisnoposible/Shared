@@ -1,14 +1,13 @@
 #pragma once
 #include<unordered_map>
 #include "TimerManager.h"
-
 namespace AOI
 {
 	class Entity;
 	class Space;
 }
 
-class MapManager : public Singleton<MapManager>
+class MapManager : public Singleton<MapManager>, Initialer
 {
 public:
 	MapManager();

@@ -6,7 +6,7 @@ template<> Application* Singleton<Application>::single = NULL;
 //-------------------------------------------------------------------------------------------
 Application::Application()
 {
-	m_pNetService = new NetService(SERVERMGRPORT,4);
+	m_pNetService = new NetService(4);
 	m_pTimerManager = new TimerManager();
 
 	server.ConnectTo(m_pNetService, SERVERADDR, SERVERPORT);

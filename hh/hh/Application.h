@@ -23,11 +23,14 @@ public:
 
 	NetClient& GetAccountConnect();
 	NetClient& GetDataBaseConnect();
+
+    void AllInitialOK();
 private:
 	NetClient* m_pAccount;
 	NetClient* m_pDatabase;
 
 	NetService* m_pNetService;
+    NetService* m_pConnecter;
 	ModuleManager *m_pModuleMgr;
 	LogService* m_pLogServer;
 	TypeTable* m_pTypeTable;

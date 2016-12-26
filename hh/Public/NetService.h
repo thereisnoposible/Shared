@@ -438,16 +438,15 @@ public:
 class NetService : public Singleton<NetService>, public MessageHandle<PackPtr>
 {
 public:
-	NetService(int port, int ionum);
+	NetService(int ionum);
 	~NetService();
-	void start();
-	void ReceivePack();
-	void SendPack(int messegeid,const ::google::protobuf::Message& mess, std::string addr, int playerid);
+    void start(int port);
 
 	void update();
 
-	bool Connect(const std::string& ip, int port, boost::function<void(ConnectPtr&)> func);
-	void OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket,boost::function<void(ConnectPtr&)> func, boost::system::error_code ec);
+    bool Connect(const std::string& ip, int port, boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc);
+	void OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket,
+        boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc, boost::system::error_code ec);
 	//void DisConnect(std::string addr);
 
 	void GetNetPack(PackPtr& pPack);
@@ -466,12 +465,10 @@ private:
 	io_service_pool _io_service_pool;
 	boost::asio::ip::tcp::acceptor* _acceptor;
 	boost::mutex _packmutex;
-	boost::mutex _connectmutex;
 	boost::mutex _disconnectmutex;
 
 	std::hash_map<ConnectPtr, std::string> _connectMap;
 
-	std::vector<ConnectPtr> newConnect;
 	std::vector<ConnectPtr> newDisConnect;
 
 	std::vector<PackPtr> NetPackVector;

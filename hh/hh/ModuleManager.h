@@ -1,7 +1,8 @@
 #pragma once
 
 #include "BaseModule.h"
-class ModuleManager : public Singleton<ModuleManager> 
+#include "Initialer.h"
+class ModuleManager : public Singleton<ModuleManager>, Initialer
 {
 public:
 	ModuleManager();

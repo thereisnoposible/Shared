@@ -36,15 +36,21 @@ public:
 		_update_time = std::chrono::steady_clock::now();
 		std::chrono::duration<double> usetime = std::chrono::duration_cast<std::chrono::duration<double>>(_update_time - _create_time);
 		_interval = usetime.count();
-		while (!Timers.empty() && (Timers[0]->Passed(_interval) || Timers[0]->IsRelease()))
-		{
-			TMHANDLE pTimer = Timers[0];
-			std::pop_heap(Timers.begin(), Timers.end(), Comparator());
-			Timers.pop_back();
-			if (!pTimer->IsRelease())
-			{
-				pTimer->update(_interval);
-			}
+        while (!Timers.empty() && (Timers[0]->Passed(_interval) || Timers[0]->IsRelease()))
+        {
+            TMHANDLE pTimer = Timers[0];
+            std::pop_heap(Timers.begin(), Timers.end(), Comparator());
+            Timers.pop_back();
+            if (!pTimer->IsRelease())
+            {
+                pTimer->update(_interval);
+                pTimer->_loop_count -= 1;
+            }
+
+            if (pTimer->_loop_count == 0)
+            {
+                delete pTimer;
+            }
 
 			if (!pTimer->IsRelease())
 			{
@@ -58,20 +64,35 @@ public:
 		}
 	}
 
-	TMHANDLE AddIntervalTimer(double Interval, std::tr1::function<void(void)> _func)
+    TMHANDLE AddIntervalTimer(double Interval, std::tr1::function<void(void)> _func)
 	{
-		TMHANDLE pTimer = new IntervalTimer(Interval, _func, _interval);
+        TMHANDLE pTimer = new IntervalTimer(Interval, _func, -1, _interval);
 		Timers.push_back(pTimer);
 		std::push_heap(Timers.begin(), Timers.end(), Comparator());
 		return pTimer;
 	}
+
+    void AddIntervalTimer(double Interval, std::tr1::function<void(void)> _func, long long loop_count)
+    {
+        TMHANDLE pTimer = new IntervalTimer(Interval, _func, loop_count, _interval);
+        Timers.push_back(pTimer);
+        std::push_heap(Timers.begin(), Timers.end(), Comparator());
+    }
+
 	TMHANDLE AddTriggerTimer(int _hour, int _minute, int _second, std::tr1::function<void(void)> _func)
 	{
-		TMHANDLE pTimer = new TriggerTimer(_hour, _minute, _second, _func, _interval);
+        TMHANDLE pTimer = new TriggerTimer(_hour, _minute, _second, _func, -1, _interval);
 		Timers.push_back(pTimer);
 		std::push_heap(Timers.begin(), Timers.end(), Comparator());
 		return pTimer;
 	}
+
+    void AddTriggerTimer(int _hour, int _minute, int _second, std::tr1::function<void(void)> _func, long long loop_count)
+    {
+        TMHANDLE pTimer = new TriggerTimer(_hour, _minute, _second, _func, loop_count, _interval);
+        Timers.push_back(pTimer);
+        std::push_heap(Timers.begin(), Timers.end(), Comparator());
+    }
 
 	void RemoveTimer(TMHANDLE tHandle)
 	{

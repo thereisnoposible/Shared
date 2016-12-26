@@ -25,6 +25,9 @@
     <Filter Include="rank_template">
       <UniqueIdentifier>{8463de23-5324-4526-9ccd-b7cbfe10dca9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="proto_paser">
+      <UniqueIdentifier>{0ac66c3f-d422-4c75-944b-83515f083597}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MessageHandle.h">
@@ -162,6 +165,12 @@
     <ClInclude Include="rank_template.h">
       <Filter>rank_template</Filter>
     </ClInclude>
+    <ClInclude Include="proto_data.h">
+      <Filter>proto_paser</Filter>
+    </ClInclude>
+    <ClInclude Include="crashReport.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NetService.cpp">
@@ -238,6 +247,12 @@
     </ClCompile>
     <ClCompile Include="aoi\Witness.cpp">
       <Filter>aoi</Filter>
+    </ClCompile>
+    <ClCompile Include="proto_data.cpp">
+      <Filter>proto_paser</Filter>
+    </ClCompile>
+    <ClCompile Include="crashReport.cpp">
+      <Filter>头文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

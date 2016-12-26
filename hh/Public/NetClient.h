@@ -3,7 +3,14 @@
 #include "NetService.h"
 #include "TimerManager.h"
 
-class NetClient :public NetObserver
+enum c_status
+{
+    status_free,
+    status_connect,
+    status_disconnect,
+};
+
+class NetClient
 {
 public:
 	NetClient();
@@ -41,6 +48,8 @@ public:
 	};
 
 public:
+    virtual void registMessage();
+
 	bool ConnectTo(NetService* pNetService, const std::string& ip, int port);
 	bool Send(int messageid, const char* pdata, int length, int roleid = 0, bool bResend = false);
 	template<typename T>
@@ -55,19 +64,21 @@ public:
 
 	int getPort(){ return m_port; }
 
-public:
-	void OnConnect(ConnectPtr&);
-	void OnDisConnect(ConnectPtr&);
+    void update();
 
-	void ReConnect();
+protected:
+    void OnConnect(ConnectPtr&);
+    void OnDisConnect(ConnectPtr&);
 
+    void ReConnect();
 private:
 	std::string m_ip;
-	int m_port;
+    int m_port = 0;
 	std::string m_address;
 	NetService* m_pNetService;
 	ConnectPtr m_pConnect;
+    ConnectPtr m_pConnectTemp;
 	std::vector<PackData> m_pPackData;
 	Timer* tTimer;
-	bool m_bConnect;
+    int conn_status = status_free;
 };

@@ -96,8 +96,8 @@ protected:
     void startWorldBoss();
     void startWorldBoss_response(Json::Value& value);
     void playWorldBoss_response(Json::Value& value);
-    void worldBossReward();
-    void worldBossReward_response(Json::Value& value);
+
+    void guildSign();
 
     void shared();
     void shared_response(Json::Value& value);
@@ -160,25 +160,12 @@ private:
 
 	std::map<int, Chapter> m_pChapter;
 
-	TMHANDLE m_fight;
-	TMHANDLE m_challenge;
-	TMHANDLE m_playerdata;
-	TMHANDLE m_hero;
-	TMHANDLE m_tower;
-	TMHANDLE m_sailing;
-	TMHANDLE m_step;
-
-	TMHANDLE m_eat1;
-	TMHANDLE m_eat2;
-	TMHANDLE m_eat3;
-
-	TMHANDLE m_signin;
-	TMHANDLE m_onlineGift;
-	TMHANDLE m_buyPow;
-
-	TMHANDLE m_carddraw2;
-	TMHANDLE m_carddraw3;
-	TMHANDLE m_carddraw5;
+    TMHANDLE m_step;
+    TMHANDLE m_fight;
+    TMHANDLE m_challenge;
+    TMHANDLE m_hero;
+    TMHANDLE m_tower;
+    TMHANDLE m_sailing;
 
 	int map_high;
 	int map_low;

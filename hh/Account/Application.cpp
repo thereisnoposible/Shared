@@ -8,7 +8,7 @@ Application* Singleton<Application>::single = nullptr;
 //-------------------------------------------------------------------------------------------
 Application::Application()
 {
-	m_pNetService = new NetService(ACCOUNTPORT, 4);
+	m_pNetService = new NetService(4);
 
 	m_pNetService->RegistObserver(this);
 
@@ -17,6 +17,8 @@ Application::Application()
 	m_pLogServer = new LogService("Account");
 
 	m_pLoginManager = new LoginManager;
+
+    m_pNetService->start(ACCOUNTPORT);
 }
 //-------------------------------------------------------------------------------------------
 Application::~Application()

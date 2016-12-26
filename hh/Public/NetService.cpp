@@ -4,19 +4,29 @@
 //INSTANTIATE_SINGLETON_1(NetService);
 NetService* Singleton<NetService>::single = nullptr;
 //-------------------------------------------------------------------------------------------
-NetService::NetService(int port, int ionum) : _io_service_pool(ionum)
+NetService::NetService(int ionum) : _io_service_pool(ionum)
 {
-	_acceptor = new boost::asio::ip::tcp::acceptor(_io_service_pool.get_io_service(), tcp::endpoint(tcp::v4(), port));
-	accept();
+    run();
 }
 
 //-------------------------------------------------------------------------------------------
 NetService::~NetService()
 {
-	_io_service_pool.stop();
+    if (_acceptor != NULL)
+    {
+        _acceptor->close();
+        delete _acceptor;
+        _acceptor = nullptr;
+    }
 
-	if (_acceptor != NULL)
-		delete _acceptor;
+	_io_service_pool.stop();
+}
+
+//-------------------------------------------------------------------------------------------
+void NetService::start(int port)
+{
+    _acceptor = new boost::asio::ip::tcp::acceptor(_io_service_pool.get_io_service(), tcp::endpoint(tcp::v4(), port));
+    accept();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -37,17 +47,8 @@ void NetService::OnConnect(std::shared_ptr<tcp::socket> psocket, boost::system::
 	//conn->ReadHead();
 	conn->Handshake(0);
 
-	boost::mutex::scoped_lock connlock(_connectmutex);	
-	newConnect.push_back(conn);
-	connlock.unlock();
-	//std::set<NetObserver*>::iterator setit = _NetObserverSet.begin();
-	//for (; setit != _NetObserverSet.end(); setit++)
-	//{
-	//	(*setit)->OnConnect(conn);
-	//}
-	static int i = 0;
-	++i;
-	accept();
+    if (_acceptor)
+	    accept();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -69,29 +70,11 @@ void NetService::update()
 		FireMessage(NetPackVectorTemp[i]->getMessageId(), NetPackVectorTemp[i]);
 	NetPackVectorTemp.clear();
 
-	boost::mutex::scoped_lock connlock(_connectmutex);
-	for (int i = 0; i < (int)newConnect.size();++i)
-	{
-		std::set<NetObserver*>::iterator setit = _NetObserverSet.begin();
-		for (; setit != _NetObserverSet.end(); setit++)
-		{
-			(*setit)->OnConnect(newConnect[i]);
-		}
-		_connectMap.insert(std::make_pair(newConnect[i], newConnect[i]->GetAddress()));
-	}
-	newConnect.clear();
-	connlock.unlock();
-
 	boost::mutex::scoped_lock disconnlock(_disconnectmutex);
 	for (int i=0; i < (int)newDisConnect.size(); i++)
 	{		
-		std::set<NetObserver*>::iterator setit = _NetObserverSet.begin();
-		for (; setit != _NetObserverSet.end(); setit++)
-		{
-			(*setit)->OnDisConnect(newDisConnect[i]);
-		}
-		_connectMap.erase(newDisConnect[i]);
 		newDisConnect[i]->CloseSocket();
+        std::for_each(_NetObserverSet.begin(), _NetObserverSet.end(), boost::bind(&NetObserver::OnDisConnect, _1, newDisConnect[i]));
 	}
 	newDisConnect.clear();
 	disconnlock.unlock();
@@ -120,70 +103,33 @@ void NetService::UnRegistObserver(NetObserver* observer)
 	_NetObserverSet.erase(observer);
 }
 //-------------------------------------------------------------------------------------------
-bool NetService::Connect(const std::string& ip, int port, boost::function<void(ConnectPtr&)> func)
+bool NetService::Connect(const std::string& ip, int port, 
+    boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc)
 {
 	std::shared_ptr<tcp::socket> skt(new tcp::socket(_io_service_pool.get_io_service()));
 	tcp::endpoint endpoint(boost::asio::ip::address_v4::from_string(ip), port);
 	boost::system::error_code error;
 
-	//skt->connect(endpoint, error);
-	skt->async_connect(endpoint, boost::bind(&NetService::OnConnect, this, skt, func, _1));
-
-	//if (error)
-	//{
-	//	return false;
-	//};
-
-	//ConnectPtr conn(new NetConnect(skt, boost::bind(&NetService::GetNetPack, this, _1)));
-
-	//conn->RegistOnDisConnect(boost::bind(&NetService::OnDisConnect, this, _1));
-	//conn->ReadHead();
-
-	//func(conn);
+	skt->async_connect(endpoint, boost::bind(&NetService::OnConnect, this, skt, sfunc,ffunc, _1));
 
 	return true;
 }
 
 //-------------------------------------------------------------------------------------------
 void NetService::OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket, 
-	boost::function<void(ConnectPtr&)> func, boost::system::error_code ec)
+    boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc, boost::system::error_code ec)
 {
 	if (ec)
 	{
+        ffunc(ConnectPtr());
 		return;
 	};
 
 	ConnectPtr conn(new NetConnect(psocket, boost::bind(&NetService::GetNetPack, this, _1)));
 
-	conn->RegistOnDisConnect(boost::bind(&NetService::OnDisConnect, this, _1));
+    conn->RegistOnDisConnect(ffunc);
 	conn->ReadHead();
 
-	func(conn);
-}
-
-//------------------------------------------------------------------------------------------ -
-//void NetService::DisConnect(std::string addr)
-//{
-//	auto it = _connectMap.find(addr);
-//	if (it != _connectMap.end())
-//	{
-//		std::set<NetObserver*>::iterator setit = _NetObserverSet.begin();
-//		for (; setit != _NetObserverSet.end(); setit++)
-//		{
-//			(*setit)->OnDisConnect(addr);
-//		}
-//		_connectMap.erase(it);
-//	}
-//}
-
-//-------------------------------------------------------------------------------------------
-void NetService::SendPack(int messegeid, const ::google::protobuf::Message& mess, std::string addr, int playerid)
-{
-	//auto it = _connectMap.find(addr);
-	//if (it != _connectMap.end())
-	//{
-	//	boost::shared_ptr<NetConnect> pConnect = it->second;
-	//	pConnect->SendBuffer(messegeid, mess, mess.ByteSize(), playerid);
-	//}
+	sfunc(conn);
 }
 

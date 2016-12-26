@@ -63,6 +63,9 @@
     <ClCompile Include="..\..\new\proto\protobuf\xinfa.pb.cc">
       <Filter>message</Filter>
     </ClCompile>
+    <ClCompile Include="Initialer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -94,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="XinfaModule.h">
       <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="Initialer.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -30,6 +30,7 @@ public:
 	double _interval; /**< TODO */
 	double _next; /**< TODO */
 	std::tr1::function<void(void)> func;
+    long long _loop_count;
 private:
 	inline void Reset()
 	{
@@ -43,11 +44,12 @@ class IntervalTimer : public Timer
 {
 public:
 
-	IntervalTimer(double Interval, std::tr1::function<void(void)>& _func, double now_interval = 0)
+	IntervalTimer(double Interval, std::tr1::function<void(void)>& _func, long long loop_count, double now_interval = 0)
 	{
 		_next = now_interval + Interval;
 		_interval = Interval;
 		func = _func;
+        _loop_count = loop_count;
 	}
 
 	//void Update(double diff)
@@ -59,7 +61,7 @@ public:
 class TriggerTimer : public Timer
 {
 public:
-	TriggerTimer(int _hour, int _minute, int _second, std::tr1::function<void(void)>& _func, double now_interval = 0)
+    TriggerTimer(int _hour, int _minute, int _second, std::tr1::function<void(void)>& _func, long long loop_count, double now_interval = 0)
 	{
 		func = _func;
 		_interval = 24 * 60 * 60;
@@ -76,6 +78,8 @@ public:
 			_next = now_interval - count;
 		else//¹ýÈ¥
 			_next = now_interval + _interval - count;
+
+        _loop_count = loop_count;
 	}
 	//void Update(double diff)
 	//{

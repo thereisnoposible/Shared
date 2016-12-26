@@ -35,6 +35,8 @@ public:
 	{
 		// Create a pool of threads to run all of the io_services.   
 		//std::vector<boost::shared_ptr<boost::thread> > threads;
+
+        threads.clear();
 		for (std::size_t i = 0; i < io_services_.size(); ++i)
 		{
 			boost::shared_ptr<boost::thread> thread(new boost::thread(
@@ -52,11 +54,24 @@ public:
 	void stop()
 	{
 		// Explicitly stop all io_services.   
-		for (std::size_t i = 0; i < io_services_.size(); ++i)
-			io_services_[i]->stop();
+        //work_.clear();
 
-		for (std::size_t i = 0; i < threads.size(); ++i)
-			threads[i]->join();
+        for (std::size_t i = 0; i < io_services_.size(); ++i)
+        {
+            //io_services_[i]->post(std::bind(&boost::asio::io_service::stop, io_services_[i]));
+            io_services_[i]->stop();
+            if (!io_services_[i]->stopped())
+            {
+                i--;
+            }
+        }
+
+        for (std::size_t i = 0; i < threads.size(); ++i)
+        {
+            if (threads[i]->joinable())
+                threads[i]->join();           
+            threads[i]->detach();
+        }
 	}
 
 	// Get an io_service to use.   

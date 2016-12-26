@@ -27,6 +27,8 @@
 #include "aoi/Space.h"
 #include "aoi/Witness.h"
 
+#include "Initialer.h"
+
 #define LOGSERVERNAME "../log/Server.log"
 #define SAFE_DELETE(p) {if(p!=nullptr){delete p;p=nullptr;}}
 

@@ -53,23 +53,27 @@ Client::Client(std::string& plat)
 
 	fight_mode = 1;
 
-	m_playerdata = m_pTimerManager->AddIntervalTimer(6 * 60, std::bind(&Client::request_player_data, this));
-	m_onlineGift = m_pTimerManager->AddIntervalTimer(60 * 60, std::bind(&Client::onlineGift, this));
-	m_buyPow = m_pTimerManager->AddIntervalTimer(5, std::bind(&Client::buyPow, this));
+    m_pTimerManager->AddIntervalTimer(6 * 60, std::bind(&Client::request_player_data, this), -1);
+    m_pTimerManager->AddIntervalTimer(60 * 60, std::bind(&Client::onlineGift, this), -1);
+    m_pTimerManager->AddIntervalTimer(5, std::bind(&Client::buyPow, this), -1);
 
-	m_eat1 = m_pTimerManager->AddTriggerTimer(12, 1, 0, std::bind(&Client::request_eat, this));
-	m_eat2 = m_pTimerManager->AddTriggerTimer(17, 1, 0, std::bind(&Client::request_eat, this));
-	m_eat3 = m_pTimerManager->AddTriggerTimer(21, 1, 0, std::bind(&Client::request_eat, this));
-	m_signin = m_pTimerManager->AddTriggerTimer(0, 1, 0, std::bind(&Client::signin, this));
+    m_pTimerManager->AddTriggerTimer(12, 1, 0, std::bind(&Client::request_eat, this), -1);
+    m_pTimerManager->AddTriggerTimer(17, 1, 0, std::bind(&Client::request_eat, this), -1);
+    m_pTimerManager->AddTriggerTimer(21, 1, 0, std::bind(&Client::request_eat, this), -1);
+    m_pTimerManager->AddTriggerTimer(0, 1, 0, std::bind(&Client::signin, this), -1);
 
-	m_carddraw2 = m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 2));
-	m_carddraw3 = m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 3));
-	m_carddraw5 = m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 5));
-	
+    m_pTimerManager->AddTriggerTimer(0, 1, 0, std::bind(&Client::guildSign, this), -1);
 
-	m_hero = NULL;
-	m_tower = NULL;
-	m_sailing = NULL;
+    m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 2), -1);
+    m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 3), -1);
+    m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 5), -1);
+
+    m_step = nullptr;
+    m_fight = nullptr;
+    m_challenge = nullptr;
+    m_hero = nullptr;
+    m_tower = nullptr;
+    m_sailing = nullptr;
 
 	platform_ = "ios";
 	if (plat == "android")
@@ -138,22 +142,6 @@ Client::~Client()
 	if (m_challenge != NULL)
 	{
 		m_pTimerManager->RemoveTimer(m_challenge);
-	}
-	if (m_playerdata != NULL)
-	{
-		m_pTimerManager->RemoveTimer(m_playerdata);
-	}
-	if (m_eat1 != NULL)
-	{
-		m_pTimerManager->RemoveTimer(m_eat1);
-	}
-	if (m_eat2 != NULL)
-	{
-		m_pTimerManager->RemoveTimer(m_eat2);
-	}
-	if (m_eat3 != NULL)
-	{
-		m_pTimerManager->RemoveTimer(m_eat3);
 	}
 
 	delete m_manager;
@@ -636,6 +624,7 @@ void Client::init()
   	startSail();
     worldBoss();
     shared();
+    guildSign();
 	m_step = m_pTimerManager->AddIntervalTimer(0.2, std::bind(&Client::checkStep, this));
 }
 
@@ -1206,6 +1195,21 @@ void Client::startWorldBoss_response(Json::Value& value)
 void Client::playWorldBoss_response(Json::Value& value)
 {
     worldBoss();
+}
+
+void Client::guildSign()
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Guild&m=sign&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
 }
 
 void Client::shared()
