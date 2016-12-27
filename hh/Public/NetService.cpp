@@ -12,14 +12,7 @@ NetService::NetService(int ionum) : _io_service_pool(ionum)
 //-------------------------------------------------------------------------------------------
 NetService::~NetService()
 {
-    if (_acceptor != NULL)
-    {
-        _acceptor->close();
-        delete _acceptor;
-        _acceptor = nullptr;
-    }
 
-	_io_service_pool.stop();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -27,6 +20,19 @@ void NetService::start(int port)
 {
     _acceptor = new boost::asio::ip::tcp::acceptor(_io_service_pool.get_io_service(), tcp::endpoint(tcp::v4(), port));
     accept();
+}
+
+//-------------------------------------------------------------------------------------------
+void NetService::stop()
+{
+    if (_acceptor != NULL)
+    {
+        _acceptor->close();
+        delete _acceptor;
+        _acceptor = nullptr;
+    }
+
+    _io_service_pool.stop();
 }
 
 //-------------------------------------------------------------------------------------------

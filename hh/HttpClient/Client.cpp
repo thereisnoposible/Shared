@@ -68,6 +68,8 @@ Client::Client(std::string& plat)
     m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 3), -1);
     m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 5), -1);
 
+    m_pTimerManager->AddTriggerTimer(12, 1, 0, std::bind(&Client::GuildBoss, this), -1);
+
     m_step = nullptr;
     m_fight = nullptr;
     m_challenge = nullptr;
@@ -587,7 +589,7 @@ void Client::request_player_data_response(Json::Value& value)
 {
 	if (value.isMember("code"))
 	{
-		if (Helper::StringToInt(value["code"].asString()) == NEED_PERMISSION)
+		if (Helper::StringToInt32(value["code"].asString()) == NEED_PERMISSION)
 		{
 			as_login_ticket();
 			return;
@@ -625,6 +627,7 @@ void Client::init()
     worldBoss();
     shared();
     guildSign();
+    GuildBoss();
 	m_step = m_pTimerManager->AddIntervalTimer(0.2, std::bind(&Client::checkStep, this));
 }
 
@@ -732,7 +735,7 @@ void Client::get_fight_map_sub(int cid)
 	http::http_request request;
 	request.type = HTTP_GET;
 	request.url = "/s20042/port/interface.php?s=Explore&m=get&a={\"cid\":";
-	request.url += Helper::IntToString(cid);
+	request.url += Helper::Int32ToString(cid);
     request.url += "}&v=";
     request.url += version;
     request.url += "&sys=";
@@ -791,7 +794,7 @@ void Client::fight(int map)
 	http::http_request request;
 	request.type = HTTP_GET;
 	request.url = "/s20042/port/interface.php?s=Explore&m=exec&a={\"mid\":\"";
-	request.url += Helper::IntToString(map);
+	request.url += Helper::Int32ToString(map);
     request.url += "\"}&v=";
     request.url += version;
     request.url += "&sys=";
@@ -807,7 +810,7 @@ void Client::playgame_response(int map, Json::Value& value)
 	if (value.isMember("code"))
 	{
 		std::string codess = value["code"].asString();
-		int code = Helper::StringToInt(codess);
+		int code = Helper::StringToInt32(codess);
 
 		switch (code)
 		{
@@ -869,11 +872,11 @@ void Client::set_mode(std::string& param)
 	if (vec.size() < 1)
 		return;
 
-	fight_mode = Helper::StringToInt(vec[0]);
+	fight_mode = Helper::StringToInt32(vec[0]);
 	if (fight_mode == 3)
 	{
-		map_high = vec.size() >= 2 ? Helper::StringToInt(vec[1]) : 0;
-		map_low = vec.size() >= 3 ? Helper::StringToInt(vec[2]) : 0;
+		map_high = vec.size() >= 2 ? Helper::StringToInt32(vec[1]) : 0;
+		map_low = vec.size() >= 3 ? Helper::StringToInt32(vec[2]) : 0;
 	}
 }
 
@@ -884,8 +887,8 @@ void Client::set_fight(std::string& param)
     if (vec.size() < 1)
         return;
 
-    fight_low = Helper::StringToInt(vec[0]);
-    fight_high = Helper::StringToInt(vec[1]);
+    fight_low = Helper::StringToInt32(vec[0]);
+    fight_high = Helper::StringToInt32(vec[1]);
 }
 
 void Client::get_challenge()
@@ -920,24 +923,49 @@ void Client::get_challenge_response(Json::Value& value)
 				tid = value["data"]["chRanks"][i]["uid"].asInt();
 		}
 
-		int srank = value["data"]["challenge"]["rank"].asInt();
-		http::http_request request;
-		request.type = HTTP_GET;
-		request.url = "/s20042/port/interface.php?s=Challenge&m=challenge&a={\"sRank\":";
-		request.url += Helper::IntToString(srank);
-		request.url += ",\"tRank\":";
-		request.url += Helper::IntToString(trank);
-		request.url += ",\"tid\":";
-		request.url += Helper::IntToString(tid);
-        request.url += "}&v=";
-        request.url += version;
-        request.url += "&sys=";
-		request.url += platform_;
-		request.host = "pl-game.thedream.cc";
-		request.head["Cookie"] = cookie;
-		request.pend_flag = "0\r\n\r\n";
+        {
+            int srank = value["data"]["challenge"]["rank"].asInt();
+            http::http_request request;
+            request.type = HTTP_GET;
+            request.url = "/s20042/port/interface.php?s=Challenge&m=challenge&a={\"sRank\":";
+            request.url += Helper::Int32ToString(srank);
+            request.url += ",\"tRank\":";
+            request.url += Helper::Int32ToString(trank);
+            request.url += ",\"tid\":";
+            request.url += Helper::Int32ToString(tid);
+            request.url += "}&v=";
+            request.url += version;
+            request.url += "&sys=";
+            request.url += platform_;
+            request.host = "pl-game.thedream.cc";
+            request.head["Cookie"] = cookie;
+            request.pend_flag = "0\r\n\r\n";
 
-		post(request, std::bind(&Client::challenge_response, this, std::placeholders::_1));
+            post(request, std::bind(&Client::challenge_response, this, std::placeholders::_1));
+        }
+
+        {
+            for (int j = 0; j < value["data"]["chMall"]["items"].size(); j++)
+            {
+                Json::Value& item = value["data"]["chMall"]["items"][j];
+                if (item["type"].asInt() == 7 && item["buyType"].asInt() == 1)
+                {
+                    http::http_request request;
+                    request.type = HTTP_GET;
+                    request.url = "/s20042/port/interface.php?s=Challenge&m=exchange&a={\"id\":";
+                    request.url += Helper::Int32ToString(item["cId"].asInt());
+                    request.url += "}&v=";
+                    request.url += version;
+                    request.url += "&sys=";
+                    request.url += platform_;
+                    request.host = "pl-game.thedream.cc";
+                    request.head["Cookie"] = cookie;
+                    request.pend_flag = "0\r\n\r\n";
+
+                    post(request, std::function<void(Json::Value&)>());
+                }
+            }
+        }
 	}
 }
 
@@ -946,7 +974,7 @@ void Client::challenge_response(Json::Value& value)
 	if (value.isMember("code"))
 	{
 		std::string codess = value["code"].asString();
-		int code = Helper::StringToInt(codess);
+		int code = Helper::StringToInt32(codess);
 
 		switch (code)
 		{
@@ -982,7 +1010,7 @@ void Client::request_eat()
 
 void Client::request_eat_response(Json::Value& value)
 {
-	if (Helper::StringToInt(value["code"].asString()) == 0)
+	if (Helper::StringToInt32(value["code"].asString()) == 0)
 	{
 		pow = value["data"]["user"]["pow"].asInt();
 	}
@@ -1010,7 +1038,7 @@ void Client::getHero()
 
 void Client::getHero_response(Json::Value& value)
 {
-	if (Helper::StringToInt(value["code"].asString()) == 0)
+	if (Helper::StringToInt32(value["code"].asString()) == 0)
 	{
 		std::map<int, int> mm;
 		Json::Value explores = value["data"]["explores"];
@@ -1030,7 +1058,7 @@ void Client::getHero_response(Json::Value& value)
 		http::http_request request;
 		request.type = HTTP_GET;
 		request.url = "/s20042/port/interface.php?s=Explore&m=exec&a={\"mid\":\"";
-		request.url += Helper::IntToString(mm.begin()->first);
+		request.url += Helper::Int32ToString(mm.begin()->first);
         request.url += "\"}&v=";
         request.url += version;
         request.url += "&sys=";
@@ -1081,14 +1109,14 @@ void Client::startTowerFight()
 }
 void Client::startTowerFight_response(Json::Value& value)
 {
-	if (TOWER_DIE == Helper::StringToInt(value["code"].asString()))
+	if (TOWER_DIE == Helper::StringToInt32(value["code"].asString()))
 	{
 		m_pTimerManager->RemoveTimer(m_tower);
 		m_tower = NULL;
 		return;
 	}
 
-	if (Helper::StringToInt(value["code"].asString()) == 0)
+	if (Helper::StringToInt32(value["code"].asString()) == 0)
 	{
 		int size = value["data"]["tower"]["buffstr"].size();
 		if (size != 0)
@@ -1098,7 +1126,7 @@ void Client::startTowerFight_response(Json::Value& value)
 			http::http_request request;
 			request.type = HTTP_GET;
 			request.url = "/s20042/port/interface.php?s=Tower&m=setBuff&a={\"id\":";
-			request.url += Helper::IntToString(id);
+			request.url += Helper::Int32ToString(id);
             request.url += "}&v=";
             request.url += version;
             request.url += "&sys=";
@@ -1177,7 +1205,7 @@ void Client::startWorldBoss_response(Json::Value& value)
         if (i == 0)
             fight_value = fight_high;
 
-        request.url += Helper::IntToString(fight_value);
+        request.url += Helper::Int32ToString(fight_value);
         if (i != loop_count - 1)
             request.url += ",";
     }
@@ -1212,12 +1240,73 @@ void Client::guildSign()
     post(request, std::function<void(Json::Value&)>());
 }
 
+void Client::GuildBoss()
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=GuildBoss&m=start&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::bind(&Client::GuildBoss_response, this, std::placeholders::_1));
+}
+
+void Client::GuildBoss_response(Json::Value& value)
+{
+    if (value["data"]["bossOpen"].asBool() == false)
+        return;
+
+    int times = value["data"]["guildBossUserDetail"]["availTimes"].asInt();
+    
+    if (times == 0)
+        return;
+
+    m_pTimerManager->AddIntervalTimer(11, std::bind(&Client::GuildBossAttack, this), times);
+}
+
+void Client::GuildBossAttack()
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=GuildBoss&m=attackBoss&a={\"isPay\":0}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::bind(&Client::GuildBossAttack_response, this, std::placeholders::_1));
+}
+
+void Client::GuildBossAttack_response(Json::Value& value)
+{
+    if (value["data"]["guildBossUserDetail"]["bonusScores"].asInt() >= 10)
+    {
+        http::http_request request;
+        request.type = HTTP_GET;
+        request.url = "/s20042/port/interface.php?s=GuildBoss&m=autoAttackBoss&a={}&v=";
+        request.url += version;
+        request.url += "&sys=";
+        request.url += platform_;
+        request.host = "pl-game.thedream.cc";
+        request.head["Cookie"] = cookie;
+        request.pend_flag = "0\r\n\r\n";
+
+        post(request, std::function<void(Json::Value&)>());
+    }
+}
+
 void Client::shared()
 {
     http::http_request request;
     request.type = HTTP_GET;
     request.url = "/s20042/port/interface.php?s=Activity&m=share&a={\"sign\":\"f40e667a047e7b16da7f3204b3760bd5\",\"ts\":";
-    request.url+=Helper::IntToString(time(NULL));
+    request.url+=Helper::Int32ToString(time(NULL));
     request.url += "}&v=";
     request.url += version;
     request.url += "&sys=";
@@ -1234,7 +1323,7 @@ void Client::shared_response(Json::Value& value)
     http::http_request request;
     request.type = HTTP_GET;
     request.url = "/s20042/port/interface.php?s=Activity&m=shareZh&a={\"sign\":\"20d1b33f523e52b57e03b5dfb575cf47\",\"ts\":";
-    request.url += Helper::IntToString(time(NULL));
+    request.url += Helper::Int32ToString(time(NULL));
     request.url += "}&v=";
     request.url += version;
     request.url += "&sys=";
@@ -1326,13 +1415,13 @@ void Client::sailing()
 }
 void Client::sailing_response(Json::Value& value)
 {
-	if (SAILING_OVER == Helper::StringToInt(value["code"].asString()))
+	if (SAILING_OVER == Helper::StringToInt32(value["code"].asString()))
 	{
 		m_pTimerManager->RemoveTimer(m_sailing);
 		m_sailing = NULL;
 	}
 
-	if (Helper::StringToInt(value["code"].asString()) == 0)
+	if (Helper::StringToInt32(value["code"].asString()) == 0)
 	{
 		Json::Value weeklyActivity = value["data"]["weeklyActivity"];
 
@@ -1691,7 +1780,7 @@ void Client::CalendarSign()
 	http::http_request request;
 	request.type = HTTP_GET;
 	request.url = "/s20042/port/interface.php?s=Activity&m=CalendarSign&a={\"id\":";
-	request.url += Helper::IntToString(tmNow.tm_mday);
+	request.url += Helper::Int32ToString(tmNow.tm_mday);
     request.url += "}&v=";
     request.url += version;
     request.url += "&sys=";
@@ -1710,7 +1799,7 @@ void Client::CardDraw(int type)
 	http::http_request request;
 	request.type = HTTP_GET;
 	request.url = "/s20042/port/interface.php?s=Card&m=draw&a={\"cost\":0,\"type\":";
-	request.url += Helper::IntToString(type);
+	request.url += Helper::Int32ToString(type);
     request.url += "}&v=";
     request.url += version;
     request.url += "&sys=";

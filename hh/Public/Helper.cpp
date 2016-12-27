@@ -22,7 +22,7 @@ namespace Helper
 		return distribution(gen);
 	}
 
-	int StringToInt(const std::string& str)
+	int StringToInt32(const std::string& str)
 	{
 		int num = 0;
 		const char* p = str.c_str();
@@ -36,7 +36,7 @@ namespace Helper
 		return num;
 	}
 
-	long long StringToLongLong(const std::string& str)
+	long long StringToInt64(const std::string& str)
 	{
 		long long num = 0;
 		const char* p = str.c_str();
@@ -60,7 +60,7 @@ namespace Helper
 		return dbid;
 	}
 
-	std::string IntToString(int num)
+	std::string Int32ToString(int num)
 	{
 		std::string str;
 		char a[30] = { 0 };
@@ -69,7 +69,7 @@ namespace Helper
 		return str;
 	}
 
-	std::string LongLongToString(long long num)
+	std::string Int64ToString(long long num)
 	{
 		std::string str;
 		char a[30] = { 0 };

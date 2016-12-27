@@ -41,26 +41,25 @@ public:
             TMHANDLE pTimer = Timers[0];
             std::pop_heap(Timers.begin(), Timers.end(), Comparator());
             Timers.pop_back();
-            if (!pTimer->IsRelease())
+
+            if (pTimer->IsRelease())
             {
-                pTimer->update(_interval);
-                pTimer->_loop_count -= 1;
+                delete pTimer;
+                continue;
             }
+
+            pTimer->update(_interval);
+            pTimer->_loop_count -= 1;
 
             if (pTimer->_loop_count == 0)
             {
                 delete pTimer;
+                continue;
             }
 
-			if (!pTimer->IsRelease())
-			{
-				Timers.push_back(pTimer);
-				std::push_heap(Timers.begin(), Timers.end(), Comparator());
-			}
-			else
-			{
-				delete pTimer;
-			}
+			Timers.push_back(pTimer);
+			std::push_heap(Timers.begin(), Timers.end(), Comparator());
+
 		}
 	}
 

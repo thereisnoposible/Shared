@@ -12,13 +12,13 @@ namespace Helper
 	void SplitString(const std::string&, const std::vector<std::string>&, std::vector<std::string>&);
 	void SplitStringHasEmpty(const std::string&str, const std::string&spl, std::vector<std::string>&sAstr);
 
-	int StringToInt(const std::string&);
+	int StringToInt32(const std::string&);
 	
-	long long StringToLongLong(const std::string&);
+	long long StringToInt64(const std::string&);
 
-	std::string IntToString(int);
+	std::string Int32ToString(int);
 	
-	std::string LongLongToString(long long);
+	std::string Int64ToString(long long);
 
 	long long Getdbid(int playerid, int unique);
 

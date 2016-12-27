@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "proto_data.h"
+#include "Helper.h"
 
 #include <fstream>
 

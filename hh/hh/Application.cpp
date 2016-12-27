@@ -51,6 +51,9 @@ void Application::AllInitialOK()
 //-------------------------------------------------------------------------------------------
 Application::~Application()
 {
+    m_pNetService->stop();
+    m_pConnecter->stop();
+
 	delete m_pModuleMgr;
 	m_pModuleMgr = nullptr;
 
@@ -69,9 +72,6 @@ Application::~Application()
     delete m_pAccount;
     m_pAccount = nullptr;
 
-	delete m_pTimerManager;
-	m_pTimerManager = nullptr;
-
 	delete m_pNetService;
 	m_pNetService = nullptr;
 
@@ -80,6 +80,9 @@ Application::~Application()
 
 	delete m_pDBService;
 	m_pDBService = nullptr;
+
+    delete m_pTimerManager;
+    m_pTimerManager = nullptr;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -109,7 +112,7 @@ void Application::update(double diff)
 //-------------------------------------------------------------------------------------------
 void Application::OnConnect(ConnectPtr&pConnect)
 {
-//	m_pPlayerMgr->getInstance().OnPlayerLogin(pConnect);
+
 }
 
 //-------------------------------------------------------------------------------------------

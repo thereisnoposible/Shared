@@ -94,7 +94,7 @@ void Player::CreatePlayerResponse(PackPtr& pPack)
 void Player::LoginGame(std::vector<std::string>& param)
 {
 	pm_login_game request;
-	request.set_id(Helper::StringToInt(param[1]));
+	request.set_id(Helper::StringToInt32(param[1]));
 	Application::getInstance().GetServer().SendProtoBuf(GM_LOGIN, request);
 }
 
@@ -113,6 +113,6 @@ void Player::LoginGameResponse(PackPtr& pPack)
 void Player::Move(std::vector<std::string>& param)
 {
 	pm_login_game request;
-	request.set_id(Helper::StringToInt(param[1]));
+	request.set_id(Helper::StringToInt32(param[1]));
 	Application::getInstance().GetServer().SendProtoBuf(GM_REQUEST_MOVE, request);
 }

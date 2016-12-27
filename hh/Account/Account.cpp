@@ -26,7 +26,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 
 	Application app;
-	app.run();
+
 	std::chrono::steady_clock::time_point fLast = std::chrono::steady_clock::now();
 	boost::thread thread(&loop);
 	while (!bExit)

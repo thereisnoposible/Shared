@@ -46,48 +46,48 @@ public:
 			if (temp == "X" || temp == "x")
 				*(point + i) = 10;
 			else
-				*(point + i) = Helper::StringToInt32(temp);
+				*(point + i) = Helper::StringToInt3232(temp);
 		}
 
 		//pos = 0;
 		//temp.assign(str.begin() + pos, str.begin() + pos + 2);
 		//pos += 2;
-		//province = Helper::StringToInt(temp);
+		//province = Helper::StringToInt32(temp);
 
 		//temp.assign(str.begin() + pos, str.begin() + pos + 2);
 		//pos += 2;
-		//city = Helper::StringToInt(temp);
+		//city = Helper::StringToInt32(temp);
 
 		//temp.assign(str.begin() + pos, str.begin() + pos + 2);
 		//pos += 2;
-		//county = Helper::StringToInt(temp);
+		//county = Helper::StringToInt32(temp);
 
 		//temp.assign(str.begin() + pos, str.begin() + pos + 4);
 		//pos += 4;
-		//year = Helper::StringToInt(temp);
+		//year = Helper::StringToInt32(temp);
 
 		//temp.assign(str.begin() + pos, str.begin() + pos + 2);
 		//pos += 2;
-		//month = Helper::StringToInt(temp);
+		//month = Helper::StringToInt32(temp);
 
 		//temp.assign(str.begin() + pos, str.begin() + pos + 2);
 		//pos += 2;
-		//day = Helper::StringToInt(temp);
+		//day = Helper::StringToInt32(temp);
 
 		//temp.assign(str.begin() + pos, str.begin() + pos + 2);
 		//pos += 2;
-		//code = Helper::StringToInt(temp);
+		//code = Helper::StringToInt32(temp);
 
 		//temp.assign(str.begin() + pos, str.begin() + pos + 1);
 		//pos += 1;
-		//sex = Helper::StringToInt(temp);
+		//sex = Helper::StringToInt32(temp);
 
 		//temp.assign(str.begin() + pos, str.begin() + pos + 1);
 		//pos += 1;
 		//if (temp == "X" || temp == "x")
 		//	checkcode = 10;
 		//else
-		//	checkcode = Helper::StringToInt(temp);
+		//	checkcode = Helper::StringToInt32(temp);
 	}
 
 	bool check()
@@ -104,7 +104,7 @@ private:
 		{
 			std::string str;
 			str = *(p + i);
-			total += Helper::StringToInt32(str) * Wi[i];
+			total += Helper::StringToInt3232(str) * Wi[i];
 		}
 		total = total % 11;
 		return Y[total] == checkcode;
@@ -146,9 +146,9 @@ int main()
 		std::getline(std::cin, str);
 		std::vector<std::string> sAstr;
 		Helper::SplitString(str, " ", sAstr);
-		int year = Helper::StringToInt(sAstr[0]);
-		int month = Helper::StringToInt(sAstr[1]);
-		int day = Helper::StringToInt(sAstr[2]);
+		int year = Helper::StringToInt32(sAstr[0]);
+		int month = Helper::StringToInt32(sAstr[1]);
+		int day = Helper::StringToInt32(sAstr[2]);
 
 			time_t tNow = time(NULL);
 			tm tmNow = *localtime(&tNow);

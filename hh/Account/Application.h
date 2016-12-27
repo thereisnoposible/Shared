@@ -9,7 +9,6 @@ class Application : public NetObserver, public Singleton<Application>
 public:
 	Application();
 	~Application();
-	void run();
 	void update(double diff);
 
 	void OnConnect(ConnectPtr&);

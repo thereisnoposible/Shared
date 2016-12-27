@@ -441,6 +441,7 @@ public:
 	NetService(int ionum);
 	~NetService();
     void start(int port);
+    void stop();
 
 	void update();
 

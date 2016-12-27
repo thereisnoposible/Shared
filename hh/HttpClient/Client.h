@@ -99,6 +99,11 @@ protected:
 
     void guildSign();
 
+    void GuildBoss();
+    void GuildBoss_response(Json::Value& value);
+    void GuildBossAttack();
+    void GuildBossAttack_response(Json::Value& value);
+
     void shared();
     void shared_response(Json::Value& value);
 

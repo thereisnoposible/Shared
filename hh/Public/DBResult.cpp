@@ -59,7 +59,7 @@ int DBResult::getIntField(const char* szField)
 	if (it == rowData.end())
 		return 0;
 
-	return Helper::StringToInt(it->second.pData);
+	return Helper::StringToInt32(it->second.pData);
 }
 
 long long DBResult::getLongLongField(const char* szField)
@@ -68,7 +68,7 @@ long long DBResult::getLongLongField(const char* szField)
 	if (it == rowData.end())
 		return 0;
 
-	return Helper::StringToLongLong(it->second.pData);
+	return Helper::StringToInt64(it->second.pData);
 }
 
 float DBResult::getFloatField(const char* szField)

@@ -23,6 +23,8 @@ Application::Application()
 //-------------------------------------------------------------------------------------------
 Application::~Application()
 {
+    m_pNetService->stop();
+
 	delete m_pLogServer;
 	m_pLogServer = nullptr;
 
@@ -35,11 +37,7 @@ Application::~Application()
 	delete m_pLoginManager;
 	m_pLoginManager = nullptr;
 }
-//-------------------------------------------------------------------------------------------
-void Application::run()
-{
-	NetService::getInstance().run();
-}
+
 //-------------------------------------------------------------------------------------------
 void Application::update(double diff)
 {

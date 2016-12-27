@@ -5,6 +5,20 @@
 #include "google/protobuf/wire_format_lite.h"
 #include "google/protobuf/wire_format.h"
 
+#define xvector std::vector
+#define xstring std::string
+#define xmap std::map
+
+typedef long long int64;
+typedef long int32;
+typedef short int16;
+typedef char int8;
+typedef unsigned long long uint64;
+typedef unsigned long uint32;
+typedef unsigned short uint16;
+typedef unsigned char uint8;
+
+
 namespace proto
 {
     struct Data;

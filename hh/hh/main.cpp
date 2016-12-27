@@ -25,14 +25,17 @@ void loop()
 	}
 }
 
-void aaa()
+Application* getApplication()
+{
+    Application* p = new Application;
+    return p;
+}
+
+void aaa(Application* app)
 {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-    Application app;
-
     std::chrono::steady_clock::time_point fLast = std::chrono::steady_clock::now();
-    boost::thread thread(&loop);
     while (!bExit)
     {
         std::chrono::steady_clock::time_point fCurr = std::chrono::steady_clock::now();
@@ -46,7 +49,7 @@ void aaa()
 
         __try
         {
-            app.update(usetime.count());
+            app->update(usetime.count());
         }
         __except (CrashHandler(GetExceptionInformation()))
         {
@@ -59,16 +62,37 @@ void aaa()
     google::protobuf::ShutdownProtobufLibrary();
 }
 
+boost::thread* getThread()
+{
+    boost::thread* p = new boost::thread(&loop);
+    return p;
+}
+
 int main()
 {
+    Application* app = nullptr;
+    boost::thread* thr = nullptr;
     __try
     {
-        aaa();
+        app = getApplication();
+        thr = getThread();
     }
     __except (CrashHandler(GetExceptionInformation()))
     {
-       
+        return 0;
     }
+
+    __try
+    {
+        aaa(app);
+    }
+    __except (CrashHandler(GetExceptionInformation()))
+    {
+
+    }
+
+    delete app;
+    delete thr;
 
 	return 0;
 }
