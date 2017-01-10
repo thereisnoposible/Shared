@@ -9,11 +9,30 @@ NetClient::~NetClient(void)
 {
 	if (tTimer != nullptr)
 		TimerManager::getInstance().RemoveTimer(tTimer);
+
+    if (m_pConnect != nullptr)
+    {
+        m_pConnect->CloseSocket();
+        m_pConnect.reset();
+    }
+
+    if (m_pNetService != nullptr)
+    {
+        m_pNetService->stop();
+        delete m_pNetService;
+        m_pNetService = nullptr;
+    }
 }
 
 
-bool NetClient::ConnectTo(NetService* pNetService, const std::string& ip, int port)
+bool NetClient::ConnectTo(const std::string& ip, int port)
 {
+    if (m_pNetService == nullptr)
+    {
+        m_pNetService = new NetService(1);
+        registMessage();
+    }
+
 	if (m_port != port || m_ip != ip)
 	{
 		for (int i = 0; i < (int)m_pPackData.size(); i++)
@@ -23,7 +42,7 @@ bool NetClient::ConnectTo(NetService* pNetService, const std::string& ip, int po
 		}
 		m_pPackData.clear();
 	}
-	m_pNetService = pNetService;
+
 	m_port = port;
 	m_ip = ip;
 
@@ -32,8 +51,6 @@ bool NetClient::ConnectTo(NetService* pNetService, const std::string& ip, int po
         m_pConnect->CloseSocket();
         m_pConnect.reset();
     }
-
-    registMessage();
 	
     return m_pNetService->Connect(ip, port, boost::bind(&NetClient::OnConnect, this, _1), boost::bind(&NetClient::OnDisConnect, this, _1));
 }
@@ -41,6 +58,11 @@ bool NetClient::ConnectTo(NetService* pNetService, const std::string& ip, int po
 void NetClient::registMessage()
 {
 
+}
+
+void NetClient::RegisterMessage(int id, boost::function<void(PackPtr&)> sfunc)
+{
+    m_pNetService->RegisterMessage(id, sfunc);
 }
 
 bool NetClient::Send(int messageid, const char* pdata, int length, int roleid, bool bResend)
@@ -81,6 +103,9 @@ std::string& NetClient::getAddress()
 
 void NetClient::update()
 {
+    if (m_pNetService != nullptr)
+        m_pNetService->update();
+
     if (conn_status == status_connect)
     {
         if (m_pConnect != nullptr)

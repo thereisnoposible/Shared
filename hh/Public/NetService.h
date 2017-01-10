@@ -97,6 +97,9 @@ public:
 
 	void Send(long messegeid, const char*pdata, int len, long roleid)
 	{
+        if (bClose)
+            return;
+
 		if (type == TYPE_SOCKET)
 		{
 			NetPack Pack(messegeid, pdata, len, roleid, type);
@@ -119,6 +122,9 @@ public:
 
 	void SendBuffer(long messegeid, const ::google::protobuf::Message& mess, long roleid)
 	{
+        if (bClose)
+            return;
+
 		std::string message;
 		mess.SerializeToString(&message);
 		if (type == TYPE_SOCKET)

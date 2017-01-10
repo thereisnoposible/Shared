@@ -35,6 +35,7 @@ public:
 
 	enum PlayerState
 	{
+        psCache,
 		psOnline,
 		psOffline,
 	};

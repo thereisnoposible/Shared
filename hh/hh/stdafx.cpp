@@ -12,7 +12,7 @@
 #include "DBResult.cpp"
 #include "DBSqlThread.cpp"
 #include "NetClient.cpp"
-
+#include "TimeWheel.cpp"
 
 #include "aoi/Entity.cpp"
 #include "aoi/AOITrigger.cpp"

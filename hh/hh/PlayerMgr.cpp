@@ -4,19 +4,71 @@
 #include "ModuleManager.h"
 #include "MapManager.h"
 #include "Application.h"
+#include "MysqlStmt.cpp"
 #include "../new/proto/protobuf/login.pb.h"
 #include "../new/proto/protobuf/player.pb.h"
 
 PlayerManager* Singleton<PlayerManager>::single = nullptr;
+
+void cbbb(StmtExData* pData)
+{
+    while (!pData->eof())
+    {
+        StmtData* pItem = pData->result.GetData("hp");
+        std::cout << "hp = " << *(int*)pItem->buffer << "\n";
+        pData->nextRow();
+    }
+}
+
 //-------------------------------------------------------------------------------------------
-PlayerManager::PlayerManager(DBService* p) :m_pDBService(p),m_LoginGameIncreament(0)
+PlayerManager::PlayerManager(DBService* p) :m_pDBService(p)
 {
 	registmessage();
+
+    m_pMysqlStmt = new MysqlStmt;
+
+    m_pMysqlStmt->Open("127.0.0.1", "root", "123456", "accdb");
+
+    //QueryInt_s：1
+    //QueryUInt_s：2
+    //QueryChar_s：3
+    //QueryUChar_s：4
+    //QueryTime_s：5
+    //QueryName_s：6		64字节
+    //QuerySBuffer_s：7		64字节
+    //QueryString_s：8		1024字节
+    //QueryBuffer_s：9		1024字节
+    //QueryText_s：a		1024*1024字节
+    //QueryLBuffer_s：b		1024*1024字节
+    //QueryInt64_s：c
+    //QueryUInt64_s：d
+    //QueryShort_s：e
+    //QueryUShort_s：f
+    //m_pMysqlStmt->PrepareQuery("insert into player(accid, id, jinbi, hp, maxhp, cellid, name) values(?,?,?,?,?,?,?)");
+    m_pMysqlStmt->PrepareQuery("select hp from player where id = ?");
+    
+
+    StmtBindData* temp1 = m_pMysqlStmt->stmts[0].GetNewStmtParam();
+    //temp1->SetString(0,"hehe");
+    //temp1->SetInt32(1, 1);
+    //temp1->SetInt32(2, 2);
+    //temp1->SetInt32(3, 3);
+    //temp1->SetInt32(4, 4);
+    //temp1->SetInt32(5, 5);
+    //temp1->SetString(6, "wangyi");
+
+    temp1->SetInt32(0, 1);
+
+    m_pMysqlStmt->stmts[0].ExecuteQueryVariable(temp1, std::bind(&cbbb, std::placeholders::_1));
 }
 
 //-------------------------------------------------------------------------------------------
 PlayerManager::~PlayerManager()
 {
+    m_pMysqlStmt->Close();
+    delete m_pMysqlStmt;
+
+
 	std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator it = m_AccPlayer.begin();
 	for (; it != m_AccPlayer.end(); ++it)
 	{
@@ -36,9 +88,7 @@ PlayerManager::~PlayerManager()
 void PlayerManager::registmessage()
 {
 	NetService::getInstance().RegisterMessage(GM_CREATE_ACCOUNT, boost::bind(&PlayerManager::CreateAccount, this, _1));
-	NetService::getInstance().RegisterMessage(GM_CREATE_ACCOUNT_RESPONSE, boost::bind(&PlayerManager::CreateAccountResponse, this, _1));
 	NetService::getInstance().RegisterMessage(GM_ACCOUNT_CHECK, boost::bind(&PlayerManager::AccountCheck, this, _1));
-	NetService::getInstance().RegisterMessage(GM_ACCOUNT_CHECK_RESPONSE, boost::bind(&PlayerManager::AccountCheckResponse, this, _1));
 	NetService::getInstance().RegisterMessage(GM_LOGIN, boost::bind(&PlayerManager::LoginGame, this, _1));
 	NetService::getInstance().RegisterMessage(GM_CREATE_PLAYER, boost::bind(&PlayerManager::CreatePlayer, this, _1));
 	NetService::getInstance().RegisterMessageRange(PLAYERMESSAGEBEGIN, PLAYERMESSAGEEND, boost::bind(&PlayerManager::onPlayerMessage, this, _1));
@@ -64,7 +114,7 @@ void PlayerManager::loadPlayer()
 	_unique_player = 0;
 	std::string sql = "select * from player";
 	DBResult result;
-	m_pDBService->syncQuery(std::move(sql), result);
+	m_pDBService->syncQuery(sql, result);
 
 	while (!result.eof())
 	{
@@ -119,18 +169,34 @@ void PlayerManager::OnDisConnect(ConnectPtr& playerid)
 }
 
 //-------------------------------------------------------------------------------------------
+std::unordered_map<ConnectPtr, PlayerManager::Session>& PlayerManager::GetPlayerMap()
+{
+    return m_AllPlayer;
+}
+
+//-------------------------------------------------------------------------------------------
+std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>& PlayerManager::GetAccPlayerMap()
+{
+    return m_AccPlayer;
+}
+
+//-------------------------------------------------------------------------------------------
 void PlayerManager::onPlayerMessage(PackPtr& pPack)
 {
 	std::unordered_map<ConnectPtr, Session>::iterator it = m_AllPlayer.find(pPack->m_Connect);
-	if (it != m_AllPlayer.end())
-	{
-		std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator accit = m_AccPlayer.find(it->second.acc_id);
-		if (accit != m_AccPlayer.end())
-		{
-			std::unordered_map<unsigned int, Player*>::iterator playerit = accit->second.find(it->second.playerid);
-			playerit->second->FireNetMsg(pPack->getMessageId(), pPack);
-		}	
-	}
+	if (it == m_AllPlayer.end())
+        return;
+
+    std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator accit = m_AccPlayer.find(it->second.acc_id);
+    if (accit == m_AccPlayer.end())
+        return;
+
+
+    std::unordered_map<unsigned int, Player*>::iterator playerit = accit->second.find(it->second.playerid);
+    if (playerit->second->GetPlayerState() != Player::PlayerState::psOnline)
+        return;
+
+    playerit->second->FireNetMsg(pPack->getMessageId(), pPack);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -138,30 +204,8 @@ void PlayerManager::CreateAccount(PackPtr& pPack)
 {
 	pm_createaccount request;
 	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
-	std::unordered_map<std::string, ConnectPtr>::iterator it = m_Creating.find(request.username());
-	if (it != m_Creating.end())
-	{
-		return;
-	}
 
-	m_Creating.insert(std::make_pair(request.username(), pPack->m_Connect));
-	Application::getInstance().GetAccountConnect().SendProtoBuf(pPack->getMessageId(), request);
-}
-
-//-------------------------------------------------------------------------------------------
-void PlayerManager::CreateAccountResponse(PackPtr& pPack)
-{
-	if (pPack->getAddr() != Application::getInstance().GetAccountConnect().getAddress())
-		return;
-
-	pm_createaccount_response response;
-	CHECKERRORANDRETURN(response.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
-	
-	std::unordered_map<std::string, ConnectPtr>::iterator it = m_Creating.find(response.username());
-	CHECKERRORANDRETURN(it != m_Creating.end());
-
-	it->second->SendBuffer(pPack->getMessageId(), response, 0);
-	m_Creating.erase(it);
+    Application::getInstance().GetAccountConnect().CreateAccount(pPack->m_Connect, request);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -170,64 +214,7 @@ void PlayerManager::AccountCheck(PackPtr& pPack)
 	pm_account_check request;
 	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
 
-	request.set_increament(m_LoginGameIncreament);
-	m_pLogin.insert(std::make_pair(m_LoginGameIncreament++, pPack->m_Connect));
-
-	Application::getInstance().GetAccountConnect().SendProtoBuf(pPack->getMessageId(), request);
-}
-
-//-------------------------------------------------------------------------------------------
-void PlayerManager::AccountCheckResponse(PackPtr& pPack)
-{
-	if (pPack->getAddr() != Application::getInstance().GetAccountConnect().getAddress())
-		return;
-
-	pm_account_check_response response;
-	CHECKERRORANDRETURN(response.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
-
-	std::unordered_map<unsigned int, ConnectPtr>::iterator it = m_pLogin.find(response.increament());
-	CHECKERRORANDRETURN(it != m_pLogin.end());
-
-	if (response.result() == 0)
-	{
-		std::unordered_map<ConnectPtr, Session>::iterator sit = m_AllPlayer.find(it->second);
-		if (sit != m_AllPlayer.end())
-		{
-			std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator accit = m_AccPlayer.find(sit->second.acc_id);
-			if (accit != m_AccPlayer.end())
-			{
-				std::unordered_map<unsigned int, Player*>::iterator playerit = accit->second.find(sit->second.playerid);
-				if (playerit != accit->second.end() && playerit->second->GetPlayerState() == Player::PlayerState::psOnline)
-				{
-					playerit->second->OnPlyaerLogout();
-				}
-			}
-		}
-
-		Session player;
-		player.acc_id = response.username();
-		player.playerid = 0;
-		m_AllPlayer[it->second] = player;
-
-		std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator accit = m_AccPlayer.find(response.username());
-		if (accit != m_AccPlayer.end())
-		{
-			std::unordered_map<unsigned int, Player*>::iterator playerit = accit->second.begin();
-			for (; playerit != accit->second.end(); ++playerit)
-			{
-				pm_player_sub_data* pData = response.add_playerdata();
-				pData->set_id(playerit->second->GetPlayerData().id);
-				pData->set_name(playerit->second->GetPlayerData().name);
-			}
-		}
-		else
-		{
-			m_AccPlayer.insert(std::make_pair(response.username(), std::unordered_map<unsigned int, Player*>()));
-		}
-	}
-
-	it->second->SendBuffer(pPack->getMessageId(), response, 0);
-	m_pLogin.erase(it);
+    Application::getInstance().GetAccountConnect().AccountCheck(pPack->m_Connect, request);
 }
 
 //-------------------------------------------------------------------------------------------

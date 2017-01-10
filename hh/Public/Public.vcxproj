@@ -181,6 +181,11 @@
     <ClInclude Include="json\writer.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="MessageHandle.h" />
+    <ClInclude Include="MysqlStmt.h" />
+    <ClInclude Include="mysql\pretreatment\ssDBThreadInterface.h" />
+    <ClInclude Include="mysql\pretreatment\ssMySQLDefin.h" />
+    <ClInclude Include="mysql\ssMySQL.h" />
+    <ClInclude Include="mysql\ssWriteFile.h" />
     <ClInclude Include="NetClient.h" />
     <ClInclude Include="NetMessage.h" />
     <ClInclude Include="NetPack.h" />
@@ -194,6 +199,7 @@
     <ClInclude Include="Struct.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerManager.h" />
+    <ClInclude Include="TimeWheel.h" />
     <ClInclude Include="TypeTable.h" />
     <ClInclude Include="WebSocketProtocol.h" />
   </ItemGroup>
@@ -219,10 +225,16 @@
     <ClCompile Include="json\json_writer.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MysqlStmt.cpp" />
+    <ClCompile Include="mysql\pretreatment\ssDBThreadInterface.cpp" />
+    <ClCompile Include="mysql\pretreatment\ssMySQLDefin.cpp" />
+    <ClCompile Include="mysql\ssMySQL.cpp" />
+    <ClCompile Include="mysql\ssWriteFile.cpp" />
     <ClCompile Include="NetClient.cpp" />
     <ClCompile Include="NetService.cpp" />
     <ClCompile Include="proto_data.cpp" />
     <ClCompile Include="TimerManager.cpp" />
+    <ClCompile Include="TimeWheel.cpp" />
     <ClCompile Include="TypeTable.cpp" />
     <ClCompile Include="WebSocketProtocol.cpp" />
   </ItemGroup>

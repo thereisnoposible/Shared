@@ -343,6 +343,11 @@ struct PropItem
 		TypeWeapon Weapon;
 		TypeArmor Armor;
 	};
-	
+};
 
+
+struct EntityData
+{
+    long long llData[1024];
+    char cData[1024][1024];
 };

@@ -24,30 +24,16 @@ namespace Helper
 
 	int StringToInt32(const std::string& str)
 	{
-		int num = 0;
-		const char* p = str.c_str();
-		for (int temp = 0; temp < (int)str.size(); temp++)
-		{
-			if (*(p + temp) == ' ')
-				continue;
-			num *= 10;
-			num += *(p + temp) - '0';
-		}
-		return num;
+        int i = atoi(str.c_str());
+
+        return i;
 	}
 
 	long long StringToInt64(const std::string& str)
 	{
-		long long num = 0;
-		const char* p = str.c_str();
-		for (int temp = 0; temp < (int)str.size(); temp++)
-		{
-			if (*(p + temp) > '9' || *(p + temp) < '0')
-				continue;
-			num *= 10;
-			num += *(p + temp) - '0';
-		}
-		return num;
+        long long i = atoll(str.c_str());
+
+        return i;
 	}
 
 	long long Getdbid(int playerid,int unique)
@@ -77,21 +63,92 @@ namespace Helper
 		str = a;
 		return str;
 	}
-	void SplitString(const std::string&str, const std::string&spl, std::vector<std::string>&sAstr)
-	{
-		if (str.empty())
-			return;
-		int pos = 0;
-		pos = str.find(spl, pos);
-		if (pos != std::string::npos)
-		{
-			if (pos != 0)
-				sAstr.push_back(std::string().assign(str.begin(), str.begin() + pos));
-			SplitString(str.substr(pos + spl.size()), spl, sAstr);
-		}
-		else
-			sAstr.push_back(str);
-	}
+
+    int FindString(const char* str, int size, const std::string&spl)
+    {
+        int pos = -1;
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < (int)spl.size(); j++)
+            {
+                if (*(str + i + j) != spl[j])
+                    break;
+
+                if (j == spl.size() - 1)
+                    pos = i;
+            }
+
+            if (pos != -1)
+                break;
+        }
+
+        return pos;
+    }
+
+    int FindString(const char* str, int size, const std::vector<std::string>&spl)
+    {
+        int pos = -1;
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < (int)spl.size(); j++)
+            {
+                for (int z = 0; z < (int)spl[j].size(); z++)
+                {
+                    if (*(str + i + z) != spl[j][z])
+                        break;
+
+                    if (z == spl.size() - 1)
+                        pos = i;
+                }
+
+                if (pos != -1)
+                    break;
+            }
+
+            if (pos != -1)
+                break;
+        }
+
+        return pos;
+    }
+
+    void SplitString(const std::string&str, const std::string&spl, std::vector<std::string>&sAstr)
+    {
+        if (str.empty())
+            return;
+
+        SplitString(str.c_str(), str.size(), spl, sAstr);
+    }
+
+    void SplitString(const char* str, int size, const std::string&spl, std::vector<std::string>&sAstr, bool bEmpty)
+    {
+        if (size == 0)
+            return;
+
+        int pos = FindString(str, size, spl);
+        int off = 0;
+        while (1)
+        {
+            if (pos == -1)
+                break;
+
+            if (bEmpty == true || pos - off != 0)
+                sAstr.push_back(std::string(str + off, pos - off));
+
+            off = pos + spl.size();
+            pos = FindString(str + off, size - off, spl);
+
+            if (pos == -1)
+                break;
+
+            pos = pos + off;
+        }
+
+        if (pos == -1 && size - off != 0)
+            sAstr.push_back(std::string(str + off, size - off));
+
+    }
+
 	void SplitStringHasEmpty(const std::string&str, const std::string&spl, std::vector<std::string>&sAstr)
 	{
 		if (str.empty())
@@ -99,102 +156,43 @@ namespace Helper
 			sAstr.push_back(str);
 			return;
 		}
-		int pos = 0;
-		pos = str.find(spl, pos);
-		if (pos != std::string::npos)
-		{
-			if (pos != 0)
-				sAstr.push_back(std::string().assign(str.begin(), str.begin() + pos));
-			SplitStringHasEmpty(str.substr(pos+spl.size()), spl, sAstr);
-		}
-		else
-			sAstr.push_back(str);
-	}
-	void SplitStringOld(const std::string& str, const std::string& spl, std::vector<std::string>& sAstr)
-	{
-		int pos = 0;
-		int nextpos = 0;
-		pos = str.find(spl, pos);
-		nextpos = str.find(spl, pos + 1);
-		if (pos == std::string::npos)
-		{
-			sAstr.push_back(str);
-			return;
-		}
-		else
-		{
-			sAstr.push_back(std::string().assign(str, 0, pos));
-		}
-		while (pos != std::string::npos)
-		{
-			if (pos == 0)
-			{
-				if (nextpos == std::string::npos)
-				{
-					sAstr.push_back(std::string());
-					sAstr.push_back(std::string().assign(str, pos + 1, str.size() - pos));
-					return;
-				}
-				else
-				{
-					sAstr.push_back(std::string().assign(str, pos + 1, nextpos - pos - 1));
-					pos = str.find(spl, nextpos);
-					nextpos = str.find(spl, pos + 1);
-				}
-			}
-			else
-			{
-				if (nextpos == std::string::npos)
-				{
-					sAstr.push_back(std::string().assign(str, pos + 1, str.size() - pos));
-					return;
-				}
-				else
-				{
-					sAstr.push_back(std::string().assign(str, pos + 1, nextpos - pos - 1));
-					pos = str.find(spl, nextpos);
-					nextpos = str.find(spl, pos + 1);
-				}
-			}
-		}
+		
+        SplitString(str.c_str(), str.size(), spl, sAstr, true);
 	}
 
 	void SplitString(const std::string&str, const std::vector<std::string>&spl, std::vector<std::string>&sAstr)
 	{
 		if (str.empty())
 			return;
-		int minpos = std::string::npos;
-		int pos = 0;
-		int vecpos = 0;
-		for (int i = 0; i < (int)spl.size(); i++)
-		{
-			pos = str.find(spl[i], 0);
-			if (pos != std::string::npos)
-			{
-				if (minpos == std::string::npos)
-				{
-					minpos = pos;
-					vecpos = i;
-				}
-				else
-				{
-					if (minpos > pos)
-					{
-						minpos = pos;
-						vecpos = i;
-					}
-				}
-			}
-		}
-		if (minpos != std::string::npos)
-		{
-			if (minpos != 0)
-				sAstr.push_back(std::string().assign(str.begin(), str.begin() + minpos));
-			SplitString(str.c_str() + minpos + spl[vecpos].length(), spl, sAstr);
-		}
-		else
-			sAstr.push_back(str);
+		
+        SplitString(str.c_str(), str.size(), spl, sAstr);
 	}
+
+    void SplitString(const char* str, int size, const std::vector<std::string>&spl, std::vector<std::string>&sAstr, bool bEmpty)
+    {
+        if (size == 0)
+            return;
+
+        int pos = FindString(str, size, spl);
+        int off = 0;
+        while (1)
+        {
+            if (bEmpty == true || pos - off != 0)
+                sAstr.push_back(std::string(str + off, pos - off));
+
+            off = pos + spl.size();
+            pos = FindString(str + off, size - off, spl);
+
+            if (pos == -1)
+                break;
+
+            pos = pos + off;
+        }
+
+        if (pos == -1 && size - off != 0)
+            sAstr.push_back(std::string(str + off, size - off));
+
+    }
 
 	std::chrono::steady_clock::time_point getMSTime()
 	{

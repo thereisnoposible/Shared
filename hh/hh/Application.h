@@ -7,6 +7,7 @@
 #include "MapManager.h"
 #include "TimerManager.h"
 #include "NetClient.h"
+#include "AccountNetClient.h"
 
 class Application : public NetObserver, public Singleton<Application>
 {
@@ -21,16 +22,15 @@ public:
 
 	int64 getDBID();
 
-	NetClient& GetAccountConnect();
+    AccountNetClient& GetAccountConnect();
 	NetClient& GetDataBaseConnect();
 
     void AllInitialOK();
 private:
-	NetClient* m_pAccount;
+    AccountNetClient* m_pAccount;
 	NetClient* m_pDatabase;
 
 	NetService* m_pNetService;
-    NetService* m_pConnecter;
 	ModuleManager *m_pModuleMgr;
 	LogService* m_pLogServer;
 	TypeTable* m_pTypeTable;

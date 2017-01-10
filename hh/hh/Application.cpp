@@ -29,9 +29,7 @@ Application::Application()
 	m_pMapMgr = new MapManager();
 
 
-    m_pConnecter = new NetService(1);
-	m_pAccount = new NetClient;
-    m_pAccount->ConnectTo(m_pConnecter, ACCOUNTADDR, ACCOUNTPORT);
+    m_pAccount = new AccountNetClient;
 
 	m_id = 1;
 	m_dbid = time(NULL) << 32;
@@ -46,13 +44,13 @@ Application::Application()
 void Application::AllInitialOK()
 {
     m_pNetService->start(SERVERPORT);
+    std::cout << "start server\n";
 }
 
 //-------------------------------------------------------------------------------------------
 Application::~Application()
 {
     m_pNetService->stop();
-    m_pConnecter->stop();
 
 	delete m_pModuleMgr;
 	m_pModuleMgr = nullptr;
@@ -75,9 +73,6 @@ Application::~Application()
 	delete m_pNetService;
 	m_pNetService = nullptr;
 
-    delete m_pConnecter;
-    m_pConnecter = nullptr;
-
 	delete m_pDBService;
 	m_pDBService = nullptr;
 
@@ -98,14 +93,14 @@ void Application::update(double diff)
 		m_pTimerManager->Update();
 	}
 
-    if (m_pConnecter != nullptr)
-    {
-        m_pConnecter->update();
-    }
-
     if (m_pAccount != nullptr)
     {
         m_pAccount->update();
+    }
+
+    if (m_pPlayerMgr != nullptr)
+    {
+        m_pPlayerMgr->m_pMysqlStmt->Update();
     }
 }
 
@@ -122,7 +117,7 @@ void Application::OnDisConnect(ConnectPtr& pConnect)
 }
 
 //-------------------------------------------------------------------------------------------
-NetClient& Application::GetAccountConnect()
+AccountNetClient& Application::GetAccountConnect()
 {
 	return *m_pAccount;
 }

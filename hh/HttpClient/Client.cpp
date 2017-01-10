@@ -68,6 +68,11 @@ Client::Client(std::string& plat)
     m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 3), -1);
     m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::CardDraw, this, 5), -1);
 
+    m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::Activeness, this, 25), -1);
+    m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::Activeness, this, 60), -1);
+    m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::Activeness, this, 90), -1);
+    m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::Activeness, this, 120), -1);
+
     m_pTimerManager->AddTriggerTimer(12, 1, 0, std::bind(&Client::GuildBoss, this), -1);
 
     m_step = nullptr;
@@ -81,10 +86,6 @@ Client::Client(std::string& plat)
 	if (plat == "android")
 		platform_ = plat;
 
-    maf[18] = 970;
-    maf[19] = 1100;
-    maf[21] = 1500;
-    maf[22] = 1700;
     maf[24] = 2100;
     maf[25] = 2300;
     maf[30] = 3300;
@@ -1809,4 +1810,21 @@ void Client::CardDraw(int type)
 	request.pend_flag = "0\r\n\r\n";
 
 	post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::Activeness(int point)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Activeness&m=getReward&a={\"point\":";
+    request.url += Helper::Int32ToString(point);
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
 }

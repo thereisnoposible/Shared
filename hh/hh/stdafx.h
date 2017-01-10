@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include "json/json.h"
 #include "DBService.h"
+#include "TimeWheel.h"
 
 #include "aoi/Entity.h"
 #include "aoi/AOITrigger.h"

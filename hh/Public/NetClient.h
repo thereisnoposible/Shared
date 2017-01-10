@@ -14,7 +14,7 @@ class NetClient
 {
 public:
 	NetClient();
-	~NetClient(void);
+	virtual ~NetClient(void);
 
 	struct PackData
 	{
@@ -49,8 +49,10 @@ public:
 
 public:
     virtual void registMessage();
+    void RegisterMessage(int id, boost::function<void(PackPtr&)> sfunc);
 
-	bool ConnectTo(NetService* pNetService, const std::string& ip, int port);
+	bool ConnectTo(const std::string& ip, int port);
+
 	bool Send(int messageid, const char* pdata, int length, int roleid = 0, bool bResend = false);
 	template<typename T>
 	bool Send(const T& t,unsigned int mesageid,  int roleid = 0, bool bResend = false)
@@ -67,8 +69,8 @@ public:
     void update();
 
 protected:
-    void OnConnect(ConnectPtr&);
-    void OnDisConnect(ConnectPtr&);
+    virtual void OnConnect(ConnectPtr&);
+    virtual void OnDisConnect(ConnectPtr&);
 
     void ReConnect();
 private:

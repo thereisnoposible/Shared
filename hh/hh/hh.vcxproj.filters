@@ -66,6 +66,9 @@
     <ClCompile Include="Initialer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="AccountNetClient.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -99,6 +102,9 @@
       <Filter>module</Filter>
     </ClInclude>
     <ClInclude Include="Initialer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AccountNetClient.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

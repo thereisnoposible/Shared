@@ -163,6 +163,7 @@
     <ClCompile Include="..\..\new\proto\protobuf\xinfa.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="AccountNetClient.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BaseModule.cpp" />
     <ClCompile Include="cell.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="XinfaModule.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AccountNetClient.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="BaseModule.h" />
     <ClInclude Include="Cell.h" />

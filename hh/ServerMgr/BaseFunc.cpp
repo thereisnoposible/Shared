@@ -13,10 +13,10 @@ Player::Player()
 
 void Player::registmessge()
 {
-	NetService::getInstance().RegisterMessage(GM_CREATE_ACCOUNT_RESPONSE, boost::bind(&Player::CreateAccountResponse, this, _1));
-	NetService::getInstance().RegisterMessage(GM_ACCOUNT_CHECK_RESPONSE, boost::bind(&Player::AccountCheckResponse, this, _1));
-	NetService::getInstance().RegisterMessage(GM_CREATE_PLAYER_RESPONSE, boost::bind(&Player::CreatePlayerResponse, this, _1));
-	NetService::getInstance().RegisterMessage(GM_LOGIN_RESPONSE, boost::bind(&Player::LoginGameResponse, this, _1));
+	Application::getInstance().GetServer().RegisterMessage(GM_CREATE_ACCOUNT_RESPONSE, boost::bind(&Player::CreateAccountResponse, this, _1));
+    Application::getInstance().GetServer().RegisterMessage(GM_ACCOUNT_CHECK_RESPONSE, boost::bind(&Player::AccountCheckResponse, this, _1));
+    Application::getInstance().GetServer().RegisterMessage(GM_CREATE_PLAYER_RESPONSE, boost::bind(&Player::CreatePlayerResponse, this, _1));
+    Application::getInstance().GetServer().RegisterMessage(GM_LOGIN_RESPONSE, boost::bind(&Player::LoginGameResponse, this, _1));
 }
 
 //-------------------------------------------------------------------------------------------

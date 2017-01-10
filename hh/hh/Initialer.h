@@ -10,7 +10,7 @@ public:
     void mgr_Initial();
 
     virtual void Initial();
-    virtual void SetInit();
+    virtual void SetInit(); //can't overload
     void SetCallBack(std::function<void()> callback);
 
 private:

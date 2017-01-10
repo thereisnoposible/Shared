@@ -91,6 +91,8 @@ protected:
 	void CalendarSign();
 	void CardDraw(int type);
 
+    void Activeness(int point);
+
     void worldBoss();
     void worldBoss_response(Json::Value& value);
     void startWorldBoss();

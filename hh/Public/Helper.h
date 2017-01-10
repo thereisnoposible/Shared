@@ -7,9 +7,14 @@ namespace Helper
 	int ABS(int x);
 	int GetRandom(int min, int max);
 	double GetRandom(double min, double max);
-	void SplitStringOld(const std::string&, const std::string&, std::vector<std::string>&);
+    int FindString(const char* str, int size, const std::string&spl);
+    int FindString(const char* str, int size, const std::vector<std::string>&);
+    void SplitString(const char* str, int size, const std::string&spl, std::vector<std::string>&sAstr, bool bEmpty = false);
 	void SplitString(const std::string&, const std::string&, std::vector<std::string>&);
+
+    void SplitString(const char* str, int size, const std::vector<std::string>&, std::vector<std::string>&sAstr, bool bEmpty = false);
 	void SplitString(const std::string&, const std::vector<std::string>&, std::vector<std::string>&);
+
 	void SplitStringHasEmpty(const std::string&str, const std::string&spl, std::vector<std::string>&sAstr);
 
 	int StringToInt32(const std::string&);

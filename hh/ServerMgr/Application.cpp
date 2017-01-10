@@ -9,7 +9,7 @@ Application::Application()
 	m_pNetService = new NetService(4);
 	m_pTimerManager = new TimerManager();
 
-	server.ConnectTo(m_pNetService, SERVERADDR, SERVERPORT);
+	server.ConnectTo(SERVERADDR, SERVERPORT);
 
     //std::vector<NetClient> pppp;
     //for (int i = 0; i < 70000; i++)
@@ -54,6 +54,6 @@ void Application::run()
 void Application::update(double diff)
 {
 	NetService::getInstance().update();
-
+    server.update();
 	m_pTimerManager->Update();
 }
