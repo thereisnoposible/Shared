@@ -30,5 +30,5 @@ private:
 
 	std::unordered_map<std::string, std::string> _accMap;
 
-	DBService* m_pDBService;
+	MysqlStmt* m_pDBService;
 };

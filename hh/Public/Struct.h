@@ -182,16 +182,14 @@ struct PlayerData
 {
 	PlayerData()
 	{
-		memset(this, 0, sizeof(PlayerData)-2*sizeof(std::string));
+
 	}
 	void fromPBMessage(const pm_playerdata& data)
 	{
 		 id = data.id();
 		 jinbi = data.jinbi();
-
-		 hp = data.hp();
-		 maxhp = data.max_hp();
 		 name = data.name();
+         account = data.account();
 	};
 
 	/**
@@ -202,20 +200,13 @@ struct PlayerData
 		data.set_id(id);
 		data.set_jinbi(jinbi);
 		data.set_name(name);
-		data.set_hp(hp);
-		data.set_max_hp(maxhp);
+        data.set_account(account);
 	};
-	uint32 id;
-	uint32 jinbi;
-
-	uint32 hp;
-	uint32 maxhp;
-
-	uint32 gengu;
+	int32 id;
+	int32 jinbi;
 	
-	int32 cellid;
 	std::string name;
-	std::string acc_id;
+	std::string account;
 };
 
 struct Xinfa

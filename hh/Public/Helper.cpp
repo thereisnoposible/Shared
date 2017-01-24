@@ -3,11 +3,15 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
+#include <assert.h>
 namespace Helper
 {
 	int ABS(int x){ return (x > 0 ? x : -x); }
 	int GetRandom(int min, int max)
 	{
+#ifdef _DEBUG
+        assert(max >= min);
+#endif
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_int_distribution<int> distribution(min, max);
@@ -16,6 +20,10 @@ namespace Helper
 
 	double GetRandom(double min, double max)
 	{
+#ifdef _DEBUG
+        assert(max >= min);
+#endif
+
 		std::random_device rd;
 		std::mt19937 gen(rd());
 		std::uniform_real_distribution<double> distribution(min, max);
@@ -97,7 +105,7 @@ namespace Helper
                     if (*(str + i + z) != spl[j][z])
                         break;
 
-                    if (z == spl.size() - 1)
+                    if (z == spl[j].size() - 1)
                         pos = i;
                 }
 

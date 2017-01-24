@@ -10,8 +10,6 @@
 #include <stdio.h>
 #include <tchar.h>
 
-
-
 // TODO:  在此处引用程序需要的其他头文件
 #include "NetMessage.h"
 #include "NetService.h"
@@ -27,9 +25,10 @@
 #include <unordered_map>
 #include "json/json.h"
 #include "DBService.h"
-#include "MysqlStmt.h"
+#include "TimeWheel.h"
 
 #define LOGSERVERNAME "../log/Server.log"
+#define SAFE_DELETE(p) {if(p!=nullptr){delete p;p=nullptr;}}
 
 #include "Log.h"
 #define CHECKERROR(b) if(!(b)) {LogService::getInstance().LogMessage("error:%s,%d",__FILE__,__LINE__);}

@@ -50,6 +50,11 @@ public:
 public:
     virtual void registMessage();
     void RegisterMessage(int id, boost::function<void(PackPtr&)> sfunc);
+    template<class... _Types >
+    void Register(int id, _Types... arg)
+    {
+        m_pNetService->RegisterMessage(id, arg...);
+    }
 
 	bool ConnectTo(const std::string& ip, int port);
 

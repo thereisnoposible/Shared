@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Application.h"
 #include "Login.h"
 
 #include "../new/proto/protobuf/login.pb.h"
@@ -6,7 +7,7 @@
 LoginManager::LoginManager()
 {
 	registerMessage();
-	m_pDBService = new DBService(1);
+	m_pDBService = new MysqlStmt;
 	if (!m_pDBService->Open("127.0.0.1", "root", "123456", "accdb"))
 	{
 		std::cout << "open accdb failed\n";
@@ -17,6 +18,8 @@ LoginManager::LoginManager()
 //-------------------------------------------------------------------------------------------
 LoginManager::~LoginManager()
 {
+    m_pDBService->Close();
+
 	delete m_pDBService;
 	m_pDBService = nullptr;
 }
@@ -24,8 +27,8 @@ LoginManager::~LoginManager()
 //-------------------------------------------------------------------------------------------
 void LoginManager::registerMessage()
 {
-	NetService::getInstance().RegisterMessage(GM_CREATE_ACCOUNT, boost::bind(&LoginManager::CreateAccount, this, _1));
-	NetService::getInstance().RegisterMessage(GM_ACCOUNT_CHECK, boost::bind(&LoginManager::AccountCheck, this, _1));
+    sNetService.RegisterMessage(GM_CREATE_ACCOUNT, boost::bind(&LoginManager::CreateAccount, this, _1));
+    sNetService.RegisterMessage(GM_ACCOUNT_CHECK, boost::bind(&LoginManager::AccountCheck, this, _1));
 }
 
 
@@ -39,21 +42,22 @@ void LoginManager::init()
 void LoginManager::loadAcc()
 {
 	_unique_acc = 0;
-	std::string sql = "select * from account";
-	DBResult result;
-    m_pDBService->syncQuery(std::move(sql), result);
 
-	while (!result.eof())
+    std::string sql = "select * from account";
+    StmtSyncResult result;
+    m_pDBService->SyncExecuteQueryVariable(sql, nullptr, result);
+
+	while (!result.pResult.eof())
 	{
-		int id = result.getIntField("id");
-		std::string name = result.getStringField("accname");
-		std::string psw = result.getStringField("psw");
+        int id = *(int*)result.pResult.result.GetData("id")->buffer;
+        std::string name = (char*)result.pResult.result.GetData("accname")->buffer;
+        std::string psw = (char*)result.pResult.result.GetData("psw")->buffer;
 		if (id > _unique_acc)
 			_unique_acc = id;
 
 		_accMap.insert(std::make_pair(name, psw));
 
-		result.nextRow();
+        result.pResult.nextRow();
 	}
 	_unique_acc += 1;
 }
@@ -67,15 +71,15 @@ void LoginManager::loadPlayer()
 //-------------------------------------------------------------------------------------------
 void LoginManager::notifyInsertAccount(int id, std::string name, std::string psw)
 {
-	std::stringstream ss;
+    std::string sql = "insert into account(id,accname,psw) values(?,?,?)";
+    StmtBindData* pParam = m_pDBService->PrepareQuery(sql.c_str());
 
-	ss << "insert into account(id,accname,psw) values(";
-	ss << id << ",";
-	ss << "'" << name << "'" << ",";
-	ss << "'" << psw << "'" << ")";
-	std::string sql = ss.str();
+    pParam->SetInt32(0, id);
+    pParam->SetString(1, name);
+    pParam->SetString(2, psw);
+
 	//直接投递执行掉,后期补充安全机制
-	m_pDBService->asynExcute(0, std::move(sql), NULLFUNC);
+    m_pDBService->AsynExecuteQueryVariable(sql, pParam, nullptr);
 }
 
 //-------------------------------------------------------------------------------------------

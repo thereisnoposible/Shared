@@ -6,6 +6,7 @@
 #include "json/json_writer.cpp"
 #include "TimerManager.cpp"
 #include <assert.h>
+#include "TimeWheel.cpp"
 
 enum code
 {
@@ -48,6 +49,8 @@ Client::Client(std::string& plat)
 	registmessage();
 
 	m_pTimerManager = new TimerManager;
+    m_pTimeWheel = new timewheel::TimeWheel;
+    m_pTimeWheel->Init(30, 1);
 
 	//m_fight = m_pTimerManager->AddIntervalTimer(30, std::bind(&Client::run_fight, this));
 
@@ -73,6 +76,8 @@ Client::Client(std::string& plat)
     m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::Activeness, this, 90), -1);
     m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::Activeness, this, 120), -1);
 
+	m_pTimeWheel->AddTimer(60000, std::bind(&Client::ManorGet, this), -1);
+
     m_pTimerManager->AddTriggerTimer(12, 1, 0, std::bind(&Client::GuildBoss, this), -1);
 
     m_step = nullptr;
@@ -86,8 +91,6 @@ Client::Client(std::string& plat)
 	if (plat == "android")
 		platform_ = plat;
 
-    maf[24] = 2100;
-    maf[25] = 2300;
     maf[30] = 3300;
     maf[33] = 3900;
     maf[34] = 4100;
@@ -156,7 +159,8 @@ void Client::run(double diff)
 	m_manager->update();
 
 	m_pTimerManager->Update();
-    
+ 
+    m_pTimeWheel->Update();
 }
 
 void Client::run_fight()
@@ -629,6 +633,13 @@ void Client::init()
     shared();
     guildSign();
     GuildBoss();
+    CupSignUp();
+    ManorGet();
+    if (m_step != nullptr)
+    {
+        m_pTimerManager->RemoveTimer(m_step);
+    }
+
 	m_step = m_pTimerManager->AddIntervalTimer(0.2, std::bind(&Client::checkStep, this));
 }
 
@@ -682,6 +693,25 @@ void Client::request_init_data_response(Json::Value& value)
 	{
 		endurance = value["data"]["user"]["endurance"].asInt();
 		pow = value["data"]["user"]["pow"].asInt();
+        //当前最高关卡
+        int mid = value["data"]["user"]["mid"].asInt();
+        int weektype = value["data"]["weeklyTypes"][0].asInt();
+        //3 棋盘
+
+        m_wid.clear();
+        m_wid_vec.clear();
+        Json::Value warriors = value["data"]["warriors"];
+        for (int i = 0; i < (int)warriors.size(); i++)
+        {
+            if (warriors[i]["wid"].asInt()>=1000)
+                continue;
+            m_wid.insert(warriors[i]["wid"].asInt());
+        }
+
+        for (auto it = m_wid.begin(); it != m_wid.end(); it++)
+        {
+            m_wid_vec.push_back(*it);
+        }
 	}
 
 	//fight(map_high * 100 + map_low);
@@ -816,7 +846,7 @@ void Client::playgame_response(int map, Json::Value& value)
 		switch (code)
 		{
 		case NOON_POWER:
-			std::cout << "error code:" << codess << codestr[code] << "\n";
+			std::cout << platform_<< " error code:" << codess << codestr[code] << "\n";
 			return;
 		case Success:
 			pow -= 1;
@@ -838,7 +868,7 @@ void Client::playgame_response(int map, Json::Value& value)
 
 	if (value["data"].isMember("pve"))
 	{
-		if (value["data"]["pve"]["grade"] != 0)
+		if (value["data"]["pve"]["grade"].asInt() != 0)
 		{
 			int cid = map / 100;
 			std::map<int, Explore>::iterator it = m_pChapter[cid].explores.find(map);
@@ -946,7 +976,7 @@ void Client::get_challenge_response(Json::Value& value)
         }
 
         {
-            for (int j = 0; j < value["data"]["chMall"]["items"].size(); j++)
+            for (int j = 0; j < (int)value["data"]["chMall"]["items"].size(); j++)
             {
                 Json::Value& item = value["data"]["chMall"]["items"][j];
                 if (item["type"].asInt() == 7 && item["buyType"].asInt() == 1)
@@ -1307,7 +1337,7 @@ void Client::shared()
     http::http_request request;
     request.type = HTTP_GET;
     request.url = "/s20042/port/interface.php?s=Activity&m=share&a={\"sign\":\"f40e667a047e7b16da7f3204b3760bd5\",\"ts\":";
-    request.url+=Helper::Int32ToString(time(NULL));
+    request.url+=Helper::Int32ToString((int)time(NULL));
     request.url += "}&v=";
     request.url += version;
     request.url += "&sys=";
@@ -1324,7 +1354,7 @@ void Client::shared_response(Json::Value& value)
     http::http_request request;
     request.type = HTTP_GET;
     request.url = "/s20042/port/interface.php?s=Activity&m=shareZh&a={\"sign\":\"20d1b33f523e52b57e03b5dfb575cf47\",\"ts\":";
-    request.url += Helper::Int32ToString(time(NULL));
+    request.url += Helper::Int32ToString((int)time(NULL));
     request.url += "}&v=";
     request.url += version;
     request.url += "&sys=";
@@ -1818,6 +1848,331 @@ void Client::Activeness(int point)
     request.type = HTTP_GET;
     request.url = "/s20042/port/interface.php?s=Activeness&m=getReward&a={\"point\":";
     request.url += Helper::Int32ToString(point);
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::CupSignUp()
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Cup&m=signUp&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::ManorGet()
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Manor&m=get&a={}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::bind(&Client::ManorGet_response, this, std::placeholders::_1));
+}
+
+void Client::ManorGet_response(Json::Value& value)
+{
+    int tNow = value["ts"].asInt();
+
+	if (platform_ == "ios")
+	{
+		std::cout << "ManorGet: " << Helper::Timet2String(tNow) << "\n";
+	}
+    std::vector<int> task_vec;
+    std::set<int> worker;
+
+    for (int i = 0; i < (int)value["data"]["manorBuildings"].size(); i++)
+    {
+        Json::Value& temp = value["data"]["manorBuildings"][i];
+
+        int type = temp["type"].asInt();
+        int lv = temp["lv"].asInt();
+
+        int count = m_wid_vec.size();
+        //酒楼
+        if (type == 1)
+        {
+            Json::Value& tasks = temp["tasks"];
+
+            Json::Value& newTasks = temp["newTasks"];
+            Json::ValueIterator it = tasks.begin();
+            for (; it != tasks.end(); ++it)
+            {
+                Json::Value task = *it;           
+                ManortaskReward(task["w"].asInt());
+                worker.insert(task["w"].asInt());
+            }
+
+            it = newTasks.begin();
+            for (; it != newTasks.end(); ++it)
+            {
+                task_vec.push_back((*it).asInt());
+            }
+        }
+
+        if (type == 2)
+        {
+            Json::Value& warriors = temp["warriors"];
+
+            Json::ValueIterator it = warriors.begin();
+            for (; it != warriors.end(); ++it)
+            {
+                Json::Value warrior = *it;
+
+                ManordojoReward(warrior["p"].asInt());
+                worker.insert(warrior["w"].asInt());
+            }
+        }
+
+        //钓鱼
+        if (type == 4)
+        {
+            Json::Value& orders = temp["orders"];
+            Json::ValueIterator it = orders.begin();
+            for (; it != orders.end(); ++it)
+            {
+                Json::Value order = *it;
+
+                ManorfishReward(order["w"].asInt());
+                worker.insert(order["w"].asInt());
+            }    
+        }
+
+        if (type == 3)
+        {
+            Json::Value& orders = temp["orders"];
+            Json::ValueIterator it = orders.begin();
+            for (; it != orders.end(); ++it)
+            {
+                Json::Value order = *it;
+
+                ManororderReward(order["w"].asInt());   
+                worker.insert(order["w"].asInt());
+            }
+        }
+    }
+    
+    int count = m_wid_vec.size() - 1;
+    for (int i = 0; i < task_vec.size(); i++)
+    {
+        if (count < 0)
+            return;
+
+        if (worker.find(m_wid_vec[count]) != worker.end())
+        {
+            i--;
+            count--;
+            continue;
+        }
+
+        count--;
+        ManordoTask(task_vec[i], m_wid_vec[count]);
+    }
+
+    for (int i = 1; i < 5; i++)
+    {
+        if (count < 0)
+            return;
+
+        if (worker.find(m_wid_vec[count]) != worker.end())
+        {
+            i--;
+            count--;
+            continue;
+        }
+
+        count--;
+        ManordojoTrain(i, m_wid_vec[count]);
+    }
+
+    int Order[] = { 301, 302, 303, 202 };
+    for (int i = 0; i < 4; i++)
+    {
+        if (count < 0)
+            return;
+
+        if (worker.find(m_wid_vec[count]) != worker.end())
+        {
+            i--;
+            count--;
+            continue;
+        }
+
+        count--;
+        ManordoOrder(Order[i], m_wid_vec[count]);
+    }
+
+    for (int i = 1; i <= 3; i++)
+    {
+        if (count < 0)
+            return;
+
+        if (worker.find(m_wid_vec[count]) != worker.end())
+        {
+            i--;
+            count--;
+            continue;
+        }
+
+        count--;
+        Manorfish(1001, i, m_wid_vec[count]);
+    }
+}
+
+void Client::ManortaskReward(int wid)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Manor&m=taskReward&a={\"wid\":";
+    request.url += Helper::Int32ToString(wid);
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::ManordoTask(int task, int wid)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Manor&m=doTask&a={\"tid\":";
+    request.url += Helper::Int32ToString(task);
+    request.url += ",\"wid\":";
+    request.url += Helper::Int32ToString(wid);
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::ManordojoReward(int pid)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Manor&m=dojoReward&a={\"pid\":";
+    request.url += Helper::Int32ToString(pid);
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::ManordojoTrain(int pid, int wid)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Manor&m=dojoTrain&a={\"isPay\":0,\"type\":2,\"pid\":";
+    request.url += Helper::Int32ToString(pid);
+    request.url += ",\"wid\":";
+    request.url += Helper::Int32ToString(wid);
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::ManorfishReward(int wid)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Manor&m=fishReward&a={\"wid\":";
+    request.url += Helper::Int32ToString(wid);
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::Manorfish(int bid, int pid, int wid)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Manor&m=fish&a={\"bid\":";
+    request.url += Helper::Int32ToString(bid);
+    request.url += ",\"type\":2,\"pid\":";
+    request.url += Helper::Int32ToString(pid);
+    request.url += ",\"wid\":";
+    request.url += Helper::Int32ToString(wid);
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::ManororderReward(int wid)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Manor&m=orderReward&a={\"wid\":";
+    request.url += Helper::Int32ToString(wid);
+    request.url += "}&v=";
+    request.url += version;
+    request.url += "&sys=";
+    request.url += platform_;
+    request.host = "pl-game.thedream.cc";
+    request.head["Cookie"] = cookie;
+    request.pend_flag = "0\r\n\r\n";
+
+    post(request, std::function<void(Json::Value&)>());
+}
+
+void Client::ManordoOrder(int oid, int wid)
+{
+    http::http_request request;
+    request.type = HTTP_GET;
+    request.url = "/s20042/port/interface.php?s=Manor&m=doOrder&a={\"type\":2,\"oid\":";
+    request.url += Helper::Int32ToString(oid);
+    request.url += ",\"wid\":";
+    request.url += Helper::Int32ToString(wid);
     request.url += "}&v=";
     request.url += version;
     request.url += "&sys=";

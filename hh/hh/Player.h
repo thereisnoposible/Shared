@@ -86,6 +86,17 @@ public:
 
 	void onOtherEntityMove(Entity* entity);
 
+    void AddComponent(IComponent* pComponent)
+    {
+        m_RootComponent.AddComponent(pComponent);
+		head.AddComponent(pComponent);
+		body.AddComponent(pComponent);
+		left_hand.AddComponent(pComponent);
+		right_hand.AddComponent(pComponent);
+		left_foot.AddComponent(pComponent);
+		right_foot.AddComponent(pComponent);
+    }
+
 	int speed;
 protected:
 	void processRequestMove(PackPtr& pPack);
@@ -103,4 +114,13 @@ private:
 
 	PlayerState state;
 	PlayerStatus status;
+
+    IComponent m_RootComponent;
+
+    IComponent head;
+    IComponent body;
+    IComponent left_hand;
+    IComponent right_hand;
+    IComponent left_foot;
+    IComponent right_foot;
 };

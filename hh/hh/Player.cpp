@@ -11,9 +11,41 @@ Player::Player(PlayerData& p) : _UniqueCount(0), speed(10), AOI::Entity(p.id, AO
 	_playerdata = p;
 	status = PlayerStatus::psFree;
 
+    IComponent head(com_type_head);
+    head.AddPower(power_type_attack, 1);
+    head.AddPower(power_type_equip, 1);
+    m_RootComponent.AddComponent(&head);
+
+    IComponent body(com_type_body);
+    body.AddPower(power_type_equip, 1);
+    m_RootComponent.AddComponent(&body);
+
+    IComponent left_hand(com_type_left_hand);
+    left_hand.AddPower(power_type_attack, 1);
+    left_hand.AddPower(power_type_equip, 1);
+    m_RootComponent.AddComponent(&left_hand);
+
+    IComponent right_hand(com_type_right_hand);
+    right_hand.AddPower(power_type_attack, 1);
+    right_hand.AddPower(power_type_equip, 1);
+    m_RootComponent.AddComponent(&right_hand);
+
+    IComponent left_foot(com_type_left_foot);
+    left_foot.AddPower(power_type_attack, 1);
+    left_foot.AddPower(power_type_equip, 1);
+    left_foot.AddPower(power_type_run, 1);
+    left_foot.AddPower(power_type_walk, 1);
+    m_RootComponent.AddComponent(&left_foot);
+
+    IComponent right_foot(com_type_right_foot);
+    right_foot.AddPower(power_type_attack, 1);
+    head.AddPower(power_type_equip, 1);
+    right_foot.AddPower(power_type_run, 1);
+    right_foot.AddPower(power_type_walk, 1);
+    m_RootComponent.AddComponent(&right_foot);
+
 
 	RegisterNetMsgHandle(GM_REQUEST_MOVE, std::bind(&Player::processRequestMove, this, std::placeholders::_1));
-
 }
 Player::~Player()
 {
@@ -59,7 +91,7 @@ void Player::OnPlyaerLogin(ConnectPtr& conn)
 {
 	if (state == PlayerState::psOffline)
 	{
-		MapManager::getInstance().AddEntity(GetCellID(), this);
+		MapManager::getInstance().AddEntity(0, this);
 	}
 	m_pConnect = conn;
 	state = PlayerState::psOnline;
@@ -71,7 +103,7 @@ void Player::OnPlyaerLogin(ConnectPtr& conn)
 
 void Player::OnPlyaerLogout()
 {
-	MapManager::getInstance().DeleteEntity(GetCellID(), this);
+	MapManager::getInstance().DeleteEntity(0, this);
 	m_pConnect = ConnectPtr();
 	state = PlayerState::psOffline;
 
@@ -144,26 +176,6 @@ PlayerData& Player::GetPlayerData()
 std::string Player::GetPlayerAddress()
 {
 	return m_pConnect.get() != nullptr ? m_pConnect->GetAddress() : "";
-}
-int Player::GetCellID()
-{
-	return _playerdata.cellid;
-}
-void Player::SetCellID(int id)
-{
-	_playerdata.cellid = id;
-}
-
-int32 Player::GetGengu()
-{
-	return _playerdata.gengu;
-}
-
-void Player::AddHP(int32 num)
-{
-	_playerdata.hp += num;
-	if (_playerdata.hp > _playerdata.maxhp)
-		_playerdata.hp = _playerdata.maxhp;
 }
 
 //-------------------------------------------------------------------------------------------

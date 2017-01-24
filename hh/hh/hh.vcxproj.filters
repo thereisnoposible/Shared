@@ -69,6 +69,15 @@
     <ClCompile Include="AccountNetClient.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DBNetClient.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="IComponent.cpp">
+      <Filter>头文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectModule.cpp">
+      <Filter>module</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -106,6 +115,15 @@
     </ClInclude>
     <ClInclude Include="AccountNetClient.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DBNetClient.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IComponent.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectModule.h">
+      <Filter>module</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

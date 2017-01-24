@@ -20,6 +20,12 @@ void Player::registmessge()
 }
 
 //-------------------------------------------------------------------------------------------
+void Player::AAAA(int,int,int)
+{
+
+}
+
+//-------------------------------------------------------------------------------------------
 void Player::registfunc()
 {
 	_funcMap.insert(std::make_pair("CreateAccount", boost::bind(&Player::CreateAccount, this, _1)));

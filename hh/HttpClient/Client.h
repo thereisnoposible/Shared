@@ -3,7 +3,9 @@
 #include <unordered_map>
 #include "TimerManager.h"
 #include "game_struct.h"
+#include "TimeWheel.h"
 #include <map>
+#include <set>
 
 namespace Json
 {
@@ -91,6 +93,21 @@ protected:
 	void CalendarSign();
 	void CardDraw(int type);
 
+    void CupSignUp();
+    void ManorGet();
+    void ManorGet_response(Json::Value& value);
+    void ManortaskReward(int wid);
+    void ManordoTask(int task, int wid);
+
+    void ManordojoReward(int pid);
+    void ManordojoTrain(int pid, int wid);
+
+    void ManorfishReward(int wid);
+    void Manorfish(int bid, int pid, int wid);
+
+    void ManororderReward(int wid);
+    void ManordoOrder(int oid, int wid);
+
     void Activeness(int point);
 
     void worldBoss();
@@ -163,6 +180,7 @@ private:
 	int pow;		//ÃÂ¡¶
 
 	TimerManager* m_pTimerManager;	
+    timewheel::TimeWheel* m_pTimeWheel;
 	int fight_mode;
 
 	std::map<int, Chapter> m_pChapter;
@@ -183,4 +201,7 @@ private:
     int fight_low = 13941;// 13025;
 
     std::map<int, int> maf;
+
+    std::set<int> m_wid;
+    std::vector<int> m_wid_vec;
 };

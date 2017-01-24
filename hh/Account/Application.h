@@ -13,9 +13,16 @@ public:
 
 	void OnConnect(ConnectPtr&);
 	void OnDisConnect(ConnectPtr&);
+
+    NetService& GetNetService()
+    {
+        return *m_pNetService;
+    }
 private:
 	NetService* m_pNetService;
 	LogService* m_pLogServer;
 	TimerManager* m_pTimerManager;
 	LoginManager* m_pLoginManager;
 };
+
+#define sNetService Application::getInstance().GetNetService()

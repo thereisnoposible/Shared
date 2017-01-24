@@ -28,9 +28,6 @@
     <Filter Include="proto_paser">
       <UniqueIdentifier>{0ac66c3f-d422-4c75-944b-83515f083597}</UniqueIdentifier>
     </Filter>
-    <Filter Include="mysql">
-      <UniqueIdentifier>{9756511a-3e56-416a-b8a9-eeae47bb7b96}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MessageHandle.h">
@@ -177,19 +174,13 @@
     <ClInclude Include="TimeWheel.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="mysql\ssMySQL.h">
-      <Filter>mysql</Filter>
-    </ClInclude>
-    <ClInclude Include="mysql\ssWriteFile.h">
-      <Filter>mysql</Filter>
-    </ClInclude>
-    <ClInclude Include="mysql\pretreatment\ssDBThreadInterface.h">
-      <Filter>mysql</Filter>
-    </ClInclude>
-    <ClInclude Include="mysql\pretreatment\ssMySQLDefin.h">
-      <Filter>mysql</Filter>
-    </ClInclude>
     <ClInclude Include="MysqlStmt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularQueue.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonConvert.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -277,18 +268,6 @@
     </ClCompile>
     <ClCompile Include="TimeWheel.cpp">
       <Filter>头文件</Filter>
-    </ClCompile>
-    <ClCompile Include="mysql\ssMySQL.cpp">
-      <Filter>mysql</Filter>
-    </ClCompile>
-    <ClCompile Include="mysql\ssWriteFile.cpp">
-      <Filter>mysql</Filter>
-    </ClCompile>
-    <ClCompile Include="mysql\pretreatment\ssDBThreadInterface.cpp">
-      <Filter>mysql</Filter>
-    </ClCompile>
-    <ClCompile Include="mysql\pretreatment\ssMySQLDefin.cpp">
-      <Filter>mysql</Filter>
     </ClCompile>
     <ClCompile Include="MysqlStmt.cpp">
       <Filter>头文件</Filter>

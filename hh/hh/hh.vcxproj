@@ -89,6 +89,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zm110 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -167,11 +168,14 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BaseModule.cpp" />
     <ClCompile Include="cell.cpp" />
+    <ClCompile Include="DBNetClient.cpp" />
+    <ClCompile Include="IComponent.cpp" />
     <ClCompile Include="Initialer.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="ModuleManager.cpp" />
+    <ClCompile Include="ObjectModule.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerMgr.cpp" />
     <ClCompile Include="stdafx.cpp" />
@@ -182,10 +186,13 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="BaseModule.h" />
     <ClInclude Include="Cell.h" />
+    <ClInclude Include="DBNetClient.h" />
+    <ClInclude Include="IComponent.h" />
     <ClInclude Include="Initialer.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="ModuleManager.h" />
+    <ClInclude Include="ObjectModule.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerMgr.h" />
     <ClInclude Include="stdafx.h" />

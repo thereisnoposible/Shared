@@ -18,6 +18,11 @@ public:
 	{
 		return server;
 	}
+
+    NetService& GetNetService()
+    {
+        return *m_pNetService;
+    }
 	void update(double diff);
 private:
 	NetService* m_pNetService;
@@ -29,3 +34,5 @@ private:
 
 	vector<NetClient> Clients;
 };
+
+#define sNetService Application::getInstance().GetNetService()

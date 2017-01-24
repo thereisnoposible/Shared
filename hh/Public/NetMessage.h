@@ -1,6 +1,11 @@
 #pragma once
 enum NetMessage
 {
+    GM_INSERT_PLAYER = 100,
+    GM_UPDATE_PLAYER,
+    GM_REQUEST_PLAYER,
+    GM_REQUEST_PLAYER_RESPONSE,
+
 	GM_CREATE_ACCOUNT,			//¥¥Ω®’À∫≈
 	GM_CREATE_ACCOUNT_RESPONSE,
 

@@ -12,6 +12,9 @@ PlayerManager* Singleton<PlayerManager>::single = nullptr;
 
 void cbbb(StmtExData* pData)
 {
+    if (pData->result.bResult == false)
+        return;
+
     while (!pData->eof())
     {
         StmtData* pItem = pData->result.GetData("hp");
@@ -24,51 +27,11 @@ void cbbb(StmtExData* pData)
 PlayerManager::PlayerManager(DBService* p) :m_pDBService(p)
 {
 	registmessage();
-
-    m_pMysqlStmt = new MysqlStmt;
-
-    m_pMysqlStmt->Open("127.0.0.1", "root", "123456", "accdb");
-
-    //QueryInt_s：1
-    //QueryUInt_s：2
-    //QueryChar_s：3
-    //QueryUChar_s：4
-    //QueryTime_s：5
-    //QueryName_s：6		64字节
-    //QuerySBuffer_s：7		64字节
-    //QueryString_s：8		1024字节
-    //QueryBuffer_s：9		1024字节
-    //QueryText_s：a		1024*1024字节
-    //QueryLBuffer_s：b		1024*1024字节
-    //QueryInt64_s：c
-    //QueryUInt64_s：d
-    //QueryShort_s：e
-    //QueryUShort_s：f
-    //m_pMysqlStmt->PrepareQuery("insert into player(accid, id, jinbi, hp, maxhp, cellid, name) values(?,?,?,?,?,?,?)");
-    m_pMysqlStmt->PrepareQuery("select hp from player where id = ?");
-    
-
-    StmtBindData* temp1 = m_pMysqlStmt->stmts[0].GetNewStmtParam();
-    //temp1->SetString(0,"hehe");
-    //temp1->SetInt32(1, 1);
-    //temp1->SetInt32(2, 2);
-    //temp1->SetInt32(3, 3);
-    //temp1->SetInt32(4, 4);
-    //temp1->SetInt32(5, 5);
-    //temp1->SetString(6, "wangyi");
-
-    temp1->SetInt32(0, 1);
-
-    m_pMysqlStmt->stmts[0].ExecuteQueryVariable(temp1, std::bind(&cbbb, std::placeholders::_1));
 }
 
 //-------------------------------------------------------------------------------------------
 PlayerManager::~PlayerManager()
 {
-    m_pMysqlStmt->Close();
-    delete m_pMysqlStmt;
-
-
 	std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator it = m_AccPlayer.begin();
 	for (; it != m_AccPlayer.end(); ++it)
 	{
@@ -87,13 +50,12 @@ PlayerManager::~PlayerManager()
 //-------------------------------------------------------------------------------------------
 void PlayerManager::registmessage()
 {
-	NetService::getInstance().RegisterMessage(GM_CREATE_ACCOUNT, boost::bind(&PlayerManager::CreateAccount, this, _1));
-	NetService::getInstance().RegisterMessage(GM_ACCOUNT_CHECK, boost::bind(&PlayerManager::AccountCheck, this, _1));
-	NetService::getInstance().RegisterMessage(GM_LOGIN, boost::bind(&PlayerManager::LoginGame, this, _1));
-	NetService::getInstance().RegisterMessage(GM_CREATE_PLAYER, boost::bind(&PlayerManager::CreatePlayer, this, _1));
-	NetService::getInstance().RegisterMessageRange(PLAYERMESSAGEBEGIN, PLAYERMESSAGEEND, boost::bind(&PlayerManager::onPlayerMessage, this, _1));
-	
-	NetService::getInstance().RegisterMessage(GM_HEARTBEAT_FROM_CLIENT, boost::bind(&PlayerManager::HeartBeat, this, _1));
+	sNetService.RegisterMessage(GM_CREATE_ACCOUNT, boost::bind(&PlayerManager::CreateAccount, this, _1));
+	sNetService.RegisterMessage(GM_ACCOUNT_CHECK, boost::bind(&PlayerManager::AccountCheck, this, _1));
+	sNetService.RegisterMessage(GM_LOGIN, boost::bind(&PlayerManager::LoginGame, this, _1));
+	sNetService.RegisterMessage(GM_CREATE_PLAYER, boost::bind(&PlayerManager::CreatePlayer, this, _1));
+	sNetService.RegisterMessageRange(PLAYERMESSAGEBEGIN, PLAYERMESSAGEEND, boost::bind(&PlayerManager::onPlayerMessage, this, _1));
+	sNetService.RegisterMessage(GM_HEARTBEAT_FROM_CLIENT, boost::bind(&PlayerManager::HeartBeat, this, _1));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -109,43 +71,28 @@ void PlayerManager::init()
 }
 
 //-------------------------------------------------------------------------------------------
-void PlayerManager::loadPlayer()
+void PlayerManager::loadPlayer(pm_playerdata_db_response& response)
 {
-	_unique_player = 0;
-	std::string sql = "select * from player";
-	DBResult result;
-	m_pDBService->syncQuery(sql, result);
+    for (int32 i = 0; i < response.datas_size(); i++)
+    {
+        PlayerData pData;
+        pData.fromPBMessage(response.datas(i));
 
-	while (!result.eof())
-	{
-		PlayerData pData;
-		pData.acc_id = result.getStringField("acc_id");
+        if (pData.id > (int)_unique_player)
+            _unique_player = pData.id;
 
-		pData.id = result.getIntField("id");
-		pData.jinbi = result.getIntField("jinbi");
+        std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator it = m_AccPlayer.find(pData.account);
+        if (it == m_AccPlayer.end())
+        {
+            m_AccPlayer.insert(std::make_pair(pData.account, std::unordered_map<unsigned int, Player*>()));
+            it = m_AccPlayer.find(pData.account);
+        }
+        Player* p = new Player(pData);
+        ModuleManager::getInstance().CreateRoleModule(p);
+        p->SetPlayerState(Player::PlayerState::psOffline);
+        it->second.insert(std::make_pair(pData.id, p));
+    }
 
-		pData.hp = result.getIntField("hp");
-		pData.maxhp = result.getIntField("max_hp");
-
-		pData.cellid = result.getIntField("cellid");
-		pData.name = result.getStringField("name");
-
-		if (pData.id > _unique_player)
-			_unique_player = pData.id;
-
-		std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator it = m_AccPlayer.find(pData.acc_id);
-		if (it == m_AccPlayer.end())
-		{
-			m_AccPlayer.insert(std::make_pair(pData.acc_id, std::unordered_map<unsigned int, Player*>()));
-			it = m_AccPlayer.find(pData.acc_id);
-		}
-		Player* p = new Player(pData);
-		ModuleManager::getInstance().CreateRoleModule(p);
-		p->SetPlayerState(Player::PlayerState::psOffline);
-		it->second.insert(std::make_pair(pData.id, p));
-
-		result.nextRow();
-	}
 	_unique_player += 1;
 }
 
@@ -267,9 +214,10 @@ void PlayerManager::CreatePlayer(PackPtr& pPack)
 	
 	response.set_result(0);
 	PlayerData pData;
-	pData.id = ++_unique_player;
+	pData.id = _unique_player++;
+    pData.jinbi = 0;
 	pData.name = request.player_name();
-	pData.acc_id = sit->second.acc_id;
+    pData.account = sit->second.acc_id;
 	InitPlayer(pData);	
 
     InsertPlayer(pData);
@@ -289,8 +237,7 @@ void PlayerManager::CreatePlayer(PackPtr& pPack)
 //-------------------------------------------------------------------------------------------
 void PlayerManager::InitPlayer(PlayerData& player)
 {
-	player.hp = 150;
-	player.maxhp = 150;
+
 }
 
 //-------------------------------------------------------------------------------------------
@@ -308,15 +255,8 @@ void PlayerManager::HeartBeat(PackPtr& pPack)
 //-------------------------------------------------------------------------------------------
 void PlayerManager::InsertPlayer(PlayerData& data)
 {
-    std::stringstream ss;
-    ss << "insert into player(accid,id,jinbi,hp,maxhp,cellid,name) values(";
-    ss << "'" << data.acc_id << "',";
-    ss << data.id << ",";
-    ss << data.jinbi << ",";
-    ss << data.hp << ",";
-    ss << data.maxhp << ",";
-    ss << data.cellid << ",";
-    ss << "'" << data.name << "')";
+    pm_playerdata notify;
+    data.toPBMessage(notify);
 
-    m_pDBService->asynExcute(data.id, ss.str(), std::function<void(DBResult&)>());
+    sApp.GetDataBaseConnect().SendProtoBuf(GM_INSERT_PLAYER, notify);
 }

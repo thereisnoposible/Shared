@@ -1,15 +1,15 @@
 #pragma once
 #include <vector>
-#include <hash_map>
 #include <functional>
+#include <unordered_map>
 using std::vector;
-using stdext::hash_map;
+using std::unordered_map;
 
 template<typename T>
 class MessageHandle
 {
 public:
-	MessageHandle(void) {};
+    MessageHandle(void) :incre(0){};
 	~MessageHandle(void) {};
 
 	typedef std::tr1::function< void(T&) > handle;		//处理函数类型
@@ -22,19 +22,25 @@ public:
 	* @return		void
 	* @remarks
 	*/
-	void RegisterMessage(int messageid, handle fun)
+	long long RegisterMessage(int messageid, handle fun)
 	{
 		MessageHandleMap::iterator it = m_MsgHandleMap.find(messageid);
 		if (it == m_MsgHandleMap.end())
 		{
-			HandleVector lstHandle;
+            HandleMap lstHandle;
 			m_MsgHandleMap.insert(std::make_pair(messageid, lstHandle));
 
 			it = m_MsgHandleMap.find(messageid);
 		}
+        incre++;
 
-		HandleVector& lstHandle = it->second;
-		lstHandle.push_back(fun);
+        HandleMap& lstHandle = it->second;
+        long long ret = messageid;
+        ret = ret << 32;
+        ret += incre;
+
+        lstHandle[ret] = fun;
+        return ret;
 	}
 
 
@@ -45,12 +51,14 @@ public:
 	* @return		void
 	* @remarks
 	*/
-	void UnregisterMessage(int messageid, handle fun)
+	void UnregisterMessage(long long id, handle fun)
 	{//由于boost未实现function的比较，故无法实现
+        int messageid = id >> 32;
 		MessageHandleMap::iterator it = m_MsgHandleMap.find(messageid);
+
 		if (it != m_MsgHandleMap.end())
 		{
-			m_MsgHandleMap.erase(it);
+            it->second.erase(id);
 		}
 	}
 
@@ -63,11 +71,15 @@ public:
 	* @return		void
 	* @remarks
 	*/
-	void RegisterMessageRange(int smessage, int emessage, handle fun)
+    long long RegisterMessageRange(int smessage, int emessage, handle fun)
 	{
 		//遍历查找是否已注册
+        incre++;
+
 		MessageRangeHandle rangeHandle(smessage, emessage, fun);
-		m_MsgRangeCollect.push_back(rangeHandle);
+        m_MsgRangeCollect[incre] = rangeHandle;
+
+        return incre;
 	}
 
 
@@ -79,9 +91,9 @@ public:
 	* @return		void
 	* @remarks
 	*/
-	void UnregisterMessageRange(int smessage, int emessage, handle fun)
+	void UnregisterMessageRange(long long id, handle fun)
 	{//由于boost未实现function的比较，故无法实现
-
+        m_MsgRangeCollect.erase(id);
 	}
 
 
@@ -99,12 +111,13 @@ public:
 		MessageHandleMap::iterator itMsg = m_MsgHandleMap.find(messageid);
 		if (itMsg != m_MsgHandleMap.end())
 		{//遍历所有的处理函数
-			HandleVector& lstHandle = itMsg->second;
-			HandleVector::iterator it = lstHandle.begin();
-			HandleVector::iterator itEnd = lstHandle.end();
+            HandleMap& lstHandle = itMsg->second;
+            HandleMap::iterator it = lstHandle.begin();
+            HandleMap::iterator itEnd = lstHandle.end();
 			for (; it != itEnd; it++)
 			{
-				(*it)(t);
+                handle& hd = it->second;
+                (hd)(t);
 			}
 
 			bFired = true;
@@ -115,11 +128,11 @@ public:
 		MessageRangeCollect::iterator itRgEnd = m_MsgRangeCollect.end();
 		for (; itRg != itRgEnd; itRg++)
 		{
-			if ((*itRg).IsInRange(messageid))
+			if ((itRg->second).IsInRange(messageid))
 			{
 				bFired = true;
 
-				(*itRg).fun(t);
+                (itRg->second).fun(t);
 			}
 		}
 
@@ -127,11 +140,13 @@ public:
 	}
 
 protected:
-	typedef vector<handle> HandleVector;					//处理函数队列
-	typedef hash_map<int, HandleVector> MessageHandleMap;		//key=消息ID,HandleVector=处理函数队列
+    typedef unordered_map<long long, handle> HandleMap;					//处理函数队列
+    typedef unordered_map<int, HandleMap> MessageHandleMap;		//key=消息ID,HandleVector=处理函数队列
+    int incre;
 
 	typedef struct tagMessageRangeHandle
 	{
+        tagMessageRangeHandle(){}
 		tagMessageRangeHandle(int p_smessage, int p_emessage, handle p_fun)
 		{
 			smessage = p_smessage;
@@ -153,7 +168,7 @@ protected:
 		handle fun;				//处理函数
 	}MessageRangeHandle;
 
-	typedef vector<MessageRangeHandle> MessageRangeCollect;
+    typedef unordered_map<long long, MessageRangeHandle> MessageRangeCollect;
 
 	MessageRangeCollect m_MsgRangeCollect;				/** 区域消息处理队列 */
 

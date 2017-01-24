@@ -68,8 +68,8 @@ void AccountNetClient::AccountCheckResponse(PackPtr& pPack)
 
     if (response.result() == 0)
     {
-        std::unordered_map<ConnectPtr, PlayerManager::Session> m_AllPlayer = PlayerManager::getInstance().GetPlayerMap();
-        std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>> m_AccPlayer = PlayerManager::getInstance().GetAccPlayerMap();
+        std::unordered_map<ConnectPtr, PlayerManager::Session>& m_AllPlayer = PlayerManager::getInstance().GetPlayerMap();
+        std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>& m_AccPlayer = PlayerManager::getInstance().GetAccPlayerMap();
 
         std::unordered_map<ConnectPtr, PlayerManager::Session>::iterator sit = m_AllPlayer.find(it->second);
         if (sit == m_AllPlayer.end())

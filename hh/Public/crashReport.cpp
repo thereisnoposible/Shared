@@ -25,7 +25,7 @@ long   __stdcall  CrashCallBack(_EXCEPTION_POINTERS* pExInfo)
 	pTime = localtime( &ctTime );
 	TCHAR tem[256];
 	memset(tem,0,256);
-	sprintf(tem,("%d-%d-%d_%d-%d-%d.dmp"),
+    sprintf(tem, ("%d-%d-%d_%d-%d-%d.dmp"),
 		1900+pTime->tm_year,1+pTime->tm_mon,pTime->tm_mday,pTime->tm_hour,pTime->tm_min,pTime->tm_sec);
 
 

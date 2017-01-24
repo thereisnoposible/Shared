@@ -17,6 +17,8 @@ Application::Application()
 	m_pDBService->Open("127.0.0.1", "root", "123456", "accdb");
 	
 	m_pTimerManager = new TimerManager();
+	m_pTimeWheel = new timewheel::TimeWheel();
+	m_pTimeWheel->Init(30, 200);
 
 	m_pModuleMgr = new ModuleManager;
 
@@ -30,7 +32,7 @@ Application::Application()
 
 
     m_pAccount = new AccountNetClient;
-
+    m_pDatabase = new DBNetClient;
 	m_id = 1;
 	m_dbid = time(NULL) << 32;
 
@@ -78,6 +80,9 @@ Application::~Application()
 
     delete m_pTimerManager;
     m_pTimerManager = nullptr;
+
+	delete m_pTimeWheel;
+	m_pTimeWheel = nullptr;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -93,14 +98,19 @@ void Application::update(double diff)
 		m_pTimerManager->Update();
 	}
 
+	if (m_pTimeWheel)
+	{
+		m_pTimeWheel->Update();
+	}
+
     if (m_pAccount != nullptr)
     {
         m_pAccount->update();
     }
 
-    if (m_pPlayerMgr != nullptr)
+    if (m_pDatabase)
     {
-        m_pPlayerMgr->m_pMysqlStmt->Update();
+        m_pDatabase->update();
     }
 }
 
@@ -123,7 +133,7 @@ AccountNetClient& Application::GetAccountConnect()
 }
 
 //-------------------------------------------------------------------------------------------
-NetClient& Application::GetDataBaseConnect()
+DBNetClient& Application::GetDataBaseConnect()
 {
 	return *m_pDatabase;
 }

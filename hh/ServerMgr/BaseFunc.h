@@ -23,6 +23,8 @@ protected:
 	void CreatePlayerResponse(PackPtr& pPack);
 	void LoginGameResponse(PackPtr& pPack);
 
+    void AAAA(int,int,int);
+
 };
 
 

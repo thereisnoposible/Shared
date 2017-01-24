@@ -8,6 +8,8 @@
 #include "TimerManager.h"
 #include "NetClient.h"
 #include "AccountNetClient.h"
+#include "DBNetClient.h"
+#include "TimeWheel.h"
 
 class Application : public NetObserver, public Singleton<Application>
 {
@@ -23,12 +25,22 @@ public:
 	int64 getDBID();
 
     AccountNetClient& GetAccountConnect();
-	NetClient& GetDataBaseConnect();
+    DBNetClient& GetDataBaseConnect();
 
     void AllInitialOK();
+
+    NetService& GetNetService()
+    {
+        return *m_pNetService;
+    }
+
+	timewheel::TimeWheel& GetTimeWheel()
+	{
+		return *m_pTimeWheel;
+	}
 private:
     AccountNetClient* m_pAccount;
-	NetClient* m_pDatabase;
+    DBNetClient* m_pDatabase;
 
 	NetService* m_pNetService;
 	ModuleManager *m_pModuleMgr;
@@ -37,6 +49,7 @@ private:
 	PlayerManager* m_pPlayerMgr;
 	MapManager* m_pMapMgr;
 	TimerManager* m_pTimerManager;
+	timewheel::TimeWheel* m_pTimeWheel;
 
 	DBService* m_pDBService;
 
@@ -44,3 +57,7 @@ private:
 	int32 m_increment;
 	int64 m_id;
 };
+
+#define sApp Application::getInstance()
+#define sNetService Application::getInstance().GetNetService()
+#define sTimer Application::getInstance().GetTimeWheel()

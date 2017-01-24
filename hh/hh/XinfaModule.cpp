@@ -103,7 +103,7 @@ void XinfaModule::Dazuo()
 		return;
 
 	int32 count = pTypeXinfa->add_ratio*pTemp->level + pTypeXinfa->add_count;
-	count = count * m_pOwner->GetGengu() / 100;
+	count = count * 1 / 100;
 
 	pTemp->exp += count;
 }
@@ -164,7 +164,6 @@ void XinfaModule::Tiaoxi()
 		return;
 
 	int32 count = pTypeXinfa->recovery_hp_ratio * pTemp->level + pTypeXinfa->recovery_hp_count;
-	m_pOwner->AddHP(count);
 
 	count = pTypeXinfa->recovery_mp_ratio * pTemp->level + pTypeXinfa->recovery_mp_count;
 

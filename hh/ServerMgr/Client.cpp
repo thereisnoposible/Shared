@@ -18,7 +18,7 @@ void Client::update()
 {
 	while (1)
 	{
-		NetService::getInstance().update();
+        sNetService.update();
 		std::string cmd;
 		std::getline(std::cin, cmd);
 		if (!cmd.empty())

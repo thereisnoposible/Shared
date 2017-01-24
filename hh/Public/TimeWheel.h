@@ -42,18 +42,23 @@ namespace timewheel
         void Init(int day_count, int millsec_count);
         void Update();
 
+		void RemoveTimer(Timer* pTimer)
+		{
+			pTimer->bRelease = true;
+		}
+
         Timer* AddTimer(int hour, int min, int sec, int msec, std::function<void()> cb_func, int interval = 86400000);
-        Timer* AddTimer(int interval, std::function<void()> cb_func);
+		Timer* AddTimer(long long interval, std::function<void()> cb_func);
 
         void AddTimer(int hour, int min, int sec, int msec, std::function<void()> cb_func, int count, int interval = 86400000);
-        void AddTimer(int interval, std::function<void()> cb_func, int count);
+		void AddTimer(long long interval, std::function<void()> cb_func, int count);
 
     protected:
         inline bool AddTime(int t, int&temp, int point, int interval, bool bAdd);
         inline int GetTimerDiff(int hour, int min, int sec, int msec);
         inline long long GetTimerTick(Timer* pTimer);
 
-        inline Timer* CreateTimer(int diff, std::function<void()> cb_func, int interval, int count);
+		inline Timer* CreateTimer(long long diff, std::function<void()> cb_func, int interval, int count);
 
         inline void UpdateMsecWheel();
         inline void UpdateSecWheel();

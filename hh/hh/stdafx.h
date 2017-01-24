@@ -27,6 +27,7 @@
 #include "aoi/RangeTriggerNode.h"
 #include "aoi/Space.h"
 #include "aoi/Witness.h"
+#include "IComponent.h"
 
 #include "Initialer.h"
 

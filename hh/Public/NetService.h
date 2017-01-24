@@ -441,7 +441,7 @@ public:
 	virtual void OnDisConnect(ConnectPtr&) = 0;
 };
 
-class NetService : public Singleton<NetService>, public MessageHandle<PackPtr>
+class NetService : public MessageHandle<PackPtr>
 {
 public:
 	NetService(int ionum);
@@ -483,5 +483,3 @@ private:
 
 	std::set<NetObserver*> _NetObserverSet;
 };
-
-#define  sNetService Singleton<NetService>::Instance();

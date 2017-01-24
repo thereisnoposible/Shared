@@ -121,14 +121,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(boost);../protobuf-2.5.0/src;../../new;../Public;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib32;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib32;F:\myproject\hh\Public\Visual Leak Detector\lib\Win32;F:\myproject\hh\Public\mysql\mysql32\lib;F:\myproject\third_party;F:\myproject\third_party\mysql\mysql32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -141,12 +141,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib64;F:\myproject\hh\Public\Visual Leak Detector\lib\Win32;F:\myproject\hh\Public\mysql\mysql32\lib;F:\myproject\third_party;F:\myproject\third_party\mysql\mysql64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -42,10 +42,10 @@ bool SqlThread::Open(const char* host, const char* user, const char* passwd, con
 		return false;
 
 	////支持中文处理
-	//mysql_options(mysql, MYSQL_SET_CHARSET_NAME, charset);
+	mysql_options(mysql, MYSQL_SET_CHARSET_NAME, charset);
 
 	/////如果断线则重新在连接
-	//mysql_options(mysql, MYSQL_OPT_RECONNECT, "1");
+	mysql_options(mysql, MYSQL_OPT_RECONNECT, "1");
 
 	if (mysql_real_connect(mysql, host, user, passwd, db, port, nullptr, flag) == nullptr)
 		return false;

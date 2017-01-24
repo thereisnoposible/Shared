@@ -1,8 +1,6 @@
 #include "Singleton.h"
 #include "NetService.h"
 
-//INSTANTIATE_SINGLETON_1(NetService);
-NetService* Singleton<NetService>::single = nullptr;
 //-------------------------------------------------------------------------------------------
 NetService::NetService(int ionum) : _io_service_pool(ionum)
 {
@@ -18,7 +16,9 @@ NetService::~NetService()
 //-------------------------------------------------------------------------------------------
 void NetService::start(int port)
 {
-    _acceptor = new boost::asio::ip::tcp::acceptor(_io_service_pool.get_io_service(), tcp::endpoint(tcp::v4(), port));
+    _acceptor = new boost::asio::ip::tcp::acceptor(_io_service_pool.get_io_service(),
+        tcp::endpoint(boost::asio::ip::tcp::v4(), port));
+
     accept();
 }
 

@@ -162,6 +162,7 @@
     <ClInclude Include="aoi\Witness.h" />
     <ClInclude Include="AStar.h" />
     <ClInclude Include="base64.h" />
+    <ClInclude Include="CircularQueue.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="crashReport.h" />
     <ClInclude Include="DBResult.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="Enum.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="io_service_pool.h" />
+    <ClInclude Include="JsonConvert.h" />
     <ClInclude Include="json\autolink.h" />
     <ClInclude Include="json\config.h" />
     <ClInclude Include="json\features.h" />
@@ -182,10 +184,6 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="MessageHandle.h" />
     <ClInclude Include="MysqlStmt.h" />
-    <ClInclude Include="mysql\pretreatment\ssDBThreadInterface.h" />
-    <ClInclude Include="mysql\pretreatment\ssMySQLDefin.h" />
-    <ClInclude Include="mysql\ssMySQL.h" />
-    <ClInclude Include="mysql\ssWriteFile.h" />
     <ClInclude Include="NetClient.h" />
     <ClInclude Include="NetMessage.h" />
     <ClInclude Include="NetPack.h" />
@@ -226,10 +224,6 @@
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MysqlStmt.cpp" />
-    <ClCompile Include="mysql\pretreatment\ssDBThreadInterface.cpp" />
-    <ClCompile Include="mysql\pretreatment\ssMySQLDefin.cpp" />
-    <ClCompile Include="mysql\ssMySQL.cpp" />
-    <ClCompile Include="mysql\ssWriteFile.cpp" />
     <ClCompile Include="NetClient.cpp" />
     <ClCompile Include="NetService.cpp" />
     <ClCompile Include="proto_data.cpp" />

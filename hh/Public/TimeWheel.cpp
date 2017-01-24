@@ -64,14 +64,14 @@ namespace timewheel
         return diff;
     }
 
-    Timer* TimeWheel::AddTimer(int interval, std::function<void()> cb_func)
+	Timer* TimeWheel::AddTimer(long long interval, std::function<void()> cb_func)
     {
         Timer* pTimer = CreateTimer(interval, cb_func, interval, -1);
 
         return pTimer;
     }
 
-    void TimeWheel::AddTimer(int interval, std::function<void()> cb_func, int count)
+	void TimeWheel::AddTimer(long long interval, std::function<void()> cb_func, int count)
     {
         if (count == 0)
             return;
@@ -79,7 +79,7 @@ namespace timewheel
         CreateTimer(interval, cb_func, interval, count);
     }
 
-    Timer* TimeWheel::CreateTimer(int diff, std::function<void()> cb_func, int interval, int count)
+    Timer* TimeWheel::CreateTimer(long long diff, std::function<void()> cb_func, int interval, int count)
     {
         int day = diff / 86400000;
         int hour = (diff / 3600000) % 24;

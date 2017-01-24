@@ -7,7 +7,6 @@ class PlayerManager : public Singleton<PlayerManager>, public Initialer
 public:
 	struct Session
 	{
-		//Session() :playering(0){}
 		unsigned int playerid;
 		std::string acc_id;
 	};
@@ -19,13 +18,12 @@ public:
     std::unordered_map<ConnectPtr, Session>& GetPlayerMap();
     std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>& GetAccPlayerMap();
 
-    MysqlStmt* m_pMysqlStmt;
+    void loadPlayer(pm_playerdata_db_response& response);
 protected:
 
 	void registmessage();
 	void unregistmessage();
 	void init();
-	void loadPlayer();
 
 	void onPlayerMessage(PackPtr& pPack);
 
