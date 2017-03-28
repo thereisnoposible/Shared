@@ -1,0 +1,43 @@
+<entities>
+    <entity type = "idandnum">
+	<filed type="int32" name="id" />
+	<filed type="int32" name="num" />
+    </entity>
+</entities>
+
+<classes>
+    <class table_name = "npc_talk">
+	<fileds ggg = "1234">
+	    <field type="int32" name="action_id" key="1" keyindex = "1"/>
+	    <field type="string" name="npc_name" key="1" keyindex = "2"/>
+	    <field type="string" name="content" key = "2" keyindex = "1"/>
+	    <field type="string" name="talk_content" key="1" keyindex="3"/>
+	    <field type="int64" name="updatetime" istimedate="1" />
+	</fileds>
+	<split>
+	    <member type="vector" subtype = "idandnum" name = "talk_contents" src = "talk_content" split=";," >
+		<filed type="int32" name="id" />
+		<filed type="int32" name="num" />
+	    </member>
+
+	    <member type="idandnum" subtype = "" name = "talk_contents" src = "talk_content" split=";," >
+		<filed type="int32" name="id" />
+		<filed type="int32" name="num" />
+	    </member>
+	</split> 
+    </class>
+</classes>
+
+<dbs>
+    <db table_name = "player" class_name = "DBPlayer" proto_name = "pm_playerdata" primary_key = "id" >
+	<members>
+		<member name="end_time" dbtype="datetime" remark="proto类型为int64情况，入数据库类型为datetime，需加说明" />
+	</members>
+	<protos>
+		<proto name="insert" req_id="GM_NOTIFY_INSERT_MAOXIAN" />
+		<proto name="update" req_id="GM_NOTIFY_UPDATE_MAOXIAN" />
+		<proto name="delete" req_id="GM_NOTIFY_DELETE_MAOXIAN" />
+		<proto name="query" req_id="GM_REQUEST_MAOXIAN_INFO" req_name="pm_request_maoxian_info" response_id="GM_MAOXIAN_INFO_RESPONSE" response_name="pm_playerdata_db_response" key="playerid" />
+	</protos>
+    </db>
+</dbs>

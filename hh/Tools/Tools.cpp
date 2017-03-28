@@ -26,27 +26,28 @@ int _tmain(int argc, _TCHAR* argv[])
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 
 	//loadtype();
-	loaddb();
+	//loaddb();
 	cout << "--type  默认文件后缀*.type 批量生成加载配置表代码\n";
-	cout << "--db    默认文件后缀*.db   批量生成数据库代码\n";
+	cout << "--db    默认文件后缀*.db	批量生成数据库代码\n";
 
 	string cmd;
 	cin >> cmd;
-	if (cmd == "type")
+	while (cmd != "exit")
 	{
-		loadtype();
+		if (cmd == "type")
+		{
+			loadtype();
+			std::cout << "loadtype finished\n";
+		}
 
+		if (cmd == "db")
+		{
+			loaddb();
+			std::cout << "loaddb finished\n";
+		}
+
+		cin >> cmd;
 	}
-
-	if (cmd == "db")
-	{
-		loaddb();
-	}
-
-	ptree pt;
-	string str;	
-	read_xml(str, pt);
-
 
 	google::protobuf::ShutdownProtobufLibrary();
 	return 0;
@@ -265,13 +266,13 @@ void writeclass(std::stringstream& ss, ClassItem&item)
 	ss << "class " << item.name << "\n";
 	ss << "{\n";
 
-	for (int i = 0; i < item.params.size(); i++)
+	for (size_t i = 0; i < item.params.size(); i++)
 	{
 		ss << "\t" << item.params[i].type << "\t\t" << item.params[i].name << ";\n";
 	}
 
 	ss << "\n\n//exparam\n";
-	for (int i = 0; i < item.exparams.size(); i++)
+	for (size_t i = 0; i < item.exparams.size(); i++)
 	{
 		ss << "\n\t" << item.exparams[i].type;
 		if (!item.exparams[i].subtype.empty())
@@ -303,7 +304,7 @@ void writetable_release(std::stringstream& ss, ClassItem&item)
 	ss << "\t\t\tdelete data_[i];\n";
 	ss << "\t\t}\n\n";
 	ss << "\t\tdata_.clear()\n";
-	for (int i = 0; i < item.keygroupname.size(); i++)
+	for (size_t i = 0; i < item.keygroupname.size(); i++)
 	{
 		ss << "\t\tmappings_" << i + 1 << ".clear();\n";
 	}
@@ -320,7 +321,7 @@ void writetable_load(std::stringstream& ss, ClassItem&item)
 	ss << "\t\twhile (!result.pResult.eof())\n";
 	ss << "\t\t{\n";
 	ss << "\t\t\t" << item.name << "* temp = new " << item.name << "\n";
-	for (int i = 0; i < item.params.size(); i++)
+	for (size_t i = 0; i < item.params.size(); i++)
 	{
 		if (item.params[i].type == "int32")
 			ss << "\t\t\ttemp->" << item.params[i].name << " = result.pResult.GetInt32(\"" << item.params[i].name << "\");\n";
@@ -339,7 +340,7 @@ void writetable_load(std::stringstream& ss, ClassItem&item)
 		}
 	}
 
-	for (int i = 0; i < item.exparams.size(); i++)
+	for (size_t i = 0; i < item.exparams.size(); i++)
 	{
 		ss << "\t\t\t{\n";
 		ss << "\t\t\t\tstd::vector<string> ssplit;\n";
@@ -362,7 +363,7 @@ void writetable_load(std::stringstream& ss, ClassItem&item)
 				ss << "\t\t\t\t\tfor(size_t j = 0;j < sub_ssplit.size();j++)\n";
 				ss << "\t\t\t\t\t{\n";
 				ss << "\t\t\t\t\t\t" << item.exparams[i].subtype << " sub_temp;\n";
-				for (int j = 0; j < item.exparams[i].params.size(); j++)
+				for (size_t j = 0; j < item.exparams[i].params.size(); j++)
 				{
 					if (item.exparams[i].params[j].type == "int32")
 						ss << "\t\t\t\t\t\t" << "sub_temp." << item.exparams[i].params[j].name << ".push_back(Helper::StringToInt32(sub_ssplit[j]));\n";
@@ -378,7 +379,7 @@ void writetable_load(std::stringstream& ss, ClassItem&item)
 		}
 		else
 		{
-			for (int j = 0; j < item.exparams[i].params.size(); j++)
+			for (size_t j = 0; j < item.exparams[i].params.size(); j++)
 			{
 				if (item.exparams[i].params[j].type == "int32")
 					ss << "\t\t\t\t\ttemp->" << item.exparams[i].name << "." << item.exparams[i].params[j].name << ".push_back(Helper::StringToInt32(ssplit[i]));\n";
@@ -488,7 +489,7 @@ void writetable_get(std::stringstream& ss, ClassItem&item)
 			else
 			{
 				ss << "\t\tauto pData = Get" << ccc << "(";
-				for (int xx = 0; xx < param_name.size() - 1; xx++)
+				for (size_t xx = 0; xx < param_name.size() - 1; xx++)
 				{
 					if (xx != 0)
 						ss << ", ";
@@ -594,33 +595,41 @@ void writetype(ClassItem& item)
 
 void loadtype()
 {
-	ptree pt;
-	string str = "text.xml";
+	xvector<xstring> file;
+	proto::auto_load_proto("", "*.type", file);
 
-	try
+	for (size_t i = 0; i < file.size(); i++)
 	{
-		read_xml(str, pt);
-	}
-	catch (std::exception& e)
-	{
-		cout << e.what();
-	}
+		ptree pt;
+		string str = file[i];
 
-	//ptree classes = pt.get<ptree>("config");
-	vector<ClassItem> clss;
-	for (ptree::iterator it = pt.begin(); it != pt.end(); ++it)
-	{
-		if (it->first == "classes")
+		try
 		{
-			loadclasses(it->second, clss);
+			read_xml(str, pt);
+		}
+		catch (std::exception& e)
+		{
+			cout << e.what();
+		}
+
+		//ptree classes = pt.get<ptree>("config");
+		vector<ClassItem> clss;
+		for (ptree::iterator it = pt.begin(); it != pt.end(); ++it)
+		{
+			if (it->first == "classes")
+			{
+				loadclasses(it->second, clss);
+			}
+		}
+
+
+		for (size_t i = 0; i < clss.size(); i++)
+		{
+			writetype(clss[i]);
 		}
 	}
 
-	
-	for (int i = 0; i < clss.size(); i++)
-	{
-		writetype(clss[i]);
-	}
+
 }
 
 struct DBItem
@@ -1029,7 +1038,7 @@ void writedbs_cpp(DBItem&item)
 		if (it->second[i].type == "proto" || it->second[i].type == "proto_s" ||
 			it->second[i].type == "int32_s" || it->second[i].type == "int64_s" || it->second[i].type == "string_s")
 		{
-			ss << "\t\JsonConvert::JsonStringToProtoBuf(result->GetString(\"" << it->second[i].name << "\"),*pdate->mutable_" << it->second[i].name << "());\n";
+			ss << "\t\tJsonConvert::JsonStringToProtoBuf(result->GetString(\"" << it->second[i].name << "\"),*pdate->mutable_" << it->second[i].name << "());\n";
 		}
 
 		if (it->second[i].type == "int32_s" || it->second[i].type == "int64_s" || it->second[i].type == "string_s")
@@ -1063,30 +1072,37 @@ void writedbs(DBItem& item)
 
 void loaddb()
 {
-	ptree pt;
-	string str = "text.xml";
+	xvector<xstring> file;
+	proto::auto_load_proto("", "*.db", file);
 
-	try
+	for (size_t i = 0; i < file.size(); i++)
 	{
-		read_xml(str, pt);
-	}
-	catch (std::exception& e)
-	{
-		cout << e.what();
-	}
+		ptree pt;
+		string str = file[i];
 
-	//ptree classes = pt.get<ptree>("config");
-	vector<DBItem> clss;
-	for (ptree::iterator it = pt.begin(); it != pt.end(); ++it)
-	{
-		if (it->first == "dbs")
+		try
 		{
-			loaddbs(it->second, clss);
+			read_xml(str, pt);
+		}
+		catch (std::exception& e)
+		{
+			cout << e.what();
+		}
+
+		//ptree classes = pt.get<ptree>("config");
+		vector<DBItem> clss;
+		for (ptree::iterator it = pt.begin(); it != pt.end(); ++it)
+		{
+			if (it->first == "dbs")
+			{
+				loaddbs(it->second, clss);
+			}
+		}
+
+		for (size_t i = 0; i < clss.size(); i++)
+		{
+			writedbs(clss[i]);
 		}
 	}
 
-	for (int i = 0; i < clss.size(); i++)
-	{
-		writedbs(clss[i]);
-	}
 }

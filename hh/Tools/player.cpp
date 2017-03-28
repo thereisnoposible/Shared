@@ -4,14 +4,9 @@
 
 DBPlayer::DBPlayer()
 {
-Init();
-registerMessage();
+	registerMessage();
 }
 DBPlayer::~DBPlayer()
-{
-
-}
-DBPlayer::Init()
 {
 
 }

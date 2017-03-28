@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "proto_data.h"
 #include "Helper.h"
+#include "Platform.h"
 
 #include <fstream>
 #include <string>
@@ -510,14 +511,14 @@ namespace proto
 
     void auto_load_proto(string path, xstring Wild, vector<string>& files)
     {
-#ifdef _WINDOWS_
+#ifdef ZS_WINOS
         //文件句柄 
         long  hFile = 0;
         //文件信息 
         struct _finddata_t fileinfo;
         string p;
 
-        if ((hFile = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1)
+        if ((hFile = _findfirst(!path.empty()?p.assign(path).append("\\*").c_str():"*", &fileinfo)) != -1)
         {
             do
             {
@@ -525,20 +526,20 @@ namespace proto
                 {
                     if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
                     {
-                        auto_load_proto(p.assign(path).append("\\").append(fileinfo.name), Wild, files);
+						auto_load_proto(!path.empty() ? p.assign(path).append("\\").append(fileinfo.name) : fileinfo.name, Wild, files);
                     }
                 }
             } while (_findnext(hFile, &fileinfo) == 0);
             _findclose(hFile);
         }
 
-        if ((hFile = _findfirst(p.assign(path).append("\\").append(Wild).c_str(), &fileinfo)) != -1)
+        if ((hFile = _findfirst(!path.empty()?p.assign(path).append("\\").append(Wild).c_str():Wild.c_str(), &fileinfo)) != -1)
         {
             do
             {
                 if (!(fileinfo.attrib & _A_SUBDIR))
                 {
-                    files.push_back(p.assign(path).append("\\").append(fileinfo.name));
+                    files.push_back(!path.empty()?p.assign(path).append("\\").append(fileinfo.name):fileinfo.name);
                 }
             } while (_findnext(hFile, &fileinfo) == 0);
             _findclose(hFile);

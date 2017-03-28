@@ -59,4 +59,6 @@ namespace proto
     bool ParseFromArray(const void* data, int size, proto_data& proto);
 
     extern xmap<xstring, proto_data> _proto_data_mgr;
+
+	void auto_load_proto(xstring path, xstring Wild, xvector<xstring>& files);
 }
