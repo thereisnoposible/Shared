@@ -32,10 +32,10 @@ PlayerManager::PlayerManager(DBService* p) :m_pDBService(p)
 //-------------------------------------------------------------------------------------------
 PlayerManager::~PlayerManager()
 {
-	std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator it = m_AccPlayer.begin();
+	std::unordered_map<std::string, std::unordered_map<int, Player*>>::iterator it = m_AccPlayer.begin();
 	for (; it != m_AccPlayer.end(); ++it)
 	{
-		std::unordered_map<unsigned int, Player*>::iterator playerit = it->second.begin();
+		std::unordered_map<int, Player*>::iterator playerit = it->second.begin();
 		for (; playerit != it->second.end(); ++playerit)
 		{
 			if (playerit->second->GetPlayerState() == Player::PlayerState::psOnline)
@@ -71,6 +71,24 @@ void PlayerManager::init()
 }
 
 //-------------------------------------------------------------------------------------------
+void PlayerManager::Broadcast(int id, const ::google::protobuf::Message& mess, int except)
+{
+	std::unordered_map<ConnectPtr, Session>::iterator sit = m_AllPlayer.begin();
+	for (; sit != m_AllPlayer.end();sit++)
+	{
+		if (!sit->second.player)
+			continue;
+		if (sit->second.player->GetPlayerState() != Player::PlayerState::psOnline)		
+			continue;
+		
+		if (sit->second.player->GetPlayerID() == except)
+			continue;
+		
+		sit->second.player->SendProtoBuf(id, mess);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
 void PlayerManager::loadPlayer(pm_playerdata_db_response& response)
 {
     for (int32 i = 0; i < response.datas_size(); i++)
@@ -81,16 +99,16 @@ void PlayerManager::loadPlayer(pm_playerdata_db_response& response)
         if (pData.id > (int)_unique_player)
             _unique_player = pData.id;
 
-        std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator it = m_AccPlayer.find(pData.account);
+		std::unordered_map<std::string, std::unordered_map<int, Player*>>::iterator it = m_AccPlayer.find(pData.account);
         if (it == m_AccPlayer.end())
         {
-            m_AccPlayer.insert(std::make_pair(pData.account, std::unordered_map<unsigned int, Player*>()));
+			m_AccPlayer.insert(std::make_pair(pData.account, std::unordered_map<int, Player*>()));
             it = m_AccPlayer.find(pData.account);
         }
         Player* p = new Player(pData);
         ModuleManager::getInstance().CreateRoleModule(p);
         p->SetPlayerState(Player::PlayerState::psOffline);
-        it->second.insert(std::make_pair(pData.id, p));
+		it->second.insert(std::make_pair(pData.id, p));
     }
 
 	_unique_player += 1;
@@ -102,15 +120,18 @@ void PlayerManager::OnDisConnect(ConnectPtr& playerid)
 	std::unordered_map<ConnectPtr, Session>::iterator sit = m_AllPlayer.find(playerid);
 	if (sit != m_AllPlayer.end())
 	{
-		std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator accit = m_AccPlayer.find(sit->second.acc_id);
-		if (accit != m_AccPlayer.end())
+		if (sit->second.player && sit->second.player->GetPlayerState() == Player::PlayerState::psOnline)
 		{
-			std::unordered_map<unsigned int, Player*>::iterator playerit = accit->second.find(sit->second.playerid);
-			if (playerit != accit->second.end() && playerit->second->GetPlayerState() == Player::PlayerState::psOnline)
-			{
-				playerit->second->OnPlyaerLogout();
-			}
+			sit->second.player->OnPlyaerLogout();
+
+			pm_other_info notify;
+			notify.set_id(sit->second.player->GetPlayerID());
+			notify.set_name(sit->second.player->GetPlayerData().name);
+			Broadcast(GM_NOTIFY_OTHER_LOGOUT, notify, sit->second.player->GetPlayerID());
+
+			m_AllPlayerID.erase(sit->second.player->GetPlayerID());
 		}
+		
 		m_AllPlayer.erase(sit);
 	}	
 }
@@ -122,7 +143,13 @@ std::unordered_map<ConnectPtr, PlayerManager::Session>& PlayerManager::GetPlayer
 }
 
 //-------------------------------------------------------------------------------------------
-std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>& PlayerManager::GetAccPlayerMap()
+std::unordered_map<int32, Player*>& PlayerManager::GetPlayerIDMap()
+{
+	return m_AllPlayerID;
+}
+
+//-------------------------------------------------------------------------------------------
+std::unordered_map<std::string, std::unordered_map<int, Player*>>& PlayerManager::GetAccPlayerMap()
 {
     return m_AccPlayer;
 }
@@ -134,16 +161,18 @@ void PlayerManager::onPlayerMessage(PackPtr& pPack)
 	if (it == m_AllPlayer.end())
         return;
 
-    std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator accit = m_AccPlayer.find(it->second.acc_id);
-    if (accit == m_AccPlayer.end())
+	if (!it->second.player)
+		return;
+
+    if (it->second.player->GetPlayerState() != Player::PlayerState::psOnline)
         return;
 
+	if (it->second.player->GetConnect() != pPack->m_Connect)
+	{
+		return;
+	}
 
-    std::unordered_map<unsigned int, Player*>::iterator playerit = accit->second.find(it->second.playerid);
-    if (playerit->second->GetPlayerState() != Player::PlayerState::psOnline)
-        return;
-
-    playerit->second->FireNetMsg(pPack->getMessageId(), pPack);
+	it->second.player->FireNetMsg(pPack->getMessageId(), pPack);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -174,26 +203,45 @@ void PlayerManager::LoginGame(PackPtr& pPack)
 	std::unordered_map<ConnectPtr, Session>::iterator sit = m_AllPlayer.find(pPack->m_Connect);
 	if (sit == m_AllPlayer.end())	
 		return;
-	std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator accit = m_AccPlayer.find(sit->second.acc_id);
+
+	std::unordered_map<std::string, std::unordered_map<int, Player*>>::iterator accit = m_AccPlayer.find(sit->second.accid);
 	if (accit == m_AccPlayer.end())	
 		return;
-	std::unordered_map<unsigned int, Player*>::iterator playerit = accit->second.find(sit->second.playerid);
-	if (playerit != accit->second.end())
-	{
-		if (playerit->second->GetPlayerState() == Player::PlayerState::psOnline)
-		{
-			playerit->second->OnPlyaerLogout();
-		}
-	}
-	playerit = accit->second.find(request.id());
+
+	std::unordered_map<int, Player*>::iterator playerit = accit->second.find(request.id());
 	if (playerit == accit->second.end())
 		return;
+
+	Player* &player = sit->second.player;
+
+	if (player && player->GetConnect() != pPack->m_Connect)
+	{
+		sit = m_AllPlayer.find(player->GetConnect());
+		if (sit != m_AllPlayer.end())
+		{
+			sit->second.player = nullptr;
+		}
+	}
+
+	if (player && player->GetPlayerState() == Player::PlayerState::psOnline)
+	{
+		player->OnPlyaerLogout();
+	}
+
 	playerit->second->OnPlyaerLogin(pPack->m_Connect);
-	sit->second.playerid = request.id();
+	pm_other_info notify;
+	notify.set_id(playerit->second->GetPlayerID());
+	notify.set_name(playerit->second->GetPlayerData().name);
+	Broadcast(GM_NOTIFY_OTHER_LOGIN, notify, playerit->second->GetPlayerID());
+
+	player = playerit->second;
+	m_AllPlayerID[playerit->second->GetPlayerID()] = player;
 				
-	pm_playerdata* pData = new pm_playerdata;
+	pm_playerdata* pData = response.mutable_data();
 	playerit->second->GetPlayerData().toPBMessage(*pData);
-	response.set_allocated_data(pData);
+
+	pm_icomponent_data* pidata = response.mutable_idata();
+	playerit->second->toIcomponentData(*pidata);
 
 	pPack->m_Connect->SendBuffer(GM_LOGIN_RESPONSE, response, 0);
 }
@@ -206,7 +254,7 @@ void PlayerManager::CreatePlayer(PackPtr& pPack)
 	std::unordered_map<ConnectPtr, Session>::iterator sit = m_AllPlayer.find(pPack->m_Connect);
 	if (sit == m_AllPlayer.end())	
 		return;
-	std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator accit = m_AccPlayer.find(sit->second.acc_id);
+	std::unordered_map<std::string, std::unordered_map<int, Player*>>::iterator accit = m_AccPlayer.find(sit->second.accid);
 	if (accit == m_AccPlayer.end())		
 		return;
 
@@ -217,7 +265,7 @@ void PlayerManager::CreatePlayer(PackPtr& pPack)
 	pData.id = _unique_player++;
     pData.jinbi = 0;
 	pData.name = request.player_name();
-    pData.account = sit->second.acc_id;
+    pData.account = sit->second.accid;
 	InitPlayer(pData);	
 
     InsertPlayer(pData);
@@ -227,9 +275,8 @@ void PlayerManager::CreatePlayer(PackPtr& pPack)
 	p->SetPlayerState(Player::PlayerState::psOffline);
 	accit->second.insert(std::make_pair(pData.id, p));
 
-	pm_playerdata* pItem = new pm_playerdata;
+	pm_playerdata* pItem = response.mutable_data();
 	pData.toPBMessage(*pItem);
-	response.set_allocated_data(pItem);
 
 	pPack->m_Connect->SendBuffer(GM_CREATE_PLAYER_RESPONSE, response, pData.id);
 }

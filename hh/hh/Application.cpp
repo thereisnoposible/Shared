@@ -6,6 +6,7 @@
 #include "Initialer.h"
 
 Application* Singleton<Application>::single = nullptr;
+
 //-------------------------------------------------------------------------------------------
 Application::Application()
 {
@@ -88,6 +89,9 @@ Application::~Application()
 //-------------------------------------------------------------------------------------------
 void Application::update(double diff)
 {
+	std::chrono::steady_clock::time_point fCurr = std::chrono::steady_clock::now();
+	time_t tNow = std::chrono::steady_clock::to_time_t(fCurr);
+
 	if (m_pNetService != nullptr)
 	{
 		m_pNetService->update();
@@ -95,7 +99,7 @@ void Application::update(double diff)
 
 	if (m_pTimerManager != nullptr)
 	{
-		m_pTimerManager->Update();
+		m_pTimerManager->Update(fCurr);
 	}
 
 	if (m_pTimeWheel)

@@ -69,21 +69,19 @@ void AccountNetClient::AccountCheckResponse(PackPtr& pPack)
     if (response.result() == 0)
     {
         std::unordered_map<ConnectPtr, PlayerManager::Session>& m_AllPlayer = PlayerManager::getInstance().GetPlayerMap();
-        std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>& m_AccPlayer = PlayerManager::getInstance().GetAccPlayerMap();
+        std::unordered_map<std::string, std::unordered_map<int, Player*>>& m_AccPlayer = PlayerManager::getInstance().GetAccPlayerMap();
 
         std::unordered_map<ConnectPtr, PlayerManager::Session>::iterator sit = m_AllPlayer.find(it->second);
-        if (sit == m_AllPlayer.end())
-        {
-            PlayerManager::Session player;
-            player.acc_id = response.username();
-            player.playerid = 0;
-            m_AllPlayer[it->second] = player;
-        }
 
-        std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>::iterator accit = m_AccPlayer.find(response.username());
+		PlayerManager::Session player;
+		player.accid = response.username();
+		player.player = nullptr;
+		m_AllPlayer[it->second] = player;
+
+        std::unordered_map<std::string, std::unordered_map<int, Player*>>::iterator accit = m_AccPlayer.find(response.username());
         if (accit != m_AccPlayer.end())
         {
-            std::unordered_map<unsigned int, Player*>::iterator playerit = accit->second.begin();
+            std::unordered_map<int, Player*>::iterator playerit = accit->second.begin();
             for (; playerit != accit->second.end(); ++playerit)
             {
                 pm_player_sub_data* pData = response.add_playerdata();
@@ -93,7 +91,7 @@ void AccountNetClient::AccountCheckResponse(PackPtr& pPack)
         }
         else
         {
-            m_AccPlayer.insert(std::make_pair(response.username(), std::unordered_map<unsigned int, Player*>()));
+            m_AccPlayer.insert(std::make_pair(response.username(), std::unordered_map<int, Player*>()));
         }
     }
 

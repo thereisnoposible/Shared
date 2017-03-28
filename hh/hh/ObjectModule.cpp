@@ -58,14 +58,7 @@ void ObjectModule::processRequestUse(PackPtr& pPack)
 //-------------------------------------------------------------------------------------------
 void ObjectModule::UseMedicine(Object* pObj, int32 target)
 {
-	Medicine* pMedi = dynamic_cast<Medicine*>(pObj);
 
-	IComponent* buff = IComponent::getIComponent();
-
-	buff->AddIntervalPower(power_type_hp_rec, 10, 6);
-	m_pOwner->AddComponent(buff);
-
-	sTimer.AddTimer(10000, std::bind(&IComponent::freeIComponent, buff), 1);
 }
 
 //-------------------------------------------------------------------------------------------

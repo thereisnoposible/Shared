@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HttpClient", "HttpClient\Ht
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataBase", "DataBase\DataBase.vcxproj", "{18EB5A95-69B7-4DAA-9CBC-CDCDEF4D5694}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tools", "Tools\Tools.vcxproj", "{4622D4B1-C384-4A5C-9EC9-730AD8602EA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -88,6 +90,12 @@ Global
 		{18EB5A95-69B7-4DAA-9CBC-CDCDEF4D5694}.Release|Win32.ActiveCfg = Release|Win32
 		{18EB5A95-69B7-4DAA-9CBC-CDCDEF4D5694}.Release|Win32.Build.0 = Release|Win32
 		{18EB5A95-69B7-4DAA-9CBC-CDCDEF4D5694}.Release|x64.ActiveCfg = Release|Win32
+		{4622D4B1-C384-4A5C-9EC9-730AD8602EA7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4622D4B1-C384-4A5C-9EC9-730AD8602EA7}.Debug|Win32.Build.0 = Debug|Win32
+		{4622D4B1-C384-4A5C-9EC9-730AD8602EA7}.Debug|x64.ActiveCfg = Debug|Win32
+		{4622D4B1-C384-4A5C-9EC9-730AD8602EA7}.Release|Win32.ActiveCfg = Release|Win32
+		{4622D4B1-C384-4A5C-9EC9-730AD8602EA7}.Release|Win32.Build.0 = Release|Win32
+		{4622D4B1-C384-4A5C-9EC9-730AD8602EA7}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

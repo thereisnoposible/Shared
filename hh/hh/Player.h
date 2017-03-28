@@ -28,6 +28,8 @@ struct Direction3D																										// 表示方向位置变量类型
 	Vector3 dir;
 };
 
+class INode;
+
 class Player :public AOI::Entity
 {
 public:
@@ -51,12 +53,14 @@ public:
 	Player(PlayerData& p);
 	~Player();
 
+	void toIcomponentData(pm_icomponent_data& data);
+
 	void OnPlyaerLogin(ConnectPtr& conn);
 	void OnPlyaerLogout();
 	void AddModule(BaseModule* pModule);
 	BaseModule* GetModule(std::string modulename);
 
-	void SendProtoBuf(int messageid, ::google::protobuf::Message &proto);
+	void SendProtoBuf(int messageid, const ::google::protobuf::Message &proto);
 	void TriggerEvent(const BaseEvent& edata);
 	void RegisterEventHandle(int evt, EventHandle::handle fun);
 	void RegisterEventRange(int evt_s, int evt_e, EventHandle::handle fun);
@@ -86,20 +90,18 @@ public:
 
 	void onOtherEntityMove(Entity* entity);
 
-    void AddComponent(IComponent* pComponent)
-    {
-        m_RootComponent.AddComponent(pComponent);
-		head.AddComponent(pComponent);
-		body.AddComponent(pComponent);
-		left_hand.AddComponent(pComponent);
-		right_hand.AddComponent(pComponent);
-		left_foot.AddComponent(pComponent);
-		right_foot.AddComponent(pComponent);
-    }
-
 	int speed;
 protected:
 	void processRequestMove(PackPtr& pPack);
+	void processRequestRoomInfo(PackPtr& pPack);
+	void processRequestFight(PackPtr& pPack);
+	void processRequestOtherInfo(PackPtr& pPack);
+	void processShanghui(PackPtr& pPack);
+	void processDuihua(PackPtr& pPack);
+	void processXuanxiang(PackPtr& pPack);
+	void processGoumai(PackPtr& pPack);
+
+	void OnPlayerDead(INode* pNode);
 private:
 	PlayerData _playerdata;
 	std::chrono::steady_clock::time_point starttime;
@@ -115,12 +117,5 @@ private:
 	PlayerState state;
 	PlayerStatus status;
 
-    IComponent m_RootComponent;
-
-    IComponent head;
-    IComponent body;
-    IComponent left_hand;
-    IComponent right_hand;
-    IComponent left_foot;
-    IComponent right_foot;
+	INode* m_RootComponent;
 };

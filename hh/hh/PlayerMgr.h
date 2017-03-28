@@ -7,8 +7,8 @@ class PlayerManager : public Singleton<PlayerManager>, public Initialer
 public:
 	struct Session
 	{
-		unsigned int playerid;
-		std::string acc_id;
+		Player* player;
+		std::string accid;
 	};
 	PlayerManager(DBService* p);
 	~PlayerManager();
@@ -16,9 +16,12 @@ public:
 	void OnDisConnect(ConnectPtr& playerid);
 
     std::unordered_map<ConnectPtr, Session>& GetPlayerMap();
-    std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>>& GetAccPlayerMap();
+	std::unordered_map<int32, Player*>& GetPlayerIDMap();
+	std::unordered_map<std::string, std::unordered_map<int, Player*>>& GetAccPlayerMap();
 
     void loadPlayer(pm_playerdata_db_response& response);
+
+	void Broadcast(int id, const ::google::protobuf::Message& mess, int except);
 protected:
 
 	void registmessage();
@@ -43,15 +46,9 @@ protected:
     void InsertPlayer(PlayerData& data);
 
 private:
-	std::unordered_map<std::string, ConnectPtr> m_Loging;
-	
-	std::hash_map<std::string, int> m_PlayerAddrToID;
-
-	std::hash_map<std::string, Session> m_pAccPlayerGroup;
-
 	std::unordered_map<ConnectPtr, Session> m_AllPlayer;
-
-	std::unordered_map<std::string, std::unordered_map<unsigned int, Player*>> m_AccPlayer;
+	std::unordered_map<int32, Player*> m_AllPlayerID;
+	std::unordered_map<std::string, std::unordered_map<int, Player*>> m_AccPlayer;
 
 	unsigned int _unique_player;
 

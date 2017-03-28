@@ -10,6 +10,7 @@
 #include "AccountNetClient.h"
 #include "DBNetClient.h"
 #include "TimeWheel.h"
+#include "proto_data.h"
 
 class Application : public NetObserver, public Singleton<Application>
 {
@@ -38,6 +39,11 @@ public:
 	{
 		return *m_pTimeWheel;
 	}
+
+	time_t GetServerTime()
+	{
+		return m_ServerTime;
+	}
 private:
     AccountNetClient* m_pAccount;
     DBNetClient* m_pDatabase;
@@ -56,6 +62,8 @@ private:
 	int64 m_dbid;
 	int32 m_increment;
 	int64 m_id;
+
+	time_t m_ServerTime;
 };
 
 #define sApp Application::getInstance()
