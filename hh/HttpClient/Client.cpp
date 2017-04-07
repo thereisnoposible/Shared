@@ -6,6 +6,8 @@
 #include "json/json_writer.cpp"
 #include <assert.h>
 
+#include "zlib/zlib.h"
+
 enum code
 {
 	Success,			//³É¹¦
@@ -143,10 +145,6 @@ Client::Client(std::string& plat)
 		//boost::thread* thr = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
 	}
 }
-
-#include "zlib/zlib.h"
-
-
 
 bool Client::webreward_response(http::http_response& response, std::string& addr, std::string& port, std::chrono::steady_clock::time_point& tim)
 {
