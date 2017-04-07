@@ -13,6 +13,7 @@ DBNetClient::DBNetClient()
 void DBNetClient::registMessage()
 {
     RegisterMessage(GM_REQUEST_PLAYER_RESPONSE, boost::bind(&DBNetClient::PlayerResponse, this, _1));
+	RegisterMessage(GM_OBJECT_DATA_RESPONSE_DB, boost::bind(&DBNetClient::ObjectResponse, this, _1));
 }
 
 void DBNetClient::Initial()
@@ -36,4 +37,12 @@ void DBNetClient::PlayerResponse(PackPtr& pPack)
     PlayerManager::getInstance().loadPlayer(response);
 
     SetInit();
+}
+
+void DBNetClient::ObjectResponse(PackPtr& pPack)
+{
+	pm_playerdata_db_response response;
+	CHECKERRORANDRETURN(response.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+
+	PlayerManager::getInstance().loadPlayer(response);
 }

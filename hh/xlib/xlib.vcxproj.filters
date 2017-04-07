@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="zlib">
+      <UniqueIdentifier>{399509a6-4cfc-4f16-ab14-beff2b7ee622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="timer">
+      <UniqueIdentifier>{52994e2e-db73-4b1a-9ebd-c44769f4d294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rank_template">
+      <UniqueIdentifier>{dae40d12-a4cd-451f-b129-e774ead6c6d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="hepler">
+      <UniqueIdentifier>{26ed9496-9df0-4f2e-9cfa-eb9375c28817}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{8362b73c-9968-4317-8f19-54d252c6846f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mysql">
+      <UniqueIdentifier>{ca970756-d19e-4a73-8f6a-0fa93dc5674d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="crashReport">
+      <UniqueIdentifier>{5527016d-59f5-43a5-b7a7-403a98e18b08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="netserver">
+      <UniqueIdentifier>{b9f6de50-b603-4e30-a9ff-e3360224f55e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{8fc6b369-619a-4cde-89f2-c70c2024fb4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="astar">
+      <UniqueIdentifier>{7f31fa87-3c71-400a-b67a-d2a79e7b31f1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zlib\crc32.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zlib\deflate.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zlib\gzguts.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zlib\inffast.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zlib\inffixed.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zlib\inflate.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zlib\inftrees.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zlib\trees.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\zlib\zutil.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base64.h" />
+    <ClInclude Include="include\CircularQueue.h" />
+    <ClInclude Include="include\Config.h" />
+    <ClInclude Include="include\MessageHandle.h" />
+    <ClInclude Include="include\Platform.h" />
+    <ClInclude Include="include\helper\Helper.h">
+      <Filter>hepler</Filter>
+    </ClInclude>
+    <ClInclude Include="include\log\Log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mysql\DBResult.h">
+      <Filter>mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mysql\DBService.h">
+      <Filter>mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mysql\DBSqlThread.h">
+      <Filter>mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mysql\MysqlStmt.h">
+      <Filter>mysql</Filter>
+    </ClInclude>
+    <ClInclude Include="include\crashReport\crashReport.h">
+      <Filter>crashReport</Filter>
+    </ClInclude>
+    <ClInclude Include="include\netserver\NetClient.h">
+      <Filter>netserver</Filter>
+    </ClInclude>
+    <ClInclude Include="include\netserver\NetPack.h">
+      <Filter>netserver</Filter>
+    </ClInclude>
+    <ClInclude Include="include\netserver\NetService.h">
+      <Filter>netserver</Filter>
+    </ClInclude>
+    <ClInclude Include="include\netserver\WebSocketProtocol.h">
+      <Filter>netserver</Filter>
+    </ClInclude>
+    <ClInclude Include="include\astar\AStar.h">
+      <Filter>astar</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rank_template\rank_template.h">
+      <Filter>rank_template</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timer\Timer.h">
+      <Filter>timer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timer\TimerManager.h">
+      <Filter>timer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timer\TimeWheel.h">
+      <Filter>timer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\zlib\zconf.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\zlib\zlib.h">
+      <Filter>zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="include\define\define.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\timer\TimerManager.cpp">
+      <Filter>timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\timer\TimeWheel.cpp">
+      <Filter>timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\adler32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\compress.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\crc32.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\deflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\gzclose.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\gzlib.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\gzread.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\gzwrite.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\infback.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\inffast.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\inflate.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\inftrees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\trees.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\uncompr.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\zlib\zutil.c">
+      <Filter>zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="src\helper\Helper.cpp">
+      <Filter>hepler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\log\Log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mysql\MysqlStmt.cpp">
+      <Filter>mysql</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mysql\DBResult.cpp">
+      <Filter>mysql</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mysql\DBService.cpp">
+      <Filter>mysql</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mysql\DBSqlThread.cpp">
+      <Filter>mysql</Filter>
+    </ClCompile>
+    <ClCompile Include="src\crashReport\crashReport.cpp">
+      <Filter>crashReport</Filter>
+    </ClCompile>
+    <ClCompile Include="src\netserver\NetClient.cpp">
+      <Filter>netserver</Filter>
+    </ClCompile>
+    <ClCompile Include="src\netserver\NetService.cpp">
+      <Filter>netserver</Filter>
+    </ClCompile>
+    <ClCompile Include="src\netserver\WebSocketProtocol.cpp">
+      <Filter>netserver</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base64.cpp" />
+    <ClCompile Include="src\astar\AStar.cpp">
+      <Filter>astar</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="12333.def">
+      <Filter>源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+</Project>

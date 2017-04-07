@@ -25,7 +25,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -160,46 +160,17 @@
     <ClInclude Include="aoi\Space.h" />
     <ClInclude Include="aoi\Vector3.h" />
     <ClInclude Include="aoi\Witness.h" />
-    <ClInclude Include="AStar.h" />
-    <ClInclude Include="base64.h" />
-    <ClInclude Include="CircularQueue.h" />
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="crashReport.h" />
-    <ClInclude Include="DBResult.h" />
-    <ClInclude Include="DBService.h" />
-    <ClInclude Include="DBSqlThread.h" />
     <ClInclude Include="Enum.h" />
-    <ClInclude Include="Helper.h" />
-    <ClInclude Include="io_service_pool.h" />
+    <ClInclude Include="icmp_header.h" />
+    <ClInclude Include="ipv4_header.h" />
     <ClInclude Include="JsonConvert.h" />
-    <ClInclude Include="json\autolink.h" />
-    <ClInclude Include="json\config.h" />
-    <ClInclude Include="json\features.h" />
-    <ClInclude Include="json\forwards.h" />
-    <ClInclude Include="json\json.h" />
-    <ClInclude Include="json\json_batchallocator.h" />
-    <ClInclude Include="json\reader.h" />
-    <ClInclude Include="json\value.h" />
-    <ClInclude Include="json\writer.h" />
-    <ClInclude Include="Log.h" />
-    <ClInclude Include="MessageHandle.h" />
-    <ClInclude Include="MysqlStmt.h" />
-    <ClInclude Include="NetClient.h" />
-    <ClInclude Include="NetMessage.h" />
-    <ClInclude Include="NetPack.h" />
-    <ClInclude Include="NetService.h" />
+    <ClInclude Include="Platform.h" />
     <ClInclude Include="proto_data.h" />
     <ClInclude Include="public.h" />
-    <ClInclude Include="rank_template.h" />
     <ClInclude Include="ServerIni.h" />
-    <ClInclude Include="Singleton.h" />
     <ClInclude Include="sourceMap.h" />
     <ClInclude Include="Struct.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="TimerManager.h" />
-    <ClInclude Include="TimeWheel.h" />
     <ClInclude Include="TypeTable.h" />
-    <ClInclude Include="WebSocketProtocol.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="aoi\AOITrigger.cpp" />
@@ -211,31 +182,11 @@
     <ClCompile Include="aoi\RangeTriggerNode.cpp" />
     <ClCompile Include="aoi\Space.cpp" />
     <ClCompile Include="aoi\Witness.cpp" />
-    <ClCompile Include="AStar.cpp" />
-    <ClCompile Include="base64.cpp" />
-    <ClCompile Include="crashReport.cpp" />
-    <ClCompile Include="DBResult.cpp" />
-    <ClCompile Include="DBService.cpp" />
-    <ClCompile Include="DBSqlThread.cpp" />
-    <ClCompile Include="Helper.cpp" />
-    <ClCompile Include="json\json_reader.cpp" />
-    <ClCompile Include="json\json_value.cpp" />
-    <ClCompile Include="json\json_writer.cpp" />
-    <ClCompile Include="Log.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="MysqlStmt.cpp" />
     <ClCompile Include="NetClient.cpp" />
     <ClCompile Include="NetService.cpp" />
     <ClCompile Include="proto_data.cpp" />
-    <ClCompile Include="TimerManager.cpp" />
-    <ClCompile Include="TimeWheel.cpp" />
     <ClCompile Include="TypeTable.cpp" />
     <ClCompile Include="WebSocketProtocol.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="json\json_internalarray.inl" />
-    <None Include="json\json_internalmap.inl" />
-    <None Include="json\json_valueiterator.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

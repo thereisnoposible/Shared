@@ -155,7 +155,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\new\proto\protobuf\general.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\new\proto\protobuf\login.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\object.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\new\proto\protobuf\player.pb.cc">
@@ -187,6 +193,7 @@
     <ClInclude Include="BaseModule.h" />
     <ClInclude Include="Cell.h" />
     <ClInclude Include="DBNetClient.h" />
+    <ClInclude Include="entity\object_entity.h" />
     <ClInclude Include="IComponent.h" />
     <ClInclude Include="Initialer.h" />
     <ClInclude Include="Log.h" />
@@ -196,6 +203,10 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerMgr.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="table\type_npc_action.h" />
+    <ClInclude Include="table\type_npc_talk.h" />
+    <ClInclude Include="table\type_prop.h" />
+    <ClInclude Include="table\type_sell_props.h" />
     <ClInclude Include="XinfaModule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

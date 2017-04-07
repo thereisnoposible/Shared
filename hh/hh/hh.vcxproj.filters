@@ -19,6 +19,12 @@
     <Filter Include="module">
       <UniqueIdentifier>{31db418e-a1e2-4819-8563-2fbb7fa80f3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="table">
+      <UniqueIdentifier>{e594e8ef-2121-409e-9770-217678098f06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="entity">
+      <UniqueIdentifier>{4fe510eb-f8a1-4ff9-8fbb-4506319fdf0c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -78,6 +84,12 @@
     <ClCompile Include="ObjectModule.cpp">
       <Filter>module</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\general.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\object.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -124,6 +136,21 @@
     </ClInclude>
     <ClInclude Include="ObjectModule.h">
       <Filter>module</Filter>
+    </ClInclude>
+    <ClInclude Include="table\type_npc_action.h">
+      <Filter>table</Filter>
+    </ClInclude>
+    <ClInclude Include="table\type_npc_talk.h">
+      <Filter>table</Filter>
+    </ClInclude>
+    <ClInclude Include="table\type_prop.h">
+      <Filter>table</Filter>
+    </ClInclude>
+    <ClInclude Include="table\type_sell_props.h">
+      <Filter>table</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\object_entity.h">
+      <Filter>entity</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

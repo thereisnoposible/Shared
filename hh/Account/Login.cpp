@@ -25,6 +25,12 @@ LoginManager::~LoginManager()
 }
 
 //-------------------------------------------------------------------------------------------
+void LoginManager::Update()
+{
+	m_pDBService->Update();
+}
+
+//-------------------------------------------------------------------------------------------
 void LoginManager::registerMessage()
 {
     sNetService.RegisterMessage(GM_CREATE_ACCOUNT, boost::bind(&LoginManager::CreateAccount, this, _1));
@@ -71,7 +77,7 @@ void LoginManager::loadPlayer()
 //-------------------------------------------------------------------------------------------
 void LoginManager::notifyInsertAccount(int id, std::string name, std::string psw)
 {
-    std::string sql = "insert into account(id,accname,psw) values(?,?,?)";
+    std::string sql = "insert into account(id,accname,psw) values(?id,?accname,?psw)";
     StmtBindData* pParam = m_pDBService->PrepareQuery(sql.c_str());
 
     pParam->SetInt32(0, id);

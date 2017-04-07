@@ -36,6 +36,9 @@
     <ClInclude Include="DBPlayer.h">
       <Filter>dbinterface</Filter>
     </ClInclude>
+    <ClInclude Include="DBObject.h">
+      <Filter>dbinterface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -51,6 +54,15 @@
       <Filter>dbinterface</Filter>
     </ClCompile>
     <ClCompile Include="..\..\new\proto\protobuf\player.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\general.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="DBObject.cpp">
+      <Filter>dbinterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\object.pb.cc">
       <Filter>message</Filter>
     </ClCompile>
   </ItemGroup>

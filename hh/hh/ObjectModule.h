@@ -1,30 +1,8 @@
 #pragma once
 #define  OBJECT "Object"
 
-enum obj_usage
-{
-	obj_usage_nothing,
-	obj_usage_medicine,
-	obj_usage_weapon,
-};
-
-struct Object
-{
-	virtual ~Object(){}
-    int64 dbid;
-    int32 id;
-    int32 kind;
-    int32 subkind;
-	int32 usage;
-    int32 num;
-};
-
-class Medicine : public Object
-{
-public:
-	int32 type;
-	int32 value;
-};
+#include "../new/proto/protobuf/object.pb.h"
+#include "entity/object_entity.h"
 
 class ObjectModule : public BaseModule
 {
@@ -32,23 +10,20 @@ public:
 	ObjectModule(std::string modulename, Player* pOwner);
 	~ObjectModule();
 
-    void AddObject(int32 id, int32 num);
-    void DelObject(int64 dbid, int32 num);
-
-    Object* GetObject(int64 dbid);
-
-protected:
-	void registmessage();
-	void unregistmessage();
-
-	void processRequestUse(PackPtr& pPack);
-
-	void UseMedicine(Object* pObj, int32 target);
-
-private:
 	bool Init();
+	void OnDataResponse(pm_object_data_response_db& response);
 
-    std::unordered_map<int64, Object> _props;
+	std::unordered_map<int64, objectItem*>& GetMaps(){ return _props; }
+
+	void AddObject(int32 id, int32 num, int32 cause);
+	void DestroyObject(int64 dbid, int32 num, int32 cause);
+	int32 GetCount(int64 dbid);
+private:
+	void Insert(objectItem& temp);
+	void Update(objectItem& temp);
+	void Delete(objectItem& temp);
+	std::unordered_map<int64, objectItem*> _props;
+	std::unordered_map<int32, objectItem*> _append_props;
 };
 
 class ObjectFactory : public ModuleFactory

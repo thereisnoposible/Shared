@@ -9,6 +9,9 @@
 #include <iostream>
 #include "include/v8.h"
 
+#include "TimeWheel.h"
+#include "TimeWheel.cpp"
+
 #ifdef _DEBUG
 	//#pragma comment(lib,"log4cppD.lib")
 #else
@@ -281,13 +284,13 @@ int LoadConfig(char* src,char* dst)
 
 			if (res != std::string::npos)
 			{
-				pos = Helper::StringToInt(sAparam[i].substr(res + 1, dot - res - 1));
+				pos = Helper::StringToInt32(sAparam[i].substr(res + 1, dot - res - 1));
 				sAparam[i].replace(res, 1, "\":");
 				pos++;
 				continue;
 			}
 			
-			sAparam[i].replace(dot, 0, "\":" + Helper::IntToString(pos++));
+			sAparam[i].replace(dot, 0, "\":" + Helper::Int32ToString(pos++));
 		}
 	}
 	catch (...)
@@ -319,7 +322,7 @@ int LoadConfig(char* src,char* dst)
 	return 0;
 }
 
-int main(int argc, char* argv[])
+int maint(int argc, char* argv[])
 {
 
 	//v8::V8::Initialize();
@@ -427,7 +430,7 @@ int main(int argc, char* argv[])
 	//	}
 	//}
 
-	LoadConfig("NetMessage.h","NetMessage.js");
+	//LoadConfig("NetMessage.h","NetMessage.js");
 	
 
 	//std::shared_ptr<POS>& best = getBestPOS();

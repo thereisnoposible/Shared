@@ -22,6 +22,9 @@ public:
 	virtual void OnLogin(){ return; }
 	virtual void OnLogout(){ return; }
 
+	void SetInitOK(){ m_bInitOk = true; }
+	bool IsInitOK(){ return m_bInitOk; }
+
 protected:
 
 protected:

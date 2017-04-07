@@ -1,11 +1,15 @@
 #pragma once
 #include "connect_manager.h"
 #include <unordered_map>
-#include "TimerManager.h"
+#include "timer/TimerManager.h"
 #include "game_struct.h"
-#include "TimeWheel.h"
+#include "timer/TimeWheel.h"
 #include <map>
 #include <set>
+
+#include "pinger.h"
+
+using namespace xlib;
 
 namespace Json
 {
@@ -40,18 +44,18 @@ public:
 	void run(double diff);
 	void fire(std::string& cmd, std::string& param);
 
-    void webreward_response(http::http_response& response);
+	bool webreward_response(http::http_response& response, std::string& addr, std::string& port, std::chrono::steady_clock::time_point& tim);
 protected:
 	void registmessage();
 
 	void as_login(std::string& param);
 	void as_login_ticket();
-	void as_login_ticket_response(http::http_response& response);
-	void as_login_response(http::http_response& response);
+	bool as_login_ticket_response(http::http_response& response);
+	bool as_login_response(http::http_response& response);
 	void loggedin();
-	void loggedin_response(http::http_response& response);
-	void login_cb_response(http::http_response& response);
-	void login_response(http::http_response& response);
+	bool loggedin_response(http::http_response& response);
+	bool login_cb_response(http::http_response& response);
+	bool login_response(http::http_response& response);
 	void init();
 	void request_init_data();
 	void request_init_data_response(Json::Value& value);
@@ -70,6 +74,7 @@ protected:
 
 	void set_mode(std::string& param);
     void set_fight(std::string& param);
+	void set_ip(std::string& param);
 	void fight(int map);
 
 	std::string parse(std::string& temp);
@@ -99,6 +104,15 @@ protected:
     void ManortaskReward(int wid);
     void ManordoTask(int task, int wid);
 
+	void UseItem(int id);
+	void Wish();
+
+	void luckyTurnHappyReset(int aid);
+	void luckyTurnHappyAward(int id, int aid);
+
+	void loulanPray();
+	void prayReward();
+
     void ManordojoReward(int pid);
     void ManordojoTrain(int pid, int wid);
 
@@ -107,6 +121,8 @@ protected:
 
     void ManororderReward(int wid);
     void ManordoOrder(int oid, int wid);
+
+	void ManorRespone(Json::Value& value, int type, int manor, int wid);
 
     void Activeness(int point);
 
@@ -139,7 +155,7 @@ protected:
 	void sailing_type6();
 
 	void post(http::http_request, std::function<void(Json::Value&)>);
-	void post_callback(http::http_response, std::function<void(Json::Value&)>);
+	bool post_callback(http::http_response, std::function<void(Json::Value&)>);
 
 	void checkStep();
 	void delete_friend();
@@ -158,7 +174,10 @@ protected:
 
     std::chrono::steady_clock::time_point fCurr;
 
-
+	static int ip1;
+	static int ip2;
+	static int ip3;
+	static int ip4;
 private:
 	http::connect_manager* m_manager;
 	std::unordered_map<std::string, std::function<void(std::string&)>> m_message;
@@ -204,4 +223,7 @@ private:
 
     std::set<int> m_wid;
     std::vector<int> m_wid_vec;
+
+	//pinger* m_pinger;
+	boost::asio::io_service io_service;
 };

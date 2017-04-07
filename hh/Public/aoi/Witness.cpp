@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "AOITrigger.h"
 #include "EntityRef.h"
+#include "CoordinateNode.h"
 
 #define SAFE_RELEASE(p){if(p!=nullptr){delete p;p=nullptr;}}
 

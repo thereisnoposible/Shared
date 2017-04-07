@@ -118,6 +118,8 @@ void loadclasses(ptree classes,vector<ClassItem>& clss)
 			{
 				ClassParam temp;
 				temp.type = filedsit->second.get<string>("<xmlattr>.type", "");
+				if (temp.type == "string" || temp.type == "std::string")
+					temp.type = "xstring";
 				temp.name = filedsit->second.get<string>("<xmlattr>.name", "");
 				temp.key = Helper::StringToInt32(filedsit->second.get<string>("<xmlattr>.key", "0"));
 				temp.keyindex = Helper::StringToInt32(filedsit->second.get<string>("<xmlattr>.keyindex", "0"));
@@ -178,6 +180,8 @@ void loadclasses(ptree classes,vector<ClassItem>& clss)
 			ExClassParam exparam;
 			exparam.type = splitsit->second.get<string>("<xmlattr>.type", "");
 			exparam.subtype = splitsit->second.get<string>("<xmlattr>.subtype", "");
+			if (exparam.subtype == "string" || exparam.subtype == "std::string")
+				exparam.subtype = "xstring";
 			exparam.name = splitsit->second.get<string>("<xmlattr>.name", "");
 			exparam.src = splitsit->second.get<string>("<xmlattr>.src", "");
 			exparam.split = splitsit->second.get<string>("<xmlattr>.split", "");
@@ -194,6 +198,8 @@ void loadclasses(ptree classes,vector<ClassItem>& clss)
 					string temp1 = membit->first;
 
 					temp.type = membit->second.get<string>("<xmlattr>.type", "");
+					if (temp.type == "string" || temp.type == "std::string")
+						temp.type = "xstring";
 					temp.name = membit->second.get<string>("<xmlattr>.name", "");
 
 					if (temp.type.empty())
@@ -239,9 +245,9 @@ void loadclasses(ptree classes,vector<ClassItem>& clss)
 					return;
 				}
 
-				if (exparam.split.size() < 2)
+				if (exparam.split.size() < 1)
 				{
-					std::cout << "split < 2\n";
+					std::cout << "split < 1\n";
 					return;
 				}
 			}
@@ -265,7 +271,7 @@ void writeclass(std::stringstream& ss, ClassItem&item)
 {
 	ss << "class " << item.name << "\n";
 	ss << "{\n";
-
+	ss << "public:\n";
 	for (size_t i = 0; i < item.params.size(); i++)
 	{
 		ss << "\t" << item.params[i].type << "\t\t" << item.params[i].name << ";\n";
@@ -274,7 +280,10 @@ void writeclass(std::stringstream& ss, ClassItem&item)
 	ss << "\n\n//exparam\n";
 	for (size_t i = 0; i < item.exparams.size(); i++)
 	{
-		ss << "\n\t" << item.exparams[i].type;
+		if (item.exparams[i].type == "vector")
+			ss << "\n\t" << "xvector";
+		else
+			ss << "\n\t" << item.exparams[i].type;
 		if (!item.exparams[i].subtype.empty())
 		{
 			ss << "<" << item.exparams[i].subtype << ">";
@@ -303,7 +312,7 @@ void writetable_release(std::stringstream& ss, ClassItem&item)
 	ss << "\t\t{\n";
 	ss << "\t\t\tdelete data_[i];\n";
 	ss << "\t\t}\n\n";
-	ss << "\t\tdata_.clear()\n";
+	ss << "\t\tdata_.clear();\n";
 	for (size_t i = 0; i < item.keygroupname.size(); i++)
 	{
 		ss << "\t\tmappings_" << i + 1 << ".clear();\n";
@@ -317,15 +326,15 @@ void writetable_load(std::stringstream& ss, ClassItem&item)
 	ss << "\t{\n";
 	ss << "\t\tstd::string sql = \"select * from " << item.name << "\";\n";
 	ss << "\t\tStmtSyncResult result;\n";
-	ss << "\t\tm_pDBService->SyncExecuteQueryVariable(sql, nullptr, result);\n";
+	ss << "\t\tsStmt.SyncExecuteQueryVariable(sql, nullptr, result);\n";
 	ss << "\t\twhile (!result.pResult.eof())\n";
 	ss << "\t\t{\n";
-	ss << "\t\t\t" << item.name << "* temp = new " << item.name << "\n";
+	ss << "\t\t\t" << item.name << "* temp = new " << item.name << ";\n";
 	for (size_t i = 0; i < item.params.size(); i++)
 	{
 		if (item.params[i].type == "int32")
 			ss << "\t\t\ttemp->" << item.params[i].name << " = result.pResult.GetInt32(\"" << item.params[i].name << "\");\n";
-		if (item.params[i].type == "string" || item.params[i].type == "std::string")
+		if (item.params[i].type == "xstring")
 			ss << "\t\t\ttemp->" << item.params[i].name << " = result.pResult.GetString(\"" << item.params[i].name << "\");\n";
 		if (item.params[i].type == "int64")
 		{
@@ -343,7 +352,7 @@ void writetable_load(std::stringstream& ss, ClassItem&item)
 	for (size_t i = 0; i < item.exparams.size(); i++)
 	{
 		ss << "\t\t\t{\n";
-		ss << "\t\t\t\tstd::vector<string> ssplit;\n";
+		ss << "\t\t\t\tstd::vector<xstring> ssplit;\n";
 		ss << "\t\t\t\tHelper::SplitString(temp->" << item.exparams[i].src << ", \"" << item.exparams[i].split[0] << "\", ssplit);\n";
 		ss << "\t\t\t\tfor(size_t i = 0;i < ssplit.size();i++)\n";
 		ss << "\t\t\t\t{\n";
@@ -354,7 +363,7 @@ void writetable_load(std::stringstream& ss, ClassItem&item)
 				ss << "\t\t\t\t\ttemp->" << item.exparams[i].name << ".push_back(Helper::StringToInt32(ssplit[i]));\n";
 			else if (item.exparams[i].subtype == "int64")
 				ss << "\t\t\t\t\ttemp->" << item.exparams[i].name << ".push_back(Helper::StringToInt64(ssplit[i]));\n";
-			else if (item.exparams[i].subtype == "string" || item.exparams[i].subtype == "std::string")
+			else if (item.exparams[i].subtype == "xstring")
 				ss << "\t\t\t\t\ttemp->" << item.exparams[i].name << ".push_back(ssplit[i]);\n";
 			else
 			{
@@ -385,7 +394,7 @@ void writetable_load(std::stringstream& ss, ClassItem&item)
 					ss << "\t\t\t\t\ttemp->" << item.exparams[i].name << "." << item.exparams[i].params[j].name << ".push_back(Helper::StringToInt32(ssplit[i]));\n";
 				else if (item.exparams[i].params[j].type == "int64")
 					ss << "\t\t\t\t\ttemp->" << item.exparams[i].name << "." << item.exparams[i].params[j].name << ".push_back(Helper::StringToInt64(ssplit[i]));\n";
-				else if (item.exparams[i].params[j].type == "string" || item.exparams[i].subtype == "std::string")
+				else if (item.exparams[i].params[j].type == "xstring")
 					ss << "\t\t\t\t\ttemp->" << item.exparams[i].name << "." << item.exparams[i].params[j].name << ".push_back(ssplit[i]);\n";
 			}
 		}
@@ -447,6 +456,7 @@ void writetable_load(std::stringstream& ss, ClassItem&item)
 	}
 	ss << "\t\t\t" << "result.pResult.nextRow();\n";
 	ss << "\t\t}\n";
+	ss << "\t\t" << "return result.pResult.GetResult();\n";
 	ss << "\t}\n";
 }
 
@@ -484,7 +494,7 @@ void writetable_get(std::stringstream& ss, ClassItem&item)
 			ss << "\t{\n";
 			if (param_type.size() == 1)
 			{
-				ss << "\t\tauto pData = &mappings_" << ccc << "\n";
+				ss << "\t\tauto pData = &mappings_" << ccc << ";\n";
 			}
 			else
 			{
@@ -502,7 +512,10 @@ void writetable_get(std::stringstream& ss, ClassItem&item)
 			ss << "\t\tauto it = pData->find(" << param_name[param_name.size() - 1] << ");\n";
 			ss << "\t\tif(it == pData->end())\n";
 			ss << "\t\t\treturn nullptr;\n\n";
-			ss << "\t\treturn &it->second;\n";
+			if (param_name.size() != it->second.size())
+				ss << "\t\treturn &it->second;\n";
+			else
+				ss << "\t\treturn it->second;\n";
 
 			ss << "\t}\n";
 
@@ -539,7 +552,7 @@ void writetable_param(std::stringstream& ss, ClassItem&item)
 
 void writetable(std::stringstream& ss, ClassItem&item)
 {
-	ss << "class " << item.name << "Table\n";
+	ss << "class " << item.name << "Table : public Singleton<"<<item.name<<"Table>\n";
 	ss << "{\n";
 	ss << "public:\n";
 
@@ -576,11 +589,19 @@ void writetable(std::stringstream& ss, ClassItem&item)
 void writetype(ClassItem& item)
 {
 	std::stringstream ss;
-
+	ss << "#pragma once\n\n";
+	ss << "#include \"Application.h\"\n";
+	ss << "namespace TABLE{\n";
 	writeclass(ss, item);
 	writetable(ss, item);
 
-	string filename = item.name;
+	ss << "}\n";
+
+	ss << "TABLE::" << item.name << "Table* Singleton<TABLE::" << item.name << "Table>::single = nullptr;\n";
+	ss << "#define s_" << item.name << "Table TABLE::" << item.name << "Table::getInstance()\n";
+
+	string filename = "table/";
+	filename += item.name;
 	filename += ".h";
 #ifdef _WIN32
 	FILE * m_hFile = _fsopen(filename.c_str(), "w+", _SH_DENYWR);
@@ -802,8 +823,8 @@ void writedbs_h(DBItem&item)
 	ss << "#pragma once\n\n";
 
 	ss << "class MysqlStmt;\n";
-	ss << "struct Stmt\n";
-	ss << "struct StmtExData\n\n";
+	ss << "struct Stmt;\n";
+	ss << "struct StmtExData;\n\n";
 
 	ss << "class " << item.class_name << "\n";
 	ss << "{\n";
@@ -817,8 +838,21 @@ void writedbs_h(DBItem&item)
 	ss << "\t" << "void processUpdate(PackPtr& pPack);\n";
 	ss << "\t" << "void processDelete(PackPtr& pPack);\n";
 	ss << "\t" << "void processRequest(PackPtr& pPack);\n";
-	ss << "\t" << "void cbRequest(StmtExData* result, ConnectPtr& conn);\n";
+	ss << "\t" << "void cbRequest(StmtExData* result, ConnectPtr& conn, int32 playerid);\n";
 	ss << "};\n";
+
+	string filename = "dbs/";
+	filename += item.class_name;
+	filename += ".h";
+#ifdef _WIN32
+	FILE * m_hFile = _fsopen(filename.c_str(), "w+", _SH_DENYWR);
+#else
+	m_hFile = fopen(filename.c_str(), "a+");
+#endif
+
+	fwrite(ss.str().c_str(), ss.str().length(), 1, m_hFile);
+	fflush(m_hFile);
+	fclose(m_hFile);
 }
 
 void writedbs_cpp(DBItem&item)
@@ -837,7 +871,7 @@ void writedbs_cpp(DBItem&item)
 	ss << "{\n\n";
 	ss << "}\n";
 
-	ss << item.class_name << "::registerMessage()\n";
+	ss << "void " << item.class_name << "::registerMessage()\n";
 	ss << "{\n";
 	ss << "\t" << "sNetService.RegisterMessage(" << item.insert_id << ", std::bind(&" << 
 		item.class_name << "::processInsert, this, std::placeholders::_1));\n";
@@ -977,6 +1011,52 @@ void writedbs_cpp(DBItem&item)
 	ss << "\tsStmt.AsynExecuteQueryVariable(sql, pBind, nullptr);\n";
 	ss << "}\n\n";
 
+
+	ss << "void " << item.class_name << "::processDelete(PackPtr& pPack)\n";
+	ss << "{\n";
+	ss << "\t" << item.proto_name << " notify;\n";
+	ss << "\t" << "CHECKERRORANDRETURN(notify.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));\n\n";
+
+	ss << "\t" << "std::string sql = \"delete from " << item.table_name << " where " << item.primary_key << " = ?" << item.primary_key << "\";\n";
+
+	ss << "\t" << "StmtBindData* pBind = sStmt.PrepareQuery(sql.c_str());\n";
+	for (size_t i = 0; i < it->second.size(); i++)
+	{
+		if (it->second[i].name != item.primary_key)
+			continue;
+
+		auto subit = item.dbtype.find(it->second[i].name);
+		if (subit != item.dbtype.end())
+		{
+			if (subit->second == "datetime")
+				ss << "\t\t" << "pBind->SetDate(\"" << it->second[i].name << "\",notify." << it->second[i].name << "());\n";
+			continue;
+		}
+
+		if (it->second[i].type == "int32")
+		{
+			ss << "\t" << "pBind->SetInt32(\"" << it->second[i].name << "\",notify." << it->second[i].name << "());\n";
+		}
+
+		if (it->second[i].type == "int64")
+		{
+			ss << "\t" << "pBind->SetInt64(\"" << it->second[i].name << "\",notify." << it->second[i].name << "());\n";
+		}
+
+		if (it->second[i].type == "string")
+		{
+			ss << "\t" << "pBind->SetString(\"" << it->second[i].name << "\",notify." << it->second[i].name << "());\n";
+		}
+
+		if (it->second[i].type == "proto" || it->second[i].type == "proto_s" ||
+			it->second[i].type == "int32_s" || it->second[i].type == "int64_s" || it->second[i].type == "string_s")
+		{
+			ss << "\t" << "pBind->SetString(\"" << it->second[i].name << "\",JsonConvert::ProtoBufToJsonString(notify." << it->second[i].name << "());\n";
+		}
+	}
+	ss << "\t" << "sStmt.AsynExecuteQueryVariable(sql, pBind, nullptr);\n";
+	ss << "}\n\n";
+
 	ss << "void " << item.class_name << "::processRequest(PackPtr& pPack)\n";
 	ss << "{\n";
 	ss << "\t" << item.request_proto << " request;\n";
@@ -984,17 +1064,19 @@ void writedbs_cpp(DBItem&item)
 	ss << "\t" << "std::string sql = \"select * from " << item.table_name << " where playerid = ?playerid\";\n";
 	ss << "\t" << "StmtBindData* pBind = sStmt.PrepareQuery(sql.c_str());\n";
 	ss << "\t" << "pBind->SetInt32(\"playerid\",request.playerid());\n";
-	ss << "\t" << "sStmt.AsynExecuteQueryVariable(sql, nullptr, std::bind(&"<<item.class_name<<"::cbRequest, this, std::placeholders::_1, pPack->m_Connect));\n";
+	ss << "\t" << "sStmt.AsynExecuteQueryVariable(sql, nullptr, std::bind(&"<<item.class_name<<"::cbRequest, this, std::placeholders::_1, pPack->m_Connect, request.playerid()));\n";
 	ss << "}\n\n";
 
-	ss << "void " << item.class_name << "::cbRequest(StmtExData* result, ConnectPtr& conn)\n";
+	ss << "void " << item.class_name << "::cbRequest(StmtExData* result, ConnectPtr& conn ,int32 playerid)\n";
 	ss << "{\n";
 	ss << "\t" << "if (!result->GetResult())\n";
 	ss << "\t" << "{\n";
-	ss << "\t\t" << "std::cout << result->geterror() << \"\\n;\"\n";
+	ss << "\t\t" << "std::cout << result->geterror() << \"\\n\";\n";
+	ss << "\t\t" << "return;\n";
 	ss << "\t" << "}\n\n";
 	ss << "\t" << item.response_proto << " response;\n";
 	ss << "\t" << "response.set_result(0);\n\n";
+	ss << "\t" << "response.set_playerid(playerid);\n\n";
 	ss << "\t" << "while (!result->eof())\n";
 	ss << "\t" << "{\n";
 	ss << "\t\t" << item.proto_name << "* pdata = response.";
@@ -1016,29 +1098,29 @@ void writedbs_cpp(DBItem&item)
 		if (subit != item.dbtype.end())
 		{
 			if (subit->second == "datetime")
-				ss << "\t\t" << "pdate->set_" << it->second[i].name << "(result->GetDate(\"" << it->second[i].name << "\"));\n";
+				ss << "\t\t" << "pdata->set_" << it->second[i].name << "(result->GetDate(\"" << it->second[i].name << "\"));\n";
 				continue;
 		}
 
 		if (it->second[i].type == "int32")
 		{
-			ss << "\t\t" << "pdate->set_" << it->second[i].name << "(result->GetInt32(\"" << it->second[i].name << "\"));\n";
+			ss << "\t\t" << "pdata->set_" << it->second[i].name << "(result->GetInt32(\"" << it->second[i].name << "\"));\n";
 		}
 
 		if (it->second[i].type == "int64")
 		{
-			ss << "\t\t" << "pdate->set_" << it->second[i].name << "(result->GetInt64(\"" << it->second[i].name << "\"));\n";
+			ss << "\t\t" << "pdata->set_" << it->second[i].name << "(result->GetInt64(\"" << it->second[i].name << "\"));\n";
 		}
 
 		if (it->second[i].type == "string")
 		{
-			ss << "\t\t" << "pdate->set_" << it->second[i].name << "(result->GetString(\"" << it->second[i].name << "\"));\n";
+			ss << "\t\t" << "pdata->set_" << it->second[i].name << "(result->GetString(\"" << it->second[i].name << "\"));\n";
 		}
 
 		if (it->second[i].type == "proto" || it->second[i].type == "proto_s" ||
 			it->second[i].type == "int32_s" || it->second[i].type == "int64_s" || it->second[i].type == "string_s")
 		{
-			ss << "\t\tJsonConvert::JsonStringToProtoBuf(result->GetString(\"" << it->second[i].name << "\"),*pdate->mutable_" << it->second[i].name << "());\n";
+			ss << "\t\tJsonConvert::JsonStringToProtoBuf(result->GetString(\"" << it->second[i].name << "\"),*pdata->mutable_" << it->second[i].name << "());\n";
 		}
 
 		if (it->second[i].type == "int32_s" || it->second[i].type == "int64_s" || it->second[i].type == "string_s")
@@ -1051,8 +1133,65 @@ void writedbs_cpp(DBItem&item)
 	ss << "\t" << "conn->SendBuffer(" << item.response_id << ", response, 0);\n";
 	ss << "}\n\n";
 
-	string filename = item.table_name;
+	string filename = "dbs/";
+	filename += item.class_name;
 	filename += ".cpp";
+#ifdef _WIN32
+	FILE * m_hFile = _fsopen(filename.c_str(), "w+", _SH_DENYWR);
+#else
+	m_hFile = fopen(filename.c_str(), "a+");
+#endif
+
+	fwrite(ss.str().c_str(), ss.str().length(), 1, m_hFile);
+	fflush(m_hFile);
+	fclose(m_hFile);
+}
+
+void writeentity(DBItem&item)
+{
+	std::stringstream ss;
+	ss << "#pragma once\n\n";
+	ss << "struct " << item.table_name << "Item\n";
+	ss << "{\n";
+
+	auto it = proto::_proto_data_mgr.find(item.proto_name);
+	if (it == proto::_proto_data_mgr.end())
+	{
+		std::cout << "could not find " << item.proto_name;
+		return;
+	}
+	for (size_t i = 0; i < it->second.size(); i++)
+	{
+		if (it->second[i].type == "string")
+		{
+			ss << "\t" << "xstring" << "\t\t\t\t" << it->second[i].name << ";\n";
+		}
+		else
+		{
+			ss << "\t" << it->second[i].type << "\t\t\t\t" << it->second[i].name << ";\n";
+		}
+	}                                                         
+	ss << "\n\n";
+	ss << "\t" << "void fromPBMessage(const "<<item.proto_name<<" &proto_item)\n";
+	ss << "\t" << "{\n";
+	for (size_t i = 0; i < it->second.size(); i++)
+	{
+		ss << "\t\t" << it->second[i].name << " = proto_item." << it->second[i].name << "();\n";
+	}
+	ss << "\t" << "}\n";
+	ss << "\t" << "void toPBMessage(" << item.proto_name << " &proto_item) const\n";
+	ss << "\t" << "{\n";
+	for (size_t i = 0; i < it->second.size(); i++)
+	{
+		ss << "\t\t" << "proto_item.set_" << it->second[i].name << "(" << it->second[i].name << "); \n";
+	}
+	ss << "\t" << "}\n";
+	ss << "};\n";
+
+	string filename = "dbs/";
+	filename += item.table_name;
+	filename += "_entity";
+	filename += ".h";
 #ifdef _WIN32
 	FILE * m_hFile = _fsopen(filename.c_str(), "w+", _SH_DENYWR);
 #else
@@ -1068,6 +1207,8 @@ void writedbs(DBItem& item)
 {
 	writedbs_h(item);
 	writedbs_cpp(item);
+
+	writeentity(item);
 }
 
 void loaddb()

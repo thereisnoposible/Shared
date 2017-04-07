@@ -12,6 +12,8 @@ public:
 
 	LoginManager();
 	~LoginManager();
+
+	void Update();
 protected:
 	void registerMessage();
 

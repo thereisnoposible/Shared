@@ -16,9 +16,6 @@
     <Filter Include="http">
       <UniqueIdentifier>{55136148-ec5a-444f-9e69-bd4417c1b20c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="aoi">
-      <UniqueIdentifier>{3fc6c177-45b1-4cc1-b23a-c74834f5413c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="math">
       <UniqueIdentifier>{d5665af9-c813-4c2f-aa90-c351b65fbff6}</UniqueIdentifier>
     </Filter>
@@ -51,6 +48,12 @@
       <Filter>http</Filter>
     </ClInclude>
     <ClInclude Include="game_struct.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="pinger.h">
+      <Filter>http</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

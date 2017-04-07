@@ -53,5 +53,8 @@
     <ClCompile Include="..\..\new\proto\protobuf\player.pb.cc">
       <Filter>message</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\new\proto\protobuf\general.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

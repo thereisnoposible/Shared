@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8FF832F5-B65F-4671-B86B-ED6437CFE788}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>xlib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;LIBGAME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;F:\myproject\hh\xlib\src</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>12333.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib32;F:\myproject\hh\Public\Visual Leak Detector\lib\Win32;F:\myproject\hh\Public\mysql\mysql32\lib;F:\myproject\third_party;F:\myproject\third_party\mysql\mysql32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>12333.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\astar\AStar.h" />
+    <ClInclude Include="include\CircularQueue.h" />
+    <ClInclude Include="include\Config.h" />
+    <ClInclude Include="include\crashReport\crashReport.h" />
+    <ClInclude Include="include\define\define.h" />
+    <ClInclude Include="include\helper\Helper.h" />
+    <ClInclude Include="include\log\Log.h" />
+    <ClInclude Include="include\MessageHandle.h" />
+    <ClInclude Include="include\mysql\DBResult.h" />
+    <ClInclude Include="include\mysql\DBService.h" />
+    <ClInclude Include="include\mysql\DBSqlThread.h" />
+    <ClInclude Include="include\mysql\MysqlStmt.h" />
+    <ClInclude Include="include\netserver\NetClient.h" />
+    <ClInclude Include="include\netserver\NetPack.h" />
+    <ClInclude Include="include\netserver\NetService.h" />
+    <ClInclude Include="include\netserver\WebSocketProtocol.h" />
+    <ClInclude Include="include\Platform.h" />
+    <ClInclude Include="include\rank_template\rank_template.h" />
+    <ClInclude Include="include\timer\Timer.h" />
+    <ClInclude Include="include\timer\TimerManager.h" />
+    <ClInclude Include="include\timer\TimeWheel.h" />
+    <ClInclude Include="include\zlib\zconf.h" />
+    <ClInclude Include="include\zlib\zlib.h" />
+    <ClInclude Include="src\base64.h" />
+    <ClInclude Include="src\zlib\crc32.h" />
+    <ClInclude Include="src\zlib\deflate.h" />
+    <ClInclude Include="src\zlib\gzguts.h" />
+    <ClInclude Include="src\zlib\inffast.h" />
+    <ClInclude Include="src\zlib\inffixed.h" />
+    <ClInclude Include="src\zlib\inflate.h" />
+    <ClInclude Include="src\zlib\inftrees.h" />
+    <ClInclude Include="src\zlib\trees.h" />
+    <ClInclude Include="src\zlib\zutil.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\astar\AStar.cpp" />
+    <ClCompile Include="src\base64.cpp" />
+    <ClCompile Include="src\crashReport\crashReport.cpp" />
+    <ClCompile Include="src\helper\Helper.cpp" />
+    <ClCompile Include="src\log\Log.cpp" />
+    <ClCompile Include="src\mysql\DBResult.cpp" />
+    <ClCompile Include="src\mysql\DBService.cpp" />
+    <ClCompile Include="src\mysql\DBSqlThread.cpp" />
+    <ClCompile Include="src\mysql\MysqlStmt.cpp" />
+    <ClCompile Include="src\netserver\NetClient.cpp" />
+    <ClCompile Include="src\netserver\NetService.cpp" />
+    <ClCompile Include="src\netserver\WebSocketProtocol.cpp" />
+    <ClCompile Include="src\timer\TimerManager.cpp" />
+    <ClCompile Include="src\timer\TimeWheel.cpp" />
+    <ClCompile Include="src\zlib\adler32.c" />
+    <ClCompile Include="src\zlib\compress.c" />
+    <ClCompile Include="src\zlib\crc32.c" />
+    <ClCompile Include="src\zlib\deflate.c" />
+    <ClCompile Include="src\zlib\gzclose.c" />
+    <ClCompile Include="src\zlib\gzlib.c" />
+    <ClCompile Include="src\zlib\gzread.c" />
+    <ClCompile Include="src\zlib\gzwrite.c" />
+    <ClCompile Include="src\zlib\infback.c" />
+    <ClCompile Include="src\zlib\inffast.c" />
+    <ClCompile Include="src\zlib\inflate.c" />
+    <ClCompile Include="src\zlib\inftrees.c" />
+    <ClCompile Include="src\zlib\trees.c" />
+    <ClCompile Include="src\zlib\uncompr.c" />
+    <ClCompile Include="src\zlib\zutil.c" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="12333.def" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

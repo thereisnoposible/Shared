@@ -113,6 +113,13 @@ void Player::LoginGameResponse(PackPtr& pPack)
 	{
 		std::cout << response.data().id() << "\n";
 	}
+
+	if (response.has_idata())
+	{
+		std::cout << "dbid :" << response.idata().dbid() << "\n";
+		std::cout << "type :" << response.idata().type() << "\n";
+		std::cout << "bactive :" << response.idata().bactive() << "\n";
+	}
 }
 
 //-------------------------------------------------------------------------------------------

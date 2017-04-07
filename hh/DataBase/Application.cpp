@@ -39,11 +39,13 @@ void Application::Init()
 void Application::InitInterface()
 {
     m_pDBPlayer = new DBPlayer;
+	m_pDBObject = new DBObject;
 }
 
 void Application::DestoryInterface()
 {
     delete m_pDBPlayer;
+	delete m_pDBObject;
 }
 
 //-------------------------------------------------------------------------------------------

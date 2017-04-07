@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 #include "connect.h"
-#include "io_service_pool.h"
+#include "netserver/io_service_pool.h"
 
 namespace http
 {
@@ -16,13 +16,19 @@ namespace http
 		struct str_conn
 		{
 			std::shared_ptr<connect> conn;
-			std::function<void(http_response&)> callback;
+			std::function<bool(http_response&)> callback;
 		};
 
 		connect_manager();
 		~connect_manager();
 		void update();
-		void post(http_request& request, std::function<void(http_response&)> func);
+		void post(http_request& request, std::function<bool(http_response&)> func,
+			const std::string& proxy_ip = std::string(), const std::string& proxy_port = std::string());
+
+		void post_https(http_request& request, std::function<bool(http_response&)> func,
+			const std::string& proxy_ip = std::string(), const std::string& proxy_port = std::string());
+
+		size_t get_conn_size(){ return _post_conn.size(); }
 
 	private:
 		void on_finish(int32 id);

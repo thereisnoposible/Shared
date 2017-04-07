@@ -184,7 +184,7 @@ namespace proto
 
             if (temp.type == "int64")
             {
-                target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(temp.index, Helper::StringToInt64(temp.value), target);
+                target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(temp.index, Helper::StringToInt64(temp.value), target);
             }
 
             if (temp.type == "string")
@@ -247,7 +247,7 @@ namespace proto
 
             if (temp.type == "int64")
             {
-                ::google::protobuf::internal::WireFormatLite::WriteInt32(temp.index, Helper::StringToInt64(temp.value), &output);
+                ::google::protobuf::internal::WireFormatLite::WriteInt64(temp.index, Helper::StringToInt64(temp.value), &output);
             }
 
             if (temp.type == "string")

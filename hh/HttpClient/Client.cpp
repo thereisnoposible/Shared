@@ -1,12 +1,10 @@
 #include "Client.h"
 #include "json/json.h"
-#include "Helper.h"
+#include "helper/Helper.h"
 #include "json/json_reader.cpp"
 #include "json/json_value.cpp"
 #include "json/json_writer.cpp"
-#include "TimerManager.cpp"
 #include <assert.h>
-#include "TimeWheel.cpp"
 
 enum code
 {
@@ -22,6 +20,11 @@ enum code
 	NOT_EXIST = 9002,	//关卡不存在
 };
 
+int Client::ip1 = 36;
+int Client::ip2 = 17;
+int Client::ip3 = 0;
+int Client::ip4 = 0;
+
 std::unordered_map<int, std::string> codestr;
 
 void Client::registmessage()
@@ -29,6 +32,7 @@ void Client::registmessage()
 	m_message["as_login"] = std::bind(&Client::as_login, this, std::placeholders::_1);
 	m_message["set_mode"] = std::bind(&Client::set_mode, this, std::placeholders::_1);
     m_message["set_fight"] = std::bind(&Client::set_fight, this, std::placeholders::_1);
+	m_message["set_ip"] = std::bind(&Client::set_ip, this, std::placeholders::_1);
 
 	codestr[NOON_POWER] = "无体力";
 	codestr[NOON_ACCESS] = "之前小节未战斗";
@@ -76,7 +80,13 @@ Client::Client(std::string& plat)
     m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::Activeness, this, 90), -1);
     m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::Activeness, this, 120), -1);
 
-	m_pTimeWheel->AddTimer(60000, std::bind(&Client::ManorGet, this), -1);
+	m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::loulanPray, this), -1);
+	m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::prayReward, this), -1);
+
+	m_pTimeWheel->AddTimer(300000, std::bind(&Client::ManorGet, this), -1);
+
+	m_pTimeWheel->AddTimer(300000, std::bind(&Client::UseItem, this, 10009), -1);
+	m_pTimeWheel->AddTimer(300000, std::bind(&Client::UseItem, this, 10010), -1);
 
     m_pTimerManager->AddTriggerTimer(12, 1, 0, std::bind(&Client::GuildBoss, this), -1);
 
@@ -89,54 +99,125 @@ Client::Client(std::string& plat)
 
 	platform_ = "ios";
 	if (plat == "android")
+	{
 		platform_ = plat;
+	}
 
-    maf[30] = 3300;
-    maf[33] = 3900;
-    maf[34] = 4100;
-    maf[36] = 4500;
-    maf[37] = 4700;
+
     maf[40] = 5300;
+	maf[44] = 6100;
+	maf[46] = 6500;
+	maf[47] = 6700;
+	maf[48] = 6900;
 
     //fCurr = std::chrono::steady_clock::now();
     //for (int i = 0; i < 10000; i++)
     //{
-    //    http::http_request request;
-    //    if (platform_ == "ios")
-    //    {
-    //        request.type = HTTP_POST;
-    //        request.url = "/webreward";
-    //        request.host = "192.168.0.232:1234";
-    //        request.head["Content-Type"] = "application/x-www-form-urlencoded";
-    //        request.head["User-Agent"] = "Dalvik/1.6.0 (IOS; U; iphone 6.1)";
-    //        request.head["User-Agent"] = "PL.APPSTORE.CN/223 CFNetwork/758.2.8 Darwin/15.0.0";
-    //        request.head["Connection"] = "Keep-Alive";
-    //        request.head["Keep-Alive"] = "timeout= 5,max = 0";
-    //        request.head["Accept-Encoding"] = "gzip, deflate";
+	http::http_request request;
+	if (platform_ == "ios")
+	{
+		request.type = HTTP_GET;
+		request.url = "/";
+		request.host = "www.baidu.com";
 
-    //        request.body = "{\"data\":1,\"playerid\":28848,\"token\":\"a2dec883c64646e49814aa16a912852c\"}";
-    //        std::stringstream ss;
-    //        ss << request.body.size();
-    //        request.head["Content-Length"] = ss.str();
+		request.head["Proxy-Connection"] = "keep-alive";
+		request.head["Keep-Alive"] = "timeout = 10,max = 0";
+		request.head["Accept-Encoding"] = "gzip";
+		request.head["Accept"] = "text/html, application/xhtml+xml, */*";
+		request.head["User-Agent"] = "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko";
+		request.head["Cookie"] = "BAIDUID=F0435850FA49644A2253602E33CEABBB:FG=1";
+		request.head["Accept-Language"] = "zh-CN";
 
-    //        m_manager->post(request, std::bind(&Client::webreward_response, this, std::placeholders::_1));
-    //    }
+		std::stringstream ss;
+		ss << request.body.size();
+		request.head["Content-Length"] = ss.str();
+
+		m_manager->post_https(request, std::bind(&Client::webreward_response, this, std::placeholders::_1, 
+			std::string("117.86.64.21"), std::string("8998"), std::chrono::steady_clock::now()));
+	}
     //}
+
+	if (platform_ == "ios")
+	{
+		//m_pinger = new pinger(io_service);
+		//boost::thread* thr = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
+	}
 }
 
-void Client::webreward_response(http::http_response& response)
+#include "zlib/zlib.h"
+
+
+
+bool Client::webreward_response(http::http_response& response, std::string& addr, std::string& port, std::chrono::steady_clock::time_point& tim)
 {
     static int count = 0;
     count++;
 
+	std::string strrr;
+	strrr.resize(150000);
+	unsigned i = 150000;
+
+	int res = gzuncompress((Bytef*)response.body.c_str(), response.body.size(), (Bytef*)strrr.c_str(), (uLongf*)&i);
+	
+
+	std::chrono::steady_clock::time_point fLast = std::chrono::steady_clock::now();
+	std::chrono::duration<int, std::ratio<1000000>> usetime = std::chrono::duration_cast<std::chrono::duration<int, std::ratio<1000000>>>(fLast - tim);
+
+	//std::cout << usetime.count();
+
+	if (response.body.find("sds") != std::string::npos)
+	{
+		std::cout << addr << " : " << port << "\n";
+
+		std::string filename = "proxy.txt";
+#ifdef _WIN32
+		FILE * m_hFile = _fsopen(filename.c_str(), "a+", _SH_DENYWR);
+#else
+		m_hFile = fopen(filename.c_str(), "a+");
+#endif
+		std::string ss;
+		ss = addr;
+		ss += " : ";
+		ss += port;
+		ss += "\t\t use_time: ";
+		ss += Helper::Int32ToString(usetime.count());
+		ss += "\n";
+		fwrite(ss.c_str(), ss.length(), 1, m_hFile);
+		fflush(m_hFile);
+		fclose(m_hFile);
+	}
+
     if (count == 10000)
     {
         std::chrono::steady_clock::time_point fLast = std::chrono::steady_clock::now();
-        std::chrono::duration<double> usetime = std::chrono::duration_cast<std::chrono::duration<double>>(fLast - fCurr);
+		std::chrono::duration<int, std::ratio<1000>> usetime = std::chrono::duration_cast<std::chrono::duration<int, std::ratio<1000>>>(fLast - tim);
 
-        std::cout << usetime.count();
+        //std::cout << usetime.count();
+
+//		if (response.code == 200)
+//		{
+//			std::cout << addr << " : " << port << "\n";
+//
+//			std::string filename = "proxy.txt";
+//#ifdef _WIN32
+//			FILE * m_hFile = _fsopen(filename.c_str(), "a+", _SH_DENYWR);
+//#else
+//			m_hFile = fopen(filename.c_str(), "a+");
+//#endif
+//			std::string ss;
+//			ss = addr;
+//			ss += " : ";
+//			ss += port;
+//			ss += "\t\t use_time: ";
+//			ss += Helper::Int32ToString(usetime.count());
+//			ss += "\n";
+//			fwrite(ss.c_str(), ss.length(), 1, m_hFile);
+//			fflush(m_hFile);
+//			fclose(m_hFile);
+//		}
     }
 
+	return true;
 }
 
 Client::~Client()
@@ -152,15 +233,132 @@ Client::~Client()
 
 	delete m_manager;
 	delete m_pTimerManager;
+
+	io_service.stop();
+	//delete m_pinger;
 }
 
 void Client::run(double diff)
 {
 	m_manager->update();
-
-	m_pTimerManager->Update();
+	std::chrono::steady_clock::time_point _update_time = std::chrono::steady_clock::now();
+	m_pTimerManager->Update(_update_time);
  
     m_pTimeWheel->Update();
+
+
+	if (platform_ == "ios")
+	{
+		http::http_request request;
+
+		static int ports[] = {
+			80,
+			843,
+			808,
+			3128,
+			8000,
+			8008,
+			8080,
+			8081,
+			8082,
+			8090,
+			8088,
+			8089,
+			8111,
+			8118,
+			8123,
+			8668,
+			8888,
+			8998,
+			9000,
+			9797,
+			9898,
+			9999,
+			63000,
+			55336,
+			62222,
+		};
+
+		if (ip1 >= 224)
+			return;
+
+		if (m_manager->get_conn_size() > 5000)
+			return;
+
+		ip4 += 1;
+		if (ip4 > 255)
+		{
+			ip4 = 0;
+			ip3 += 1;
+			if (ip3 > 255)
+			{
+				ip3 = 0;
+				ip2 += 1;
+				if (ip2 > 255)
+				{
+					ip2 = 0;
+					ip1 += 1;
+					if (ip1 > 255)
+						return;
+
+					if (ip1 == 10)
+						ip1 = 11;
+
+					if (ip1 == 127)
+						ip1 = 128;
+				}
+
+				if (ip1 == 168 && ip2 == 192)
+					ip2 = 193;
+
+				if (ip1 == 169 && ip2 == 254)
+					ip2 = 255;
+
+				if (ip1 == 172 && ip2 == 16)
+					ip2 = 32;
+
+				if (ip1 == 192 && ip2 == 168)
+					ip2 = 169;
+
+				//std::cout << ip1 << ":" << ip2 << "\n";
+			}
+			//std::cout << ip1 << ":" << ip2 << ":" << ip3 << "\n";
+		}
+		if (request.host.empty())
+		{
+			request.type = HTTP_GET;
+			request.url = "http://mall.geely.com/a.txt";
+			request.host = "mall.geely.com";
+
+			request.head["Proxy-Connection"] = "keep-alive";
+			request.head["Keep-Alive"] = "timeout = 10,max = 0";
+			request.head["Accept-Encoding"] = "gzip, deflate";
+			request.head["Accept"] = "text/html, application/xhtml+xml, */*";
+			request.head["User-Agent"] = "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko";
+			request.head["Cookie"] = "BAIDUID=F0435850FA49644A2253602E33CEABBB:FG=1";
+			request.head["Accept-Language"] = "zh-CN";
+		}
+
+		std::string addr = Helper::Int32ToString(ip1);
+		addr += ".";
+		addr += Helper::Int32ToString(ip2);
+		addr += ".";
+		addr += Helper::Int32ToString(ip3);
+		addr += ".";
+		addr += Helper::Int32ToString(ip4);
+
+		for (int i = 0; i < sizeof(ports) / sizeof(int); i++)
+		{
+			std::string por = Helper::Int32ToString(ports[i]);
+			//m_manager->post(request, std::bind(&Client::webreward_response, this, std::placeholders::_1, addr, por, _update_time), addr, por);
+		}
+
+		//m_pinger->start_send(addr.c_str());
+		//m_pinger->start_send("115.28.167.223");
+		
+		//m_manager->post(request, std::bind(&Client::webreward_response, this, std::placeholders::_1,
+			//std::string("115.28.167.223"), std::string("80"), _update_time), "121.199.9.161", "3128");
+	}
 }
 
 void Client::run_fight()
@@ -234,7 +432,6 @@ void Client::run_fight()
                     if (exit->second.todayTimes < 5)
                     {
                         fight(exit->second.mid);
-                        cpit->second.pres++;
                         return;
                     }
                 }
@@ -304,10 +501,13 @@ void Client::as_login_ticket()
 	}
 }
 
-void Client::as_login_ticket_response(http::http_response& response)
+bool Client::as_login_ticket_response(http::http_response& response)
 {
 	if (response.code != 200)
-		abort();
+	{
+		as_login_ticket();
+		return false;
+	}
 
 	Json::Reader reader;
 	Json::Value value;
@@ -357,12 +557,17 @@ void Client::as_login_ticket_response(http::http_response& response)
 	}
 
 	m_manager->post(request, std::bind(&Client::as_login_response, this, std::placeholders::_1));
+
+	return true;
 }
 
-void Client::as_login_response(http::http_response& response)
+bool Client::as_login_response(http::http_response& response)
 {
 	if (response.code != 200)
-		abort();
+	{
+		as_login_ticket();
+		return false;
+	}
 	Json::Reader reader;
 	Json::Value value;
 	reader.parse(response.body, value, false);
@@ -370,6 +575,8 @@ void Client::as_login_response(http::http_response& response)
 	token = value["token"].asString();
 
 	loggedin();
+
+	return true;
 }
 
 void Client::loggedin()
@@ -452,10 +659,13 @@ void Client::loggedin()
 	m_manager->post(request, std::bind(&Client::loggedin_response, this, std::placeholders::_1));
 
 }
-void Client::loggedin_response(http::http_response& response)
+bool Client::loggedin_response(http::http_response& response)
 {
 	if (response.code != 200)
-		abort();
+	{
+		as_login_ticket();
+		return false;
+	}
 	http::http_request request;
 	if (platform_ == "ios")
 	{
@@ -488,12 +698,17 @@ void Client::loggedin_response(http::http_response& response)
 		request.pend_flag = "0\r\n\r\n";
 	}
 	m_manager->post(request, std::bind(&Client::login_cb_response, this, std::placeholders::_1));
+
+	return true;
 }
 
-void Client::login_cb_response(http::http_response& response)
+bool Client::login_cb_response(http::http_response& response)
 {
 	if (response.code != 200)
-		abort();
+	{
+		as_login_ticket();
+		return false;
+	}
 	Json::Reader reader;
 	Json::Value value;
 	int pos = response.body.find("{");
@@ -548,17 +763,24 @@ void Client::login_cb_response(http::http_response& response)
 	request.pend_flag = "0\r\n\r\n";
 
 	m_manager->post(request, std::bind(&Client::login_response, this, std::placeholders::_1));
+
+	return true;
 }
 
-void Client::login_response(http::http_response& response)
+bool Client::login_response(http::http_response& response)
 {
 	if (response.code != 200)
-		abort();
+	{
+		as_login_ticket();
+		return false;
+	}
 	cookie = response.head["Set-Cookie"];
 	int pos = cookie.find(";");
 	cookie = cookie.substr(0, pos);
 
 	init();
+
+	return true;
 }
 
 std::string Client::parse(std::string& temp)
@@ -635,6 +857,10 @@ void Client::init()
     GuildBoss();
     CupSignUp();
     ManorGet();
+	Wish();
+
+	//luckyTurnHappyReset(2400);
+	//luckyTurnHappyAward(2, 2400);
     if (m_step != nullptr)
     {
         m_pTimerManager->RemoveTimer(m_step);
@@ -648,28 +874,30 @@ void Client::post(http::http_request request, std::function<void(Json::Value&)> 
 	m_manager->post(request, std::bind(&Client::post_callback, this, std::placeholders::_1, value));
 }
 
-void Client::post_callback(http::http_response response, std::function<void(Json::Value&)> func)
+bool Client::post_callback(http::http_response response, std::function<void(Json::Value&)> func)
 {
 	//assert(response.code == 200);
 	if (response.code != 200)
 	{
-		return;
+		return true;
 	}
 
-	std::string& body = parse(response.body);
+	std::string body = (response.body);
 
 	Json::Reader reader;
 	Json::Value value;
-	int pos = body.find("{\"code");
+	int pos = body.find("{");
 	int rpos = body.rfind("}");
 
 	if (pos == std::string::npos || rpos == std::string::npos)
-		return;
+		return true;
 	body = body.substr(pos, rpos - pos + 1);
 	reader.parse(body, value, false);
 
 	if (!func._Empty())
 		func(value);
+
+	return true;
 }
 
 void Client::request_init_data()
@@ -850,6 +1078,14 @@ void Client::playgame_response(int map, Json::Value& value)
 			return;
 		case Success:
 			pow -= 1;
+			{
+				auto it = m_pChapter.find(map / 100);
+				if (it != m_pChapter.end())
+				{
+					it->second.pres++;
+				}
+			}
+
 		case NOON_WAIT:
 			break;
 		case NEED_PERMISSION:
@@ -920,6 +1156,19 @@ void Client::set_fight(std::string& param)
 
     fight_low = Helper::StringToInt32(vec[0]);
     fight_high = Helper::StringToInt32(vec[1]);
+}
+
+void Client::set_ip(std::string& param)
+{
+	std::vector<std::string> vec;
+	Helper::SplitString(param, " ", vec);
+	if (vec.size() < 4)
+		return;
+
+	ip1 = Helper::StringToInt32(vec[0]);
+	ip2 = Helper::StringToInt32(vec[1]);
+	ip3 = Helper::StringToInt32(vec[2]);
+	ip4 = Helper::StringToInt32(vec[3]);
 }
 
 void Client::get_challenge()
@@ -1097,7 +1346,7 @@ void Client::getHero_response(Json::Value& value)
 		request.host = "pl-game.thedream.cc";
 		request.head["Cookie"] = cookie;
 		request.pend_flag = "0\r\n\r\n";
-		m_manager->post(request, std::function<void(http::http_response&)>());
+		m_manager->post(request, std::function<bool(http::http_response&)>());
 	}
 }
 
@@ -1166,7 +1415,7 @@ void Client::startTowerFight_response(Json::Value& value)
 			request.head["Cookie"] = cookie;
 			request.pend_flag = "0\r\n\r\n";
 
-			m_manager->post(request, std::function<void(http::http_response&)>());
+			m_manager->post(request, std::function<bool(http::http_response&)>());
 		}
 		if (value["data"]["win"].asBool() == false)
 		{
@@ -1224,11 +1473,11 @@ void Client::startWorldBoss_response(Json::Value& value)
     http::http_request request;
     request.type = HTTP_GET;
     request.url = "/s20042/port/interface.php?s=WorldBoss&m=play&a={\"damages\":[";
-    int loop_count = Helper::GetRandom(69,72);
+    int loop_count = Helper::GetRandom(74,75);
     for (int i = 0; i < loop_count; i++)
     {
         double range = Helper::GetRandom(0.0, 1.0);
-        int fight_value = fight_low;
+		int fight_value = fight_low;
         if (range > 0.8)
         {
             fight_value = fight_high;
@@ -1972,9 +2221,9 @@ void Client::ManorGet_response(Json::Value& value)
     }
     
     int count = m_wid_vec.size() - 1;
-    for (int i = 0; i < task_vec.size(); i++)
+    for (size_t i = 0; i < task_vec.size(); i++)
     {
-        if (count < 0)
+		if (count <= 0)
             return;
 
         if (worker.find(m_wid_vec[count]) != worker.end())
@@ -1990,7 +2239,7 @@ void Client::ManorGet_response(Json::Value& value)
 
     for (int i = 1; i < 5; i++)
     {
-        if (count < 0)
+		if (count <= 0)
             return;
 
         if (worker.find(m_wid_vec[count]) != worker.end())
@@ -2007,7 +2256,7 @@ void Client::ManorGet_response(Json::Value& value)
     int Order[] = { 301, 302, 303, 202 };
     for (int i = 0; i < 4; i++)
     {
-        if (count < 0)
+		if (count <= 0)
             return;
 
         if (worker.find(m_wid_vec[count]) != worker.end())
@@ -2021,9 +2270,9 @@ void Client::ManorGet_response(Json::Value& value)
         ManordoOrder(Order[i], m_wid_vec[count]);
     }
 
-    for (int i = 1; i <= 3; i++)
+    for (int i = 1; i <= 4; i++)
     {
-        if (count < 0)
+        if (count <= 0)
             return;
 
         if (worker.find(m_wid_vec[count]) != worker.end())
@@ -2034,7 +2283,7 @@ void Client::ManorGet_response(Json::Value& value)
         }
 
         count--;
-        Manorfish(1001, i, m_wid_vec[count]);
+		Manorfish(1103, i, m_wid_vec[count]);
     }
 }
 
@@ -2071,7 +2320,50 @@ void Client::ManordoTask(int task, int wid)
     request.head["Cookie"] = cookie;
     request.pend_flag = "0\r\n\r\n";
 
-    post(request, std::function<void(Json::Value&)>());
+	post(request, std::bind(&Client::ManorRespone, this, std::placeholders::_1, 1, task, wid));
+}
+
+void Client::ManorRespone(Json::Value& value, int type, int manor, int wid)
+{
+	if (Helper::StringToInt32(value["code"].asString()) != 0)
+	{
+		int code = Helper::StringToInt32(value["code"].asString());
+		int pos = -1;
+		for (int i = 0; i < (int)m_wid_vec.size(); i++)
+		{
+			if (m_wid_vec[i] == wid)
+			{
+				pos = i - 1;
+				break;
+			}
+		}
+
+		if (pos < 0)
+			return;
+
+		if (code == 6202 || code == 9002 || code == 6223 || code == 6203 || code == 6224 || code == 6222)
+			return;
+
+		if (type == 1)
+		{
+			ManordoTask(manor, m_wid_vec[pos]);
+		}
+
+		if (type == 2)
+		{
+			ManordojoTrain(manor, m_wid_vec[pos]);
+		}
+
+		if (type == 3)
+		{
+			ManordoOrder(manor, m_wid_vec[pos]);
+		}
+
+		if (type == 4)
+		{
+			Manorfish(1103, manor, m_wid_vec[pos]);
+		}
+	}
 }
 
 void Client::ManordojoReward(int pid)
@@ -2107,7 +2399,7 @@ void Client::ManordojoTrain(int pid, int wid)
     request.head["Cookie"] = cookie;
     request.pend_flag = "0\r\n\r\n";
 
-    post(request, std::function<void(Json::Value&)>());
+	post(request, std::bind(&Client::ManorRespone, this, std::placeholders::_1, 2, pid, wid));
 }
 
 void Client::ManorfishReward(int wid)
@@ -2145,7 +2437,7 @@ void Client::Manorfish(int bid, int pid, int wid)
     request.head["Cookie"] = cookie;
     request.pend_flag = "0\r\n\r\n";
 
-    post(request, std::function<void(Json::Value&)>());
+	post(request, std::bind(&Client::ManorRespone, this, std::placeholders::_1, 4, pid, wid));
 }
 
 void Client::ManororderReward(int wid)
@@ -2181,5 +2473,106 @@ void Client::ManordoOrder(int oid, int wid)
     request.head["Cookie"] = cookie;
     request.pend_flag = "0\r\n\r\n";
 
-    post(request, std::function<void(Json::Value&)>());
+	post(request, std::bind(&Client::ManorRespone, this, std::placeholders::_1, 3, oid, wid));
+}
+
+void Client::UseItem(int id)
+{
+	http::http_request request;
+	request.type = HTTP_GET;
+	request.url = "/s20042/port/interface.php?s=Item&m=useItem&a={\"id\":";
+	request.url += Helper::Int32ToString(id);
+	request.url += ",\"newName\":\"\",\"noSort\":1,\"num\":-1}&v=";
+	request.url += version;
+	request.url += "&sys=";
+	request.url += platform_;
+	request.host = "pl-game.thedream.cc";
+	request.head["Cookie"] = cookie;
+	request.pend_flag = "0\r\n\r\n";
+
+	post(request, nullptr);
+}
+
+void Client::Wish()
+{
+	if (platform_ == "ios")
+		return;
+
+	http::http_request request;
+	request.type = HTTP_GET;
+	request.url = "/s20042/port/interface.php?s=Wish&m=wish&a={\"isTen\":0,\"wishes\":[151,1]}&v=";
+	request.url += version;
+	request.url += "&sys=";
+	request.url += platform_;
+	request.host = "pl-game.thedream.cc";
+	request.head["Cookie"] = cookie;
+	request.pend_flag = "0\r\n\r\n";
+
+	post(request, nullptr);
+}
+
+void Client::luckyTurnHappyReset(int aid)
+{
+	http::http_request request;
+	request.type = HTTP_GET;
+	request.url = "/s20042/port/interface.php?s=Activity&m=luckyTurnHappyReset&a={\"aid\":";
+	request.url += Helper::Int32ToString(aid);
+	request.url+="}&v=";
+	request.url += version;
+	request.url += "&sys=";
+	request.url += platform_;
+	request.host = "pl-game.thedream.cc";
+	request.head["Cookie"] = cookie;
+	request.pend_flag = "0\r\n\r\n";
+
+	post(request, nullptr);
+}
+
+void Client::luckyTurnHappyAward(int id, int aid)
+{
+	http::http_request request;
+	request.type = HTTP_GET;
+	request.url = "/s20042/port/interface.php?s=Activity&m=luckyTurnHappyAward&a={\"id\":";
+	request.url += Helper::Int32ToString(id);
+	request.url +=",\"aid\":";
+	request.url += Helper::Int32ToString(aid);
+	request.url += "}&v=";
+	request.url += version;
+	request.url += "&sys=";
+	request.url += platform_;
+	request.host = "pl-game.thedream.cc";
+	request.head["Cookie"] = cookie;
+	request.pend_flag = "0\r\n\r\n";
+
+	post(request, nullptr);
+}
+
+void Client::loulanPray()
+{
+	http::http_request request;
+	request.type = HTTP_GET;
+	request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=loulanPray&a={}&v=";
+	request.url += version;
+	request.url += "&sys=";
+	request.url += platform_;
+	request.host = "pl-game.thedream.cc";
+	request.head["Cookie"] = cookie;
+	request.pend_flag = "0\r\n\r\n";
+
+	post(request, nullptr);
+}
+
+void Client::prayReward()
+{
+	http::http_request request;
+	request.type = HTTP_GET;
+	request.url = "/s20042/port/interface.php?s=WeeklyActivity&m=prayReward&a={}&v=";
+	request.url += version;
+	request.url += "&sys=";
+	request.url += platform_;
+	request.host = "pl-game.thedream.cc";
+	request.head["Cookie"] = cookie;
+	request.pend_flag = "0\r\n\r\n";
+
+	post(request, nullptr);
 }

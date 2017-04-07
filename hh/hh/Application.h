@@ -12,6 +12,8 @@
 #include "TimeWheel.h"
 #include "proto_data.h"
 
+#include "MysqlStmt.h"
+
 class Application : public NetObserver, public Singleton<Application>
 {
 public:
@@ -22,6 +24,8 @@ public:
 
 	void OnConnect(ConnectPtr&);
 	void OnDisConnect(ConnectPtr&);
+
+	void loadTable();
 
 	int64 getDBID();
 
@@ -44,6 +48,11 @@ public:
 	{
 		return m_ServerTime;
 	}
+
+	MysqlStmt& GetMysqlStmt()
+	{
+		return *m_pMysqlStmt;
+	}
 private:
     AccountNetClient* m_pAccount;
     DBNetClient* m_pDatabase;
@@ -57,6 +66,8 @@ private:
 	TimerManager* m_pTimerManager;
 	timewheel::TimeWheel* m_pTimeWheel;
 
+	MysqlStmt* m_pMysqlStmt;
+
 	DBService* m_pDBService;
 
 	int64 m_dbid;
@@ -69,3 +80,4 @@ private:
 #define sApp Application::getInstance()
 #define sNetService Application::getInstance().GetNetService()
 #define sTimer Application::getInstance().GetTimeWheel()
+#define sStmt sApp.GetMysqlStmt()

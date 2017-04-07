@@ -1,0 +1,59 @@
+<entities>
+    <entity type = "idandnum">
+	<filed type="int32" name="id" />
+	<filed type="int32" name="num" />
+    </entity>
+</entities>
+
+<classes>
+    <class table_name = "type_npc_talk">
+	<fileds>
+	    <field type="int32" name="npc_id" key="1" keyindex = "1"/>
+	    <field type="string" name="npc_name" />
+	    <field type="string" name="content" />
+	    <field type="string" name="talk_content" />
+	</fileds>
+	<split>
+	    <member type="vector" subtype = "int32" name = "talk_contents" src = "talk_content" split="," >
+	    </member>
+	</split> 
+    </class>
+
+    <class table_name = "type_sell_props">
+	<fileds>
+	    <field type="int32" name="npc_id" key="1" keyindex = "1"/>
+	    <field type="int32" name="id" key="1" keyindex = "2"/>
+	    <field type="string" name="name" />
+	    <field type="int32" name="price" />
+	    <field type="int32" name="num" />
+	</fileds>
+	<split>
+	</split> 
+    </class>
+
+    <class table_name = "type_npc_action">
+	<fileds>
+	    <field type="int32" name="action_id" key="1" keyindex = "1"/>
+	    <field type="string" name="action_content"/>
+	    <field type="int32" name="action_type" />
+	    <field type="string" name="type_content" />
+	    <field type="int32" name="server_action" />
+	    <field type="string" name="server_action_param" />
+	</fileds>
+	<split>
+	</split> 
+    </class>
+
+    <class table_name = "type_prop">
+	<fileds>
+	    <field type="int32" name="id" key="1" keyindex = "1"/>
+	    <field type="string" name="name"/>
+	    <field type="string" name="desc"/>
+	    <field type="int32" name="type" />
+	    <field type="int32" name="sub_type" />
+	    <field type="int32" name="append" />
+	</fileds>
+	<split>
+	</split> 
+    </class>
+</classes>

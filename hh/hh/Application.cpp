@@ -5,6 +5,11 @@
 #include <iostream>
 #include "Initialer.h"
 
+#include "table/type_sell_props.h"
+#include "table/type_prop.h"
+#include "table/type_npc_talk.h"
+#include "table/type_npc_action.h"
+
 Application* Singleton<Application>::single = nullptr;
 
 //-------------------------------------------------------------------------------------------
@@ -14,8 +19,13 @@ Application::Application()
 
 	m_pNetService->RegistObserver(this);
 
+	m_pMysqlStmt = new MysqlStmt;
+	m_pMysqlStmt->Open("127.0.0.1", "root", "123456", "accdb");
+
 	m_pDBService = new DBService(4);
 	m_pDBService->Open("127.0.0.1", "root", "123456", "accdb");
+
+	loadTable();
 	
 	m_pTimerManager = new TimerManager();
 	m_pTimeWheel = new timewheel::TimeWheel();
@@ -128,6 +138,22 @@ void Application::OnConnect(ConnectPtr&pConnect)
 void Application::OnDisConnect(ConnectPtr& pConnect)
 {
 	m_pPlayerMgr->getInstance().OnDisConnect(pConnect);
+}
+
+//-------------------------------------------------------------------------------------------
+void Application::loadTable()
+{
+	if (s_type_npc_actionTable.create())
+		s_type_npc_actionTable.Load();
+
+	if (s_type_npc_talkTable.create())
+		s_type_npc_talkTable.Load();
+
+	if (s_type_propTable.create())
+		s_type_propTable.Load();
+
+	if (s_type_sell_propsTable.create())
+		s_type_sell_propsTable.Load();
 }
 
 //-------------------------------------------------------------------------------------------

@@ -1,8 +1,9 @@
-#include "pch.h"
 #include "proto_data.h"
 #include "Helper.h"
 
 #include <fstream>
+#include "Platform.h"
+#include <io.h>
 
 //#include "google/protobuf/io/zero_copy_stream_impl.cc"
 //#include "google/protobuf/wire_format_lite.cc"
@@ -180,7 +181,7 @@ namespace proto
 
             if (temp.type == "int64")
             {
-                target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(temp.index, Helper::StringToInt64(temp.value), target);
+                target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(temp.index, Helper::StringToInt64(temp.value), target);
             }
 
             if (temp.type == "string")
@@ -243,7 +244,7 @@ namespace proto
 
             if (temp.type == "int64")
             {
-                ::google::protobuf::internal::WireFormatLite::WriteInt32(temp.index, Helper::StringToInt64(temp.value), &output);
+                ::google::protobuf::internal::WireFormatLite::WriteInt64(temp.index, Helper::StringToInt64(temp.value), &output);
             }
 
             if (temp.type == "string")
@@ -505,14 +506,14 @@ namespace proto
 
     xmap<xstring, proto_data> _proto_data_mgr;
 
-    void auto_load_proto(string path, xstring Wild, vector<string>& files)
+    void auto_load_proto(xstring path, xstring Wild, std::vector<xstring>& files)
     {
-#ifdef _WINDOWS_
+//#ifdef ZS_WINOS
         //文件句柄 
         long  hFile = 0;
         //文件信息 
         struct _finddata_t fileinfo;
-        string p;
+        xstring p;
 
         if ((hFile = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1)
         {
@@ -540,7 +541,7 @@ namespace proto
             } while (_findnext(hFile, &fileinfo) == 0);
             _findclose(hFile);
         }
-#endif // _WINDOWS_
+//#endif // _WINDOWS_
 
     }
 
@@ -612,14 +613,14 @@ namespace proto
 
     void load_proto(xstring& filename)
     {
-        ifstream file;
+        std::ifstream file;
         file.open(filename.c_str());
         xstring str;
         if (file && !file.eof())
         {
-            file.seekg(0, ios::end);
+            file.seekg(0, std::ios::end);
             int32 num = file.tellg();
-            file.seekg(0, ios::beg);
+			file.seekg(0, std::ios::beg);
             str.resize(num);
             if (num != 0)
                 file.read(&*str.begin(), num);
@@ -714,6 +715,7 @@ namespace proto
         {
             xvector<xstring> file;
             auto_load_proto("proto", "*.txt", file);
+			auto_load_proto("proto", "*.proto", file);
 
             for (int32 i = 0; i < file.size(); i++)
             {

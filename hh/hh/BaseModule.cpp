@@ -5,7 +5,7 @@
 
 ModuleFactory::ModuleFactory(const std::string& name) : m_ModuleName(name)
 {
-	ModuleManager::getInstance().registerFactory(this);
+	//ModuleManager::getInstance().registerFactory(this);
 }
 
 ModuleFactory::~ModuleFactory(void)

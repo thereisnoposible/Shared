@@ -2,10 +2,12 @@
 #include "ModuleManager.h"
 #include "Player.h"
 
+#include "ObjectModule.h"
+
 ModuleManager* Singleton<ModuleManager>::single = NULL;
 ModuleManager::ModuleManager()
 {
-
+	registerFactory(new ObjectFactory());
 }
 ModuleManager::~ModuleManager()
 {

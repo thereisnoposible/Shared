@@ -4,18 +4,9 @@
 #include "sourceMap.h"
 #include "PlayerMgr.h"
 #include "MapManager.h"
-
 #include <boost/any.hpp>
 
-bool cmpp(int32 a)
-{
-	if (a <= 0)
-	{
-		return true;
-	}
-
-	return false;
-}
+#include "table/type_sell_props.h"
 
 Player::Player(PlayerData& p) : _UniqueCount(0), speed(10), AOI::Entity(p.id, AOI::EntityTypePlayer)
 {
@@ -29,7 +20,13 @@ Player::Player(PlayerData& p) : _UniqueCount(0), speed(10), AOI::Entity(p.id, AO
 	head->AddIComponent(power_type_attack, 1, com_property_self);
 	head->AddIComponent(power_type_equip, 1, com_property_self);
 	head->AddIComponent(power_type_hp, 10, com_property_self);
-	head->SetCallBack(power_type_hp, std::bind(cmpp, std::placeholders::_1), 
+	head->SetCallBack(power_type_hp, std::bind([](int32 a)->bool{
+		if (a <= 0)
+		{
+			return true;
+		}
+		return false;
+	}, std::placeholders::_1),
 		std::bind(&Player::OnPlayerDead, this, std::placeholders::_1));
 	m_RootComponent->AddINode(head);
 
@@ -370,7 +367,8 @@ class Action
 class NPC
 {
 	int32 id;
-	int32 first;
+	xstring name;
+	xstring content;
 	std::unordered_map<int32, Action> action;
 };
 
@@ -483,8 +481,21 @@ void Player::processGoumai(PackPtr& pPack)
 	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
 	pm_goumai_response response;
 
-	response.set_result(0);
+	int32 result = [&]()->int32{
 
+		TABLE::type_sell_props* pProps = s_type_sell_propsTable.Get1(request.npcid(), request.propid());
+		if (!pProps)
+			return 1;
+
+		pProps->price += 1;
+		pProps->num -= 1;
+
+		return 0;
+	}();
+
+	response.set_result(result);
+	
+	SendProtoBuf(GM_GOUMAI_RESPONSE, response);
 }
 
 void Player::onOtherEntityMove(Entity* entity)

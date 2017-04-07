@@ -53,7 +53,8 @@ void Application::run()
 //-------------------------------------------------------------------------------------------
 void Application::update(double diff)
 {
+	std::chrono::steady_clock::time_point _update_time = std::chrono::steady_clock::now();
     sNetService.update();
     server.update();
-	m_pTimerManager->Update();
+	m_pTimerManager->Update(_update_time);
 }

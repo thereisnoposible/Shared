@@ -10,5 +10,6 @@ public:
 
 protected:
     void PlayerResponse(PackPtr& pPack);
+	void ObjectResponse(PackPtr& pPack);
 private:
 };

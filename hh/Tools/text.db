@@ -40,4 +40,16 @@
 		<proto name="query" req_id="GM_REQUEST_MAOXIAN_INFO" req_name="pm_request_maoxian_info" response_id="GM_MAOXIAN_INFO_RESPONSE" response_name="pm_playerdata_db_response" key="playerid" />
 	</protos>
     </db>
+
+    <db table_name = "object" class_name = "DBObject" proto_name = "pm_object" primary_key = "dbid" >
+	<members>
+
+	</members>
+	<protos>
+		<proto name="insert" req_id="GM_INSERT_OBJECT" />
+		<proto name="update" req_id="GM_UPDATE_OBJECT" />
+		<proto name="delete" req_id="GM_DELETE_OBJECT" />
+		<proto name="query" req_id="GM_OBJECT_DATA_DB" req_name="pm_object_data_db" response_id="GM_OBJECT_DATA_RESPONSE_DB" response_name="pm_object_data_response_db" key="playerid" />
+	</protos>
+    </db>
 </dbs>

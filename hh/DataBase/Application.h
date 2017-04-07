@@ -5,6 +5,7 @@
 #include "NetClient.h"
 #include "MysqlStmt.h"
 #include "DBPlayer.h"
+#include "DBObject.h"
 
 class Application : public Singleton<Application>
 {
@@ -37,6 +38,7 @@ private:
     MysqlStmt* m_pMysqlStmt;
 
     DBPlayer* m_pDBPlayer;
+	DBObject* m_pDBObject;
 };
 
 #define sApp Application::getInstance()

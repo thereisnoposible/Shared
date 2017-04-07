@@ -41,6 +41,8 @@ Application::~Application()
 //-------------------------------------------------------------------------------------------
 void Application::update(double diff)
 {
+	std::chrono::steady_clock::time_point fCurr = std::chrono::steady_clock::now();
+
 	if (m_pNetService != nullptr)
 	{
 		m_pNetService->update();
@@ -48,9 +50,13 @@ void Application::update(double diff)
 
 	if (m_pTimerManager != nullptr)
 	{
-		m_pTimerManager->Update();
+		m_pTimerManager->Update(fCurr);
 	}
 
+	if (m_pLoginManager)
+	{
+		m_pLoginManager->Update();
+	}
 }
 
 //-------------------------------------------------------------------------------------------

@@ -83,14 +83,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINSOCK_DEPRECATED_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party\g3dlite</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party\g3dlite;F:\myproject\hh\HttpClient;F:\myproject\hh\HttpClient\openssl;../Public\zlib;../Public\gzip;F:\myproject\hh\HttpClient\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib32;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib32;F:\myproject\hh\HttpClient\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libeay32.lib;ssleay32.lib;xlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -160,6 +161,8 @@
     <ClInclude Include="connect_manager.h" />
     <ClInclude Include="game_struct.h" />
     <ClInclude Include="http_define.h" />
+    <ClInclude Include="pinger.h" />
+    <ClInclude Include="zlib.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
