@@ -1,18 +1,22 @@
 #pragma once
-#include "NetService.h"
+#include "netserver/NetService.h"
 #include "Player.h"
 #include "ModuleManager.h"
-#include "Log.h"
+#include "log/Log.h"
 #include "PlayerMgr.h"
 #include "MapManager.h"
-#include "TimerManager.h"
-#include "NetClient.h"
+#include "timer/TimerManager.h"
+#include "netserver/NetClient.h"
 #include "AccountNetClient.h"
 #include "DBNetClient.h"
-#include "TimeWheel.h"
+#include "timer/TimeWheel.h"
 #include "proto_data.h"
 
-#include "MysqlStmt.h"
+#include "mysql/MysqlStmt.h"
+#include "CoroutineManager.h"
+#include "NPCManager.h"
+
+using namespace xlib;
 
 class Application : public NetObserver, public Singleton<Application>
 {
@@ -26,6 +30,7 @@ public:
 	void OnDisConnect(ConnectPtr&);
 
 	void loadTable();
+	void destoryTable();
 
 	int64 getDBID();
 
@@ -53,6 +58,11 @@ public:
 	{
 		return *m_pMysqlStmt;
 	}
+
+	LogService& GetLogServer()
+	{
+		return *m_pLogServer;
+	}
 private:
     AccountNetClient* m_pAccount;
     DBNetClient* m_pDatabase;
@@ -60,15 +70,17 @@ private:
 	NetService* m_pNetService;
 	ModuleManager *m_pModuleMgr;
 	LogService* m_pLogServer;
-	TypeTable* m_pTypeTable;
+	//TypeTable* m_pTypeTable;
 	PlayerManager* m_pPlayerMgr;
 	MapManager* m_pMapMgr;
 	TimerManager* m_pTimerManager;
 	timewheel::TimeWheel* m_pTimeWheel;
+	CoroutineManager* m_pCoroutineManager;
+	NPCManager* m_pNPCManager;
 
 	MysqlStmt* m_pMysqlStmt;
 
-	DBService* m_pDBService;
+	xlib::DBService* m_pDBService;
 
 	int64 m_dbid;
 	int32 m_increment;

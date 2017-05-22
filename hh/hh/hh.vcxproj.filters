@@ -25,6 +25,9 @@
     <Filter Include="entity">
       <UniqueIdentifier>{4fe510eb-f8a1-4ff9-8fbb-4506319fdf0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="event">
+      <UniqueIdentifier>{96354163-9ca9-4c23-a5d9-1d375d806075}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,9 +51,6 @@
     <ClCompile Include="BaseModule.cpp">
       <Filter>头文件</Filter>
     </ClCompile>
-    <ClCompile Include="Log.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="MapManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -62,9 +62,6 @@
     </ClCompile>
     <ClCompile Include="..\..\new\proto\protobuf\player.pb.cc">
       <Filter>message</Filter>
-    </ClCompile>
-    <ClCompile Include="XinfaModule.cpp">
-      <Filter>module</Filter>
     </ClCompile>
     <ClCompile Include="..\..\new\proto\protobuf\xinfa.pb.cc">
       <Filter>message</Filter>
@@ -90,6 +87,15 @@
     <ClCompile Include="..\..\new\proto\protobuf\object.pb.cc">
       <Filter>message</Filter>
     </ClCompile>
+    <ClCompile Include="CoroutineManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NPCManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FightManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -110,17 +116,11 @@
     <ClInclude Include="BaseModule.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Log.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="MapManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Cell.h">
       <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="XinfaModule.h">
-      <Filter>module</Filter>
     </ClInclude>
     <ClInclude Include="Initialer.h">
       <Filter>头文件</Filter>
@@ -151,6 +151,15 @@
     </ClInclude>
     <ClInclude Include="entity\object_entity.h">
       <Filter>entity</Filter>
+    </ClInclude>
+    <ClInclude Include="CoroutineManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NPCManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FightManager.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

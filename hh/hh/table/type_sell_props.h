@@ -7,7 +7,7 @@ class type_sell_props
 public:
 	int32		npc_id;
 	int32		id;
-	xstring		name;
+	std::string		name;
 	int32		price;
 	int32		num;
 

@@ -88,6 +88,7 @@ Player::Player(PlayerData& p) : _UniqueCount(0), speed(10), AOI::Entity(p.id, AO
 	RegisterNetMsgHandle(GM_XUANXIANG, std::bind(&Player::processXuanxiang, this, std::placeholders::_1));
 
 	RegisterNetMsgHandle(GM_GOUMAI, std::bind(&Player::processGoumai, this, std::placeholders::_1));
+
 }
 
 void Player::OnPlayerDead(INode* pNode)
@@ -206,14 +207,31 @@ void Player::AddModule(BaseModule* pModule)
 	m_pModuleMap.insert(std::make_pair(pModule->GetModuleName(), pModule));
 }
 
-BaseModule* Player::GetModule(std::string modulename)
+BaseModule* Player::GetModule(std::string modulename, bool isServer)
 {
-	BaseModule* pModule = nullptr;
 	std::hash_map<std::string, BaseModule*>::iterator it = m_pModuleMap.find(modulename);
-	if (it != m_pModuleMap.end())
-		pModule = it->second;
-	return pModule;
+	if (it == m_pModuleMap.end())	
+		return nullptr;	
+	
+	if (it->second->IsInitOK() == false && isServer == false)
+		return nullptr;
+
+	return it->second;
 }
+
+void Player::InitModule()
+{
+	time_t tNow = sApp.GetServerTime();
+	auto it = m_pModuleMap.begin();
+	for (; it != m_pModuleMap.end(); ++it)
+	{
+		if (it->second->IsInitOK() == false && it->second->GetInitTime() + 600 < tNow)
+		{
+			it->second->Init();
+		}
+	}
+}
+
 int Player::GetPlayerID()
 {
 	return _playerdata.id;
@@ -256,7 +274,7 @@ void Player::processRequestRoomInfo(PackPtr& pPack)
 	pm_room_info_response response;
 	response.set_result(0);
 
-	std::unordered_map<ConnectPtr, PlayerManager::Session>& AllPlayer = PlayerManager::getInstance().GetPlayerMap();
+	auto& AllPlayer = PlayerManager::getInstance().GetPlayerMap();
 
 	for (auto it = AllPlayer.begin(); it != AllPlayer.end(); it++)
 	{
@@ -277,7 +295,7 @@ void Player::processRequestRoomInfo(PackPtr& pPack)
 void Player::processRequestFight(PackPtr& pPack)
 {
 	pm_request_fight request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 	pm_fight_response response;
 
 	int32 result = 0;
@@ -320,7 +338,7 @@ void Player::processRequestFight(PackPtr& pPack)
 void Player::processRequestOtherInfo(PackPtr& pPack)
 {
 	pm_request_other_info request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 	pm_other_info_response response;
 	response.set_playerid(request.playerid());
 	int32 result = 0;
@@ -346,33 +364,6 @@ void Player::processRequestOtherInfo(PackPtr& pPack)
 
 }
 
-class Action
-{
-	int32 id;
-	int32 content;
-	int32 type; 				//1.交谈 2物品 3 任务 4 行为
-
-	boost::any type_content;
-	//string type_1;					//交谈内容
-	//vector<shangren_prop> type_2; 	//商人物品
-	//vector<int32> type_3; 			//任务ID
-	//vector<xuanxiang> type_4;		//行为ID Action
-
-	int32 server_action;				//1取消任务 2传送
-	boost::any server_action_param;
-	//std::string server_action_param_1;	//任务类型
-	//std::string server_action_param_2;	//传送坐标
-};
-
-class NPC
-{
-	int32 id;
-	xstring name;
-	xstring content;
-	std::unordered_map<int32, Action> action;
-};
-
-std::unordered_map<int32, NPC> npc;
 void init()
 {
 
@@ -397,7 +388,7 @@ void Player::processShanghui(PackPtr& pPack)
 void Player::processDuihua(PackPtr& pPack)
 {
 	pm_duihua request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 	pm_duihua_response response;
 
 	response.set_result(0);
@@ -427,7 +418,7 @@ void Player::processDuihua(PackPtr& pPack)
 void Player::processXuanxiang(PackPtr& pPack)
 {
 	pm_xuanxiang request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 	pm_xuanxiang_response response;
 
 	response.set_result(0);
@@ -478,7 +469,7 @@ void Player::processXuanxiang(PackPtr& pPack)
 void Player::processGoumai(PackPtr& pPack)
 {
 	pm_goumai request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 	pm_goumai_response response;
 
 	int32 result = [&]()->int32{
@@ -498,6 +489,46 @@ void Player::processGoumai(PackPtr& pPack)
 	SendProtoBuf(GM_GOUMAI_RESPONSE, response);
 }
 
+class FightNPC1 :public FightBase
+{
+	void Fight(FightInfo& temp)
+	{
+		temp.RandOver(this);
+		return;
+	}
+
+	int32 GetYisu()
+	{
+		return 1;
+	}
+
+	int32 GetGongsu()
+	{
+		return 1;
+	}
+};
+
+void Player::processFight(PackPtr& pPack)
+{
+	FightNPC1* temp = new FightNPC1;
+	if (temp)
+	{
+		FightManager::getInstance().CreateFight(this, temp);
+	}
+}
+
+void Player::processRequestFightMove(PackPtr& pPack)
+{
+	FightInfo* pFight = FightManager::getInstance().GetFightInfo(fight_dbid);
+	if (!pFight)
+		return;
+
+	if (!pFight->IsSelfFight(this))
+		return;
+
+
+}
+
 void Player::onOtherEntityMove(Entity* entity)
 {
     std::cout << _playerdata.id << "currpos "<<position().x<<": player " << entity->id() << " move " << "curr pos:" << entity->position().x << "\n";
@@ -506,5 +537,8 @@ void Player::onOtherEntityMove(Entity* entity)
 //-------------------------------------------------------------------------------------------
 void Player::SendProtoBuf(int messageid, const ::google::protobuf::Message &proto)
 {
-	m_pConnect->SendBuffer(messageid, proto, GetPlayerID());
+	std::string buf;
+	proto.SerializePartialToString(&buf);
+
+	m_pConnect->Send(messageid, buf.c_str(), (int32)buf.length(), GetPlayerID());
 }

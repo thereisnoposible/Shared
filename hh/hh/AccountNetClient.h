@@ -3,7 +3,7 @@
 class AccountNetClient :public NetClient, public Singleton<AccountNetClient>, public Initialer
 {
 public:
-    AccountNetClient();
+	AccountNetClient(TimerManager* ptimer);
     void registMessage();
     void Initial();
     void OnConnect(ConnectPtr&);
@@ -13,6 +13,8 @@ public:
 
     void AccountCheck(ConnectPtr& pConnect, pm_account_check& request);
     void AccountCheckResponse(PackPtr& pPack);
+
+	void SendProtoBuf(int32 messageid, const ::google::protobuf::Message &proto);
 
 private:
     std::unordered_map<std::string, ConnectPtr> m_Creating;

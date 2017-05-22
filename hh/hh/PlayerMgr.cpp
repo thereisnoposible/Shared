@@ -3,8 +3,8 @@
 #include "Player.h"
 #include "ModuleManager.h"
 #include "MapManager.h"
+#include "ObjectModule.h"
 #include "Application.h"
-#include "MysqlStmt.cpp"
 #include "../new/proto/protobuf/login.pb.h"
 #include "../new/proto/protobuf/player.pb.h"
 
@@ -21,6 +21,14 @@ void cbbb(StmtExData* pData)
         std::cout << "hp = " << *(int*)pItem->buffer << "\n";
         pData->nextRow();
     }
+}
+
+void SendBuffer(ConnectPtr& conn, int32 messageid, const  ::google::protobuf::Message & proto,int32 id)
+{
+	std::string buf;
+	proto.SerializePartialToString(&buf);
+
+	conn->Send(messageid, buf.c_str(), (int32)buf.length(), id);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -73,7 +81,7 @@ void PlayerManager::init()
 //-------------------------------------------------------------------------------------------
 void PlayerManager::Broadcast(int id, const ::google::protobuf::Message& mess, int except)
 {
-	std::unordered_map<ConnectPtr, Session>::iterator sit = m_AllPlayer.begin();
+	auto sit = m_AllPlayer.begin();
 	for (; sit != m_AllPlayer.end();sit++)
 	{
 		if (!sit->second.player)
@@ -117,7 +125,7 @@ void PlayerManager::loadPlayer(pm_playerdata_db_response& response)
 //-------------------------------------------------------------------------------------------
 void PlayerManager::OnDisConnect(ConnectPtr& playerid)
 {
-	std::unordered_map<ConnectPtr, Session>::iterator sit = m_AllPlayer.find(playerid);
+	auto sit = m_AllPlayer.find(playerid);
 	if (sit != m_AllPlayer.end())
 	{
 		if (sit->second.player && sit->second.player->GetPlayerState() == Player::PlayerState::psOnline)
@@ -137,7 +145,7 @@ void PlayerManager::OnDisConnect(ConnectPtr& playerid)
 }
 
 //-------------------------------------------------------------------------------------------
-std::unordered_map<ConnectPtr, PlayerManager::Session>& PlayerManager::GetPlayerMap()
+std::hash_map<ConnectPtr, PlayerManager::Session>& PlayerManager::GetPlayerMap()
 {
     return m_AllPlayer;
 }
@@ -149,6 +157,16 @@ std::unordered_map<int32, Player*>& PlayerManager::GetPlayerIDMap()
 }
 
 //-------------------------------------------------------------------------------------------
+Player* PlayerManager::GetPlayer(int32 playerid)
+{
+	auto it = m_AllPlayerID.find(playerid);
+	if (it == m_AllPlayerID.end())
+		return nullptr;
+
+	return it->second;
+}
+
+//-------------------------------------------------------------------------------------------
 std::unordered_map<std::string, std::unordered_map<int, Player*>>& PlayerManager::GetAccPlayerMap()
 {
     return m_AccPlayer;
@@ -157,7 +175,7 @@ std::unordered_map<std::string, std::unordered_map<int, Player*>>& PlayerManager
 //-------------------------------------------------------------------------------------------
 void PlayerManager::onPlayerMessage(PackPtr& pPack)
 {
-	std::unordered_map<ConnectPtr, Session>::iterator it = m_AllPlayer.find(pPack->m_Connect);
+	auto it = m_AllPlayer.find(pPack->GetConnect());
 	if (it == m_AllPlayer.end())
         return;
 
@@ -167,7 +185,7 @@ void PlayerManager::onPlayerMessage(PackPtr& pPack)
     if (it->second.player->GetPlayerState() != Player::PlayerState::psOnline)
         return;
 
-	if (it->second.player->GetConnect() != pPack->m_Connect)
+	if (it->second.player->GetConnect() != pPack->GetConnect())
 	{
 		return;
 	}
@@ -179,79 +197,106 @@ void PlayerManager::onPlayerMessage(PackPtr& pPack)
 void PlayerManager::CreateAccount(PackPtr& pPack)
 {
 	pm_createaccount request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 
-    Application::getInstance().GetAccountConnect().CreateAccount(pPack->m_Connect, request);
+	Application::getInstance().GetAccountConnect().CreateAccount(pPack->GetConnect(), request);
 }
 
 //-------------------------------------------------------------------------------------------
 void PlayerManager::AccountCheck(PackPtr& pPack)
 {
 	pm_account_check request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 
-    Application::getInstance().GetAccountConnect().AccountCheck(pPack->m_Connect, request);
+	Application::getInstance().GetAccountConnect().AccountCheck(pPack->GetConnect(), request);
+}
+
+void ttttt(boost::coroutines::symmetric_coroutine<void*>::yield_type& yield)
+{
+
 }
 
 //-------------------------------------------------------------------------------------------
 void PlayerManager::LoginGame(PackPtr& pPack)
 {
-	pm_login_game request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
-	pm_login_game_response response;
-	response.set_result(0);
-	std::unordered_map<ConnectPtr, Session>::iterator sit = m_AllPlayer.find(pPack->m_Connect);
-	if (sit == m_AllPlayer.end())	
-		return;
+	int64 dbid = CoroutineManager::getInstance().Alloc();
 
-	std::unordered_map<std::string, std::unordered_map<int, Player*>>::iterator accit = m_AccPlayer.find(sit->second.accid);
-	if (accit == m_AccPlayer.end())	
-		return;
+	CoroutineManager::getInstance().RegistFunc(dbid, [&](boost::coroutines::symmetric_coroutine<void*>::yield_type& yield){
+		boost::shared_ptr<NetConnect> conn = pPack->GetConnect();
+		int64 temp_dbid = dbid;
+		pm_login_game request;
+		CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
+		pm_login_game_response response;
+		response.set_result(0);
+		auto sit = m_AllPlayer.find(pPack->GetConnect());
+		if (sit == m_AllPlayer.end())
+			return;
 
-	std::unordered_map<int, Player*>::iterator playerit = accit->second.find(request.id());
-	if (playerit == accit->second.end())
-		return;
+		std::unordered_map<std::string, std::unordered_map<int, Player*>>::iterator accit = m_AccPlayer.find(sit->second.accid);
+		if (accit == m_AccPlayer.end())
+			return;
 
-	Player* &player = sit->second.player;
+		std::unordered_map<int, Player*>::iterator playerit = accit->second.find(request.id());
+		if (playerit == accit->second.end())
+			return;
 
-	if (player && player->GetConnect() != pPack->m_Connect)
-	{
-		sit = m_AllPlayer.find(player->GetConnect());
-		if (sit != m_AllPlayer.end())
+		Player* &player = sit->second.player;
+
+		if (player && player->GetConnect() != pPack->GetConnect())
 		{
-			sit->second.player = nullptr;
+			sit = m_AllPlayer.find(player->GetConnect());
+			if (sit != m_AllPlayer.end())
+			{
+				sit->second.player = nullptr;
+			}
 		}
-	}
 
-	if (player && player->GetPlayerState() == Player::PlayerState::psOnline)
+		if (player && player->GetPlayerState() == Player::PlayerState::psOnline)
+		{
+			player->OnPlyaerLogout();
+		}
+
+
+		playerit->second->OnPlyaerLogin(pPack->GetConnect());
+		pm_other_info notify;
+		notify.set_id(playerit->second->GetPlayerID());
+		notify.set_name(playerit->second->GetPlayerData().name);
+		Broadcast(GM_NOTIFY_OTHER_LOGIN, notify, playerit->second->GetPlayerID());
+
+		player = playerit->second;
+
+		player->InitModule();
+
+		m_AllPlayerID[playerit->second->GetPlayerID()] = player;
+
+		pm_playerdata* pData = response.mutable_data();
+		playerit->second->GetPlayerData().toPBMessage(*pData);
+
+		pm_icomponent_data* pidata = response.mutable_idata();
+		playerit->second->toIcomponentData(*pidata);
+
+		SendBuffer(conn, GM_LOGIN_RESPONSE, response, 0);
+
+		CoroutineManager::getInstance().Free(temp_dbid);
+	});
+
+	auto iii = CoroutineManager::getInstance().GetCoroutine(dbid);
+	if (iii)
 	{
-		player->OnPlyaerLogout();
+		iii->operator()(nullptr);
 	}
 
-	playerit->second->OnPlyaerLogin(pPack->m_Connect);
-	pm_other_info notify;
-	notify.set_id(playerit->second->GetPlayerID());
-	notify.set_name(playerit->second->GetPlayerData().name);
-	Broadcast(GM_NOTIFY_OTHER_LOGIN, notify, playerit->second->GetPlayerID());
-
-	player = playerit->second;
-	m_AllPlayerID[playerit->second->GetPlayerID()] = player;
-				
-	pm_playerdata* pData = response.mutable_data();
-	playerit->second->GetPlayerData().toPBMessage(*pData);
-
-	pm_icomponent_data* pidata = response.mutable_idata();
-	playerit->second->toIcomponentData(*pidata);
-
-	pPack->m_Connect->SendBuffer(GM_LOGIN_RESPONSE, response, 0);
+	//boost::coroutines::symmetric_coroutine<void*>::call_type* coro_b = new boost::coroutines::symmetric_coroutine<void*>::call_type;
+	//new(coro_b)boost::coroutines::symmetric_coroutine<void*>::call_type(fn);
+	//coro_b->operator()("hehe");
 }
 
 //-------------------------------------------------------------------------------------------
 void PlayerManager::CreatePlayer(PackPtr& pPack)
 {
 	pm_create_player request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
-	std::unordered_map<ConnectPtr, Session>::iterator sit = m_AllPlayer.find(pPack->m_Connect);
+	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
+	auto sit = m_AllPlayer.find(pPack->GetConnect());
 	if (sit == m_AllPlayer.end())	
 		return;
 	std::unordered_map<std::string, std::unordered_map<int, Player*>>::iterator accit = m_AccPlayer.find(sit->second.accid);
@@ -278,7 +323,7 @@ void PlayerManager::CreatePlayer(PackPtr& pPack)
 	pm_playerdata* pItem = response.mutable_data();
 	pData.toPBMessage(*pItem);
 
-	pPack->m_Connect->SendBuffer(GM_CREATE_PLAYER_RESPONSE, response, pData.id);
+	SendBuffer(pPack->GetConnect(), GM_CREATE_PLAYER_RESPONSE, response, 0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -291,12 +336,13 @@ void PlayerManager::InitPlayer(PlayerData& player)
 void PlayerManager::HeartBeat(PackPtr& pPack)
 {
 	pm_client_heart_beat request;
-	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+	CHECKERRORANDRETURN(request.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 
 	pm_client_heart_beat_response response;
 
 	response.set_currtime((int)time(NULL));
-	pPack->m_Connect->SendBuffer(GM_CLIENT_HEARTBEAT_RESPONSE, response, 0);
+
+	SendBuffer(pPack->GetConnect(), GM_CLIENT_HEARTBEAT_RESPONSE, response, 0);
 }
 
 //-------------------------------------------------------------------------------------------

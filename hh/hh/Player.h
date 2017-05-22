@@ -9,6 +9,8 @@
 typedef G3D::Vector3							Position3D;
 typedef G3D::Vector3							Vector3;
 
+using namespace xlib;
+
 struct Direction3D																										// 表示方向位置变量类型
 
 {
@@ -29,11 +31,12 @@ struct Direction3D																										// 表示方向位置变量类型
 };
 
 class INode;
+#include "FightManager.h"
 
-class Player :public AOI::Entity
+class Player :public AOI::Entity, FightBase
 {
 public:
-	typedef MessageHandle<PackPtr> NetMsgHandle;
+	typedef MessageHandle<xlib::PackPtr> NetMsgHandle;
 
 	enum PlayerState
 	{
@@ -58,7 +61,7 @@ public:
 	void OnPlyaerLogin(ConnectPtr& conn);
 	void OnPlyaerLogout();
 	void AddModule(BaseModule* pModule);
-	BaseModule* GetModule(std::string modulename);
+	BaseModule* GetModule(std::string modulename, bool isServer = false);
 
 	void SendProtoBuf(int messageid, const ::google::protobuf::Message &proto);
 	void TriggerEvent(const BaseEvent& edata);
@@ -66,6 +69,8 @@ public:
 	void RegisterEventRange(int evt_s, int evt_e, EventHandle::handle fun);
 	void RegisterNetMsgHandle(int msgid, NetMsgHandle::handle fun);
 	void FireNetMsg(int msgid, PackPtr& pPack);
+
+	void InitModule();
 
 	void SetPlayerState(PlayerState _state);
 	PlayerState GetPlayerState();
@@ -86,20 +91,22 @@ public:
 	int32 GetGengu();
 	void AddHP(int32 num);
 
-	ConnectPtr& GetConnect(){ return m_pConnect; }
+	xlib::ConnectPtr& GetConnect(){ return m_pConnect; }
 
 	void onOtherEntityMove(Entity* entity);
 
 	int speed;
 protected:
-	void processRequestMove(PackPtr& pPack);
-	void processRequestRoomInfo(PackPtr& pPack);
-	void processRequestFight(PackPtr& pPack);
-	void processRequestOtherInfo(PackPtr& pPack);
-	void processShanghui(PackPtr& pPack);
-	void processDuihua(PackPtr& pPack);
-	void processXuanxiang(PackPtr& pPack);
-	void processGoumai(PackPtr& pPack);
+	
+	void processRequestRoomInfo(xlib::PackPtr& pPack);
+	void processRequestFight(xlib::PackPtr& pPack);
+	void processRequestOtherInfo(xlib::PackPtr& pPack);
+	void processShanghui(xlib::PackPtr& pPack);
+	void processDuihua(xlib::PackPtr& pPack);
+	void processXuanxiang(xlib::PackPtr& pPack);
+	void processGoumai(xlib::PackPtr& pPack);
+	void processFight(PackPtr& pPack);
+	void processRequestFightMove(PackPtr& pPack);
 
 	void OnPlayerDead(INode* pNode);
 private:
@@ -112,10 +119,12 @@ private:
 	std::hash_map<std::string, BaseModule*> m_pModuleMap;
 	int _UniqueCount;
 
-	ConnectPtr m_pConnect;
+	xlib::ConnectPtr m_pConnect;
 
 	PlayerState state;
 	PlayerStatus status;
 
 	INode* m_RootComponent;
+
+	int64 fight_dbid;
 };

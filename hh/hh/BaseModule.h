@@ -5,33 +5,36 @@ class Player;
 class BaseModule
 {
 public:
-	BaseModule(const std::string& name, Player* pOwner) :m_bInitOk(false)
+	BaseModule(const std::string& name, Player* pOwner)
 	{
 		m_ModuleName = name;
 		m_pOwner = pOwner;
+		bInit = false;
+		init_time = 0;
 	}
 	virtual ~BaseModule(void){};
+	virtual void registmessage() = 0;
+	virtual void InitFunc() = 0;
+	void Init(){ InitFunc(); init_time = time(NULL); }
+	int64 GetInitTime(){ return init_time; }
+	bool IsInitOK(){ return bInit; }
+	void SetInitOK(){ bInit = true; registmessage(); }
 
 public:
 	std::string GetModuleName(){ return m_ModuleName; }
-
-	virtual bool Init(){ return true; }
 
 	Player* GetOwner(){ return m_pOwner; }
 
 	virtual void OnLogin(){ return; }
 	virtual void OnLogout(){ return; }
 
-	void SetInitOK(){ m_bInitOk = true; }
-	bool IsInitOK(){ return m_bInitOk; }
-
 protected:
 
 protected:
 	std::string m_ModuleName;
 	Player* m_pOwner;
-
-	bool m_bInitOk;
+	bool bInit;
+	int64 init_time;
 };
 
 class ModuleFactory

@@ -2,6 +2,8 @@
 
 #include "BaseModule.h"
 #include "Initialer.h"
+#include "singleton/Singleton.h"
+
 class ModuleManager : public Singleton<ModuleManager>, Initialer
 {
 public:

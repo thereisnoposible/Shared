@@ -6,8 +6,8 @@ class type_prop
 {
 public:
 	int32		id;
-	xstring		name;
-	xstring		desc;
+	std::string		name;
+	std::string		desc;
 	int32		type;
 	int32		sub_type;
 	int32		append;

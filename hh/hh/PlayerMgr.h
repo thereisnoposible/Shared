@@ -1,6 +1,8 @@
 #pragma once
 #include "Initialer.h"
-#include "MysqlStmt.h"
+#include "mysql/MysqlStmt.h"
+
+using namespace xlib;
 
 class PlayerManager : public Singleton<PlayerManager>, public Initialer
 {
@@ -10,13 +12,14 @@ public:
 		Player* player;
 		std::string accid;
 	};
-	PlayerManager(DBService* p);
+	PlayerManager(xlib::DBService* p);
 	~PlayerManager();
 
 	void OnDisConnect(ConnectPtr& playerid);
 
-    std::unordered_map<ConnectPtr, Session>& GetPlayerMap();
+	std::hash_map<ConnectPtr, Session>& GetPlayerMap();
 	std::unordered_map<int32, Player*>& GetPlayerIDMap();
+	Player* GetPlayer(int32 playerid);
 	std::unordered_map<std::string, std::unordered_map<int, Player*>>& GetAccPlayerMap();
 
     void loadPlayer(pm_playerdata_db_response& response);
@@ -46,11 +49,11 @@ protected:
     void InsertPlayer(PlayerData& data);
 
 private:
-	std::unordered_map<ConnectPtr, Session> m_AllPlayer;
+	std::hash_map<ConnectPtr, Session> m_AllPlayer;
 	std::unordered_map<int32, Player*> m_AllPlayerID;
 	std::unordered_map<std::string, std::unordered_map<int, Player*>> m_AccPlayer;
 
 	unsigned int _unique_player;
 
-	DBService* m_pDBService;
+	xlib::DBService* m_pDBService;
 };

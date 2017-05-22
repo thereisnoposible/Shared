@@ -4,20 +4,26 @@
 #include "../new/proto/protobuf/object.pb.h"
 #include "entity/object_entity.h"
 
+struct ModuleInit
+{
+	ModuleInit(const std::string& n)
+	{
+		name = n;
+	}
+
+	std::string name;
+};
+
 class ObjectModule : public BaseModule
 {
 public:
 	ObjectModule(std::string modulename, Player* pOwner);
 	~ObjectModule();
 
-	bool Init();
+	void InitFunc();
+	void registmessage();
+
 	void OnDataResponse(pm_object_data_response_db& response);
-
-	std::unordered_map<int64, objectItem*>& GetMaps(){ return _props; }
-
-	void AddObject(int32 id, int32 num, int32 cause);
-	void DestroyObject(int64 dbid, int32 num, int32 cause);
-	int32 GetCount(int64 dbid);
 private:
 	void Insert(objectItem& temp);
 	void Update(objectItem& temp);

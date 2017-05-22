@@ -6,9 +6,9 @@ class type_npc_talk
 {
 public:
 	int32		npc_id;
-	xstring		npc_name;
-	xstring		content;
-	xstring		talk_content;
+	std::string		npc_name;
+	std::string		content;
+	std::string		talk_content;
 
 
 //exparam
@@ -48,7 +48,7 @@ public:
 			temp->content = result.pResult.GetString("content");
 			temp->talk_content = result.pResult.GetString("talk_content");
 			{
-				std::vector<xstring> ssplit;
+				std::vector<std::string> ssplit;
 				Helper::SplitString(temp->talk_content, ",", ssplit);
 				for(size_t i = 0;i < ssplit.size();i++)
 				{

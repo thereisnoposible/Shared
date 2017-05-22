@@ -6,11 +6,11 @@ class type_npc_action
 {
 public:
 	int32		action_id;
-	xstring		action_content;
+	std::string		action_content;
 	int32		action_type;
-	xstring		type_content;
+	std::string		type_content;
 	int32		server_action;
-	xstring		server_action_param;
+	std::string		server_action_param;
 
 
 //exparam

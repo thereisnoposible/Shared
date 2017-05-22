@@ -5,7 +5,7 @@
 
 AccountNetClient* Singleton<AccountNetClient>::single = nullptr;
 
-AccountNetClient::AccountNetClient()
+AccountNetClient::AccountNetClient(TimerManager* ptimer) :NetClient(ptimer)
 {
     m_LoginGameIncreament = 0;
 }
@@ -27,6 +27,15 @@ void AccountNetClient::OnConnect(ConnectPtr& pConnect)
     SetInit();
 }
 
+//----------------------------------------------------------------
+void AccountNetClient::SendProtoBuf(int32 messageid, const  ::google::protobuf::Message & proto)
+{
+	std::string buf;
+	proto.SerializePartialToString(&buf);
+
+	Send(messageid, buf.c_str(), (int32)buf.length());
+}
+
 void AccountNetClient::CreateAccount(ConnectPtr& pConnect, pm_createaccount& request)
 {
     std::unordered_map<std::string, ConnectPtr>::iterator it = m_Creating.find(request.username());
@@ -39,12 +48,14 @@ void AccountNetClient::CreateAccount(ConnectPtr& pConnect, pm_createaccount& req
 void AccountNetClient::CreateAccountResponse(PackPtr& pPack)
 {
     pm_createaccount_response response;
-    CHECKERRORANDRETURN(response.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+    CHECKERRORANDRETURN(response.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 
     std::unordered_map<std::string, ConnectPtr>::iterator it = m_Creating.find(response.username());
     CHECKERRORANDRETURN(it != m_Creating.end());
+	std::string buf;
+	response.SerializePartialToString(&buf);
 
-    it->second->SendBuffer(pPack->getMessageId(), response, 0);
+	it->second->Send(pPack->getMessageId(), buf.c_str(), (int32)buf.length(), 0);
     m_Creating.erase(it);
 }
 
@@ -61,17 +72,17 @@ void AccountNetClient::AccountCheck(ConnectPtr& pConnect, pm_account_check& requ
 void AccountNetClient::AccountCheckResponse(PackPtr& pPack)
 {
     pm_account_check_response response;
-    CHECKERRORANDRETURN(response.ParseFromArray(pPack->getBuffer().c_str(), pPack->getBufferSize()));
+    CHECKERRORANDRETURN(response.ParseFromArray(pPack->getBuffer(), pPack->getBufferSize()));
 
     std::unordered_map<unsigned int, ConnectPtr>::iterator it = m_pLogin.find(response.increament());
     CHECKERRORANDRETURN(it != m_pLogin.end());
 
     if (response.result() == 0)
     {
-        std::unordered_map<ConnectPtr, PlayerManager::Session>& m_AllPlayer = PlayerManager::getInstance().GetPlayerMap();
+        auto& m_AllPlayer = PlayerManager::getInstance().GetPlayerMap();
         std::unordered_map<std::string, std::unordered_map<int, Player*>>& m_AccPlayer = PlayerManager::getInstance().GetAccPlayerMap();
 
-        std::unordered_map<ConnectPtr, PlayerManager::Session>::iterator sit = m_AllPlayer.find(it->second);
+        auto sit = m_AllPlayer.find(it->second);
 
 		PlayerManager::Session player;
 		player.accid = response.username();
@@ -95,6 +106,8 @@ void AccountNetClient::AccountCheckResponse(PackPtr& pPack)
         }
     }
 
-    it->second->SendBuffer(pPack->getMessageId(), response, 0);
+	std::string buf;
+	response.SerializePartialToString(&buf);
+	it->second->Send(pPack->getMessageId(), buf.c_str(), (int32)buf.length(), 0);
     m_pLogin.erase(it);
 }

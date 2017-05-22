@@ -35,15 +35,16 @@ Application::Application()
 
 	m_pLogServer = new LogService(LOGSERVERNAME);
 
-	m_pTypeTable = new TypeTable();
+	//m_pTypeTable = new TypeTable();
 
 	m_pPlayerMgr = new PlayerManager(m_pDBService);
 
 	m_pMapMgr = new MapManager();
+	m_pCoroutineManager = new CoroutineManager();
+	m_pNPCManager = new NPCManager;
 
-
-    m_pAccount = new AccountNetClient;
-    m_pDatabase = new DBNetClient;
+    m_pAccount = new AccountNetClient(m_pTimerManager);
+	m_pDatabase = new DBNetClient(m_pTimerManager);
 	m_id = 1;
 	m_dbid = time(NULL) << 32;
 
@@ -65,35 +66,21 @@ Application::~Application()
 {
     m_pNetService->stop();
 
-	delete m_pModuleMgr;
-	m_pModuleMgr = nullptr;
+	SAFE_DELETE(m_pModuleMgr);
+	SAFE_DELETE(m_pLogServer);
+	SAFE_DELETE(m_pPlayerMgr);
+	SAFE_DELETE(m_pMapMgr);
+	SAFE_DELETE(m_pAccount);
+	SAFE_DELETE(m_pDatabase);
+	SAFE_DELETE(m_pNetService);
+	SAFE_DELETE(m_pDBService);
+	SAFE_DELETE(m_pTimerManager);
+	SAFE_DELETE(m_pTimeWheel);
+	SAFE_DELETE(m_pMysqlStmt);
+	SAFE_DELETE(m_pCoroutineManager);
+	SAFE_DELETE(m_pNPCManager);
 
-	delete m_pLogServer;
-	m_pLogServer = nullptr;
-
-	delete m_pTypeTable;
-	m_pTypeTable = nullptr;
-
-	delete m_pPlayerMgr;
-	m_pPlayerMgr = nullptr;
-
-	delete m_pMapMgr;
-	m_pMapMgr = nullptr;
-
-    delete m_pAccount;
-    m_pAccount = nullptr;
-
-	delete m_pNetService;
-	m_pNetService = nullptr;
-
-	delete m_pDBService;
-	m_pDBService = nullptr;
-
-    delete m_pTimerManager;
-    m_pTimerManager = nullptr;
-
-	delete m_pTimeWheel;
-	m_pTimeWheel = nullptr;
+	destoryTable();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -101,7 +88,7 @@ void Application::update(double diff)
 {
 	std::chrono::steady_clock::time_point fCurr = std::chrono::steady_clock::now();
 	time_t tNow = std::chrono::steady_clock::to_time_t(fCurr);
-
+	m_ServerTime = tNow;
 	if (m_pNetService != nullptr)
 	{
 		m_pNetService->update();
@@ -126,6 +113,11 @@ void Application::update(double diff)
     {
         m_pDatabase->update();
     }
+
+	if (m_pCoroutineManager)
+	{
+		m_pCoroutineManager->update();
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -154,6 +146,15 @@ void Application::loadTable()
 
 	if (s_type_sell_propsTable.create())
 		s_type_sell_propsTable.Load();
+}
+
+//-------------------------------------------------------------------------------------------
+void Application::destoryTable()
+{
+	s_type_npc_actionTable.destory();
+	s_type_npc_talkTable.destory();
+	s_type_propTable.destory();
+	s_type_sell_propsTable.destory();
 }
 
 //-------------------------------------------------------------------------------------------
