@@ -2,13 +2,20 @@
 #pragma pack(1)
 #include <stdint.h>
 #include <memory>
+#include <boost/shared_ptr.hpp>
 #include "../include/helper/Helper.h"
 #include <string>
+
+#pragma warning (push)
+
+#pragma warning (disable: 4251)
 
 namespace xlib
 {
 	struct NetConnect;
-	typedef struct tagPackHead
+	class WebSocketProtocol;
+
+	typedef struct XDLL tagPackHead
 	{
 		static const short PACK_VER = 1;				/** 协议版本 */
 		static const unsigned char PACK_HFLAG = 0x5A;	/** 开始标识 */
@@ -28,9 +35,12 @@ namespace xlib
 
 #pragma pack()
 
-	class NetPack
+	class XDLL NetPack
 	{
 	public:
+		friend class WebSocketProtocol;
+		friend struct NetConnect;
+
 		NetPack(){};
 		NetPack(long messageid, const char* pdata, long len, long roleid, int type)
 		{
@@ -50,9 +60,9 @@ namespace xlib
 			m_pBuff.append(temp);
 		}
 
-		std::string getBuffer()
+		const char* getBuffer()
 		{
-			return m_pBuff;
+			return m_pBuff.c_str();
 		}
 
 		int getBufferSize()
@@ -70,19 +80,27 @@ namespace xlib
 			return m_Head.messageid;
 		}
 
-		std::string getAddr()
+		const char* getAddr()
 		{
-			return m_address;
+			return m_address.c_str();
 		}
 
-		void setAddr(std::string addr)
+		void setAddr(const char* addr)
 		{
 			m_address = addr;
 		}
 
+		boost::shared_ptr<NetConnect> GetConnect()
+		{
+			return m_Connect;
+		}
+
+	private:
 		PackHead m_Head;								/** 协议头 */
 		std::string m_pBuff;							/** 协议体 */
 		std::string m_address;							/** 网络包来源地址,ip+port */
-		std::shared_ptr<NetConnect> m_Connect;
+		boost::shared_ptr<NetConnect> m_Connect;
 	};
 }
+
+#pragma warning (pop)

@@ -3,6 +3,7 @@
 namespace xlib
 {
 	NetClient::NetClient(TimerManager* ptimer) :tTimer(nullptr)
+		, m_pNetService(nullptr)
 	{
 		m_pTimer = ptimer;
 	}
@@ -10,7 +11,7 @@ namespace xlib
 	NetClient::~NetClient(void)
 	{
 		if (tTimer != nullptr && m_pTimer != nullptr)
-			m_pTimer->RemoveTimer(tTimer);
+			(m_pTimer)->RemoveTimer(tTimer);
 
 		if (m_pConnect != nullptr)
 		{
@@ -27,7 +28,7 @@ namespace xlib
 	}
 
 
-	bool NetClient::ConnectTo(const std::string& ip, int port)
+	bool NetClient::ConnectTo(const char* ip, int port)
 	{
 		if (m_pNetService == nullptr)
 		{
@@ -80,14 +81,14 @@ namespace xlib
 		return false;
 	}
 
-	std::string& NetClient::getAddress()
+	const char* NetClient::getAddress()
 	{
 		m_address = m_ip;
 		m_address += ":";
 		char pot[10] = { 0 };
 		sprintf_s<10>(pot, "%d", m_port);
 		m_address += pot;
-		return m_address;
+		return m_address.c_str();
 	}
 
 	void NetClient::update()
@@ -105,7 +106,7 @@ namespace xlib
 
 			if (tTimer != nullptr && m_pTimer != nullptr)
 			{
-				m_pTimer->RemoveTimer(tTimer);
+				(m_pTimer)->RemoveTimer(tTimer);
 				tTimer = nullptr;
 
 				for (int i = 0; i < (int)m_pPackData.size(); i++)
@@ -127,7 +128,7 @@ namespace xlib
 
 			if (tTimer != nullptr && m_pTimer != nullptr)
 			{
-				m_pTimer->RemoveTimer(tTimer);
+				(m_pTimer)->RemoveTimer(tTimer);
 				tTimer = nullptr;
 			}
 
@@ -135,7 +136,7 @@ namespace xlib
 
 			ReConnect();
 			if (m_pTimer)
-				tTimer = m_pTimer->AddIntervalTimer(10, boost::bind(&NetClient::ReConnect, this));
+				tTimer = (m_pTimer)->AddIntervalTimer(10, boost::bind(&NetClient::ReConnect, this));
 		}
 	}
 
@@ -154,6 +155,6 @@ namespace xlib
 	void NetClient::ReConnect()
 	{
 		std::cout << "reconnect\n";
-		m_pNetService->Connect(m_ip, m_port, boost::bind(&NetClient::OnConnect, this, _1), boost::bind(&NetClient::OnDisConnect, this, _1));
+		m_pNetService->Connect(m_ip.c_str(), m_port, boost::bind(&NetClient::OnConnect, this, _1), boost::bind(&NetClient::OnDisConnect, this, _1));
 	}
 }

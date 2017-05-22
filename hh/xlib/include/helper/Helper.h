@@ -13,7 +13,7 @@ namespace xlib
 		int XDLL GetRandom(int min, int max);
 		double XDLL GetRandom(double min, double max);
 		size_t XDLL FindString(const char* str, size_t size, const std::string&spl);
-		size_t XDLL FindString(const char* str, size_t size, const std::vector<std::string>&);
+		size_t XDLL FindString(const char* str, size_t size, const std::vector<std::string>&, size_t&);
 		void XDLL SplitString(const char* str, size_t size, const std::string&spl, std::vector<std::string>&sAstr, bool bEmpty = false);
 		void XDLL SplitString(const std::string&, const std::string&, std::vector<std::string>&);
 

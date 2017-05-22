@@ -43,11 +43,14 @@
     <Filter Include="astar">
       <UniqueIdentifier>{7f31fa87-3c71-400a-b67a-d2a79e7b31f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="keywordFilter">
+      <UniqueIdentifier>{caad29a6-22ee-4e5d-a8bf-6fe2de9a8045}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="stmt">
+      <UniqueIdentifier>{57616873-2194-4103-a2d9-a1bc1f238717}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -138,14 +141,21 @@
       <Filter>zlib</Filter>
     </ClInclude>
     <ClInclude Include="include\define\define.h" />
+    <ClInclude Include="include\singleton\Singleton.h" />
+    <ClInclude Include="include\keywordFilter\KeywordFilter.h">
+      <Filter>keywordFilter</Filter>
+    </ClInclude>
+    <ClInclude Include="include\keywordFilter\DFA.h">
+      <Filter>keywordFilter</Filter>
+    </ClInclude>
+    <ClInclude Include="include\log\LogService.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stmt\smtp.h">
+      <Filter>stmt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\timer\TimerManager.cpp">
-      <Filter>timer</Filter>
-    </ClCompile>
     <ClCompile Include="src\timer\TimeWheel.cpp">
       <Filter>timer</Filter>
     </ClCompile>
@@ -227,6 +237,18 @@
     <ClCompile Include="src\base64.cpp" />
     <ClCompile Include="src\astar\AStar.cpp">
       <Filter>astar</Filter>
+    </ClCompile>
+    <ClCompile Include="src\keywordFilter\KeywordFilter.cpp">
+      <Filter>keywordFilter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\keywordFilter\DFA.cpp">
+      <Filter>keywordFilter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\log\LogService.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stmt\smtp.cpp">
+      <Filter>stmt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

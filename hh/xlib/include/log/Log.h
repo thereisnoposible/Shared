@@ -1,14 +1,17 @@
 #pragma once
 
-#include "../include/singleton/Singleton.h"
 #include <string>
+
+#include "../include/define/define.h"
 
 namespace xlib
 {
-	class LogService : public Singleton<LogService>
+	template class _declspec(dllexport) std::basic_string<char>;
+
+	class XDLL LogService
 	{
 	public:
-		LogService(const std::string& logname);
+		LogService(const char* logname);
 		~LogService(void);
 
 	public:

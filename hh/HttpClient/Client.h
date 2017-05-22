@@ -193,7 +193,7 @@ private:
 
 	std::string ios_deviceid = "B5028106-12E3-483D-99BC-3E180138F779";
 	std::string android_deviceid = "127468846146468";
-    std::string version = "1.0.8";
+    std::string version = "1.0.9";
 
 	int endurance;	//ÄÍÁ¦
 	int pow;		//ÌåÁ¦

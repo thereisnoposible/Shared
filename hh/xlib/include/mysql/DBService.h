@@ -1,4 +1,6 @@
 #pragma once
+
+#include "../include/define/define.h"
 #include <string>
 #include "DBResult.h"
 #include <functional>
@@ -8,6 +10,10 @@
 #include <unordered_map>
 #include <condition_variable>
 #include "DBSqlThread.h"
+
+#pragma warning (push)
+
+#pragma warning (disable: 4251)
 
 namespace xlib
 {
@@ -26,9 +32,10 @@ namespace xlib
 		std::string sql;
 		SqlCommondType type;
 		DBResult result;
+		std::string err;
 	};
 
-	class DBService
+	class XDLL DBService
 	{
 	public:
 		DBService(int count);
@@ -54,3 +61,5 @@ namespace xlib
 		std::vector<SqlCommond> result;
 	};
 }
+
+#pragma warning (pop)

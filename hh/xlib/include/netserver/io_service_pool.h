@@ -54,24 +54,21 @@ public:
 	void stop()
 	{
 		// Explicitly stop all io_services.   
-        //work_.clear();
+        work_.clear();
 
         for (std::size_t i = 0; i < io_services_.size(); ++i)
         {
             //io_services_[i]->post(std::bind(&boost::asio::io_service::stop, io_services_[i]));
             io_services_[i]->stop();
-            if (!io_services_[i]->stopped())
-            {
-                i--;
-            }
         }
 
         for (std::size_t i = 0; i < threads.size(); ++i)
         {
-            if (threads[i]->joinable())
-                threads[i]->join();           
-            threads[i]->detach();
+            threads[i]->join();           
         }
+
+		threads.clear();
+		io_services_.clear();	
 	}
 
 	// Get an io_service to use.   

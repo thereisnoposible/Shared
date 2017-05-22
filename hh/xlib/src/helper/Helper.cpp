@@ -97,7 +97,7 @@ namespace xlib{
 			return pos;
 		}
 
-		size_t FindString(const char* str, size_t size, const std::vector<std::string>&spl)
+		size_t FindString(const char* str, size_t size, const std::vector<std::string>&spl, size_t& out_spl_size)
 		{
 			size_t pos = -1;
 			for (size_t i = 0; i < size; i++)
@@ -110,7 +110,10 @@ namespace xlib{
 							break;
 
 						if (z == spl[j].size() - 1)
+						{
 							pos = i;
+							out_spl_size = spl[j].size();
+						}
 					}
 
 					if (pos != -1)
@@ -200,7 +203,8 @@ namespace xlib{
 			if (size == 0)
 				return;
 
-			size_t pos = FindString(str, size, spl);
+			size_t out_size = 0;
+			size_t pos = FindString(str, size, spl, out_size);
 			size_t off = 0;
 			while (1)
 			{
@@ -215,8 +219,8 @@ namespace xlib{
 					//sAstr.push_back(std::string(str + off, pos - off));
 				}
 
-				off = pos + spl.size();
-				pos = FindString(str + off, size - off, spl);
+				off = pos + out_size;
+				pos = FindString(str + off, size - off, spl, out_size);
 
 				if (pos == -1)
 					break;

@@ -1,0 +1,290 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{3b68e711-5d3d-4efe-b0ee-db4e011c9f64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application">
+      <UniqueIdentifier>{934bf0ee-1129-4c9a-877c-951b3a8300e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helper">
+      <UniqueIdentifier>{999b1dd5-5694-4872-98f1-296f3c9f6fdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NetWork">
+      <UniqueIdentifier>{35988ef1-6baa-432e-878f-695ef960f11c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pch">
+      <UniqueIdentifier>{023a83b7-b5c8-4ace-897d-9658999fc17d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Message">
+      <UniqueIdentifier>{655d81e3-15dc-46cc-91ae-fba0f96a21dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SharedMemory">
+      <UniqueIdentifier>{a8487421-e8a2-46ab-bf33-40c5914d4142}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Database">
+      <UniqueIdentifier>{ee919ee1-8138-4cc6-9fe2-81345b1d5d5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{d54d58c5-672b-406e-9457-b6b219b16877}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MultiLanguage">
+      <UniqueIdentifier>{17135f1b-f874-488f-8e7e-06dc65736bfb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logger">
+      <UniqueIdentifier>{67ed34a9-fbe9-4b64-b7a0-ab28b4d01160}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="httpclient">
+      <UniqueIdentifier>{a2667a63-c12e-4bd6-8d74-6aa0b1f8a75f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EMail">
+      <UniqueIdentifier>{9cf1b096-1eaf-4cd2-a27e-404d63e3f14c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MD5">
+      <UniqueIdentifier>{fd0cb756-3726-4a03-abb9-f21ddea12fd2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>pch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\depend\json\json_reader.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\depend\json\json_value.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\depend\json\json_writer.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BaseApp.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="source\WindowAPP.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="source\helper.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="source\NetConnect.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="source\NetPack.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="source\io_service_pool.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Timer.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TimerManager.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="source\NetService.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DBSaveManager.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SharedObject.cpp">
+      <Filter>SharedMemory</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DBService.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DBConnect.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DBInterface.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CustParament.cpp">
+      <Filter>Database</Filter>
+    </ClCompile>
+    <ClCompile Include="source\IniFile.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MultiLanguage.cpp">
+      <Filter>MultiLanguage</Filter>
+    </ClCompile>
+    <ClCompile Include="source\NetClient.cpp">
+      <Filter>NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="source\LogService.cpp">
+      <Filter>Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Config.cpp">
+      <Filter>Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="source\crashReport.cpp" />
+    <ClCompile Include="source\DFA.cpp" />
+    <ClCompile Include="source\HTTPSession.cpp">
+      <Filter>httpclient</Filter>
+    </ClCompile>
+    <ClCompile Include="source\HttpClient.cpp">
+      <Filter>httpclient</Filter>
+    </ClCompile>
+    <ClCompile Include="source\HttpExecuter.cpp">
+      <Filter>httpclient</Filter>
+    </ClCompile>
+    <ClCompile Include="source\smtp.cpp">
+      <Filter>EMail</Filter>
+    </ClCompile>
+    <ClCompile Include="source\base64.cpp">
+      <Filter>EMail</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MD5.cpp">
+      <Filter>MD5</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\depend\json\autolink.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\depend\json\config.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\depend\json\features.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\depend\json\forwards.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\depend\json\json.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\depend\json\json_batchallocator.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\depend\json\reader.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\depend\json\value.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\depend\json\writer.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="include\BaseApp.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="include\helper.h">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="include\io_service_pool.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MessageHandle.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="include\NetConnect.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="include\NetPack.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="include\WindowAPP.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Timer.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TimerManager.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SharedMemory.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="include\NetService.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DBSaveManager.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SharedObject.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DBService.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DBConnect.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DBInterface.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CustParament.h">
+      <Filter>Database</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SharedMemSave.h">
+      <Filter>SharedMemory</Filter>
+    </ClInclude>
+    <ClInclude Include="include\platform.h" />
+    <ClInclude Include="include\Singleton.h" />
+    <ClInclude Include="include\IniFile.h">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MultiLanguage.h">
+      <Filter>MultiLanguage</Filter>
+    </ClInclude>
+    <ClInclude Include="include\NetClient.h">
+      <Filter>NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Event.h">
+      <Filter>Message</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LogService.h">
+      <Filter>Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Config.h">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="include\crashReport.h" />
+    <ClInclude Include="include\DFA.h" />
+    <ClInclude Include="include\Heap.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HTTPSession.h">
+      <Filter>httpclient</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HttpClient.h">
+      <Filter>httpclient</Filter>
+    </ClInclude>
+    <ClInclude Include="include\HttpExecuter.h">
+      <Filter>httpclient</Filter>
+    </ClInclude>
+    <ClInclude Include="include\targetver.h">
+      <Filter>EMail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\smtp.h">
+      <Filter>EMail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\base64.h">
+      <Filter>EMail</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CircularQueue.h">
+      <Filter>Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MD5.h">
+      <Filter>MD5</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\depend\json\json_internalarray.inl">
+      <Filter>json</Filter>
+    </None>
+    <None Include="..\depend\json\json_internalmap.inl">
+      <Filter>json</Filter>
+    </None>
+    <None Include="..\depend\json\json_valueiterator.inl">
+      <Filter>json</Filter>
+    </None>
+  </ItemGroup>
+</Project>

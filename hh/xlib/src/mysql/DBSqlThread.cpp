@@ -95,8 +95,9 @@ namespace xlib
 			switch (res)
 			{
 			case 1:
-				std::cout << mysql_error(mysql) << "\n";
-				break;
+				//std::cout << mysql_error(mysql) << "\n";
+				commd.result.err = mysql_error(mysql);
+				//break;
 			case 0:
 				if (!commd.func._Empty())
 					commd.func(commd.result);
@@ -114,8 +115,9 @@ namespace xlib
 			switch (res)
 			{
 			case 1:
-				std::cout << "error :" << mysql_error(mysql);
-				break;
+				//std::cout << "error :" << mysql_error(mysql);
+				(*it).err = mysql_error(mysql);
+				//break;
 			case 0:
 				if (!(*it).func._Empty())
 					(*it).func((*it).result);

@@ -39,6 +39,8 @@ namespace xlib
 				Helper::SplitString(temp[1], subn, sub);
 				config[key] = sub;
 			}
+
+			fclose(pFile);
 			return 0;
 		}
 

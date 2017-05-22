@@ -9,6 +9,7 @@
 #include <boost/enable_shared_from_this.hpp>  
 #include <boost/noncopyable.hpp>   
 #include <boost/asio.hpp>   
+#include <boost/shared_ptr.hpp>
 #include <hash_map>
 #include <iostream>
 #include <queue>
@@ -18,40 +19,29 @@
 #include "../helper/Helper.h"
 #include <iostream>
 
+#pragma warning (push)
+
+#pragma warning (disable: 4251)
+
 namespace xlib
 {
 	struct NetConnect;
-	typedef std::shared_ptr<NetPack> PackPtr;
-	typedef std::shared_ptr<NetConnect> ConnectPtr;
+	class NetService;
+
+	typedef boost::shared_ptr<NetPack> PackPtr;
+	typedef boost::shared_ptr<NetConnect> ConnectPtr;
 
 	using boost::asio::ip::tcp;
-	struct NetConnect : public std::enable_shared_from_this<NetConnect>
+	struct NetConnect : public boost::enable_shared_from_this<NetConnect>
 	{
 	public:
-
+		friend class NetService;
 		enum SocketType
 		{
 			TYPE_SOCKET = 1,
 			TYPE_WEBSOCKET,
 		};
 
-		NetConnect(std::shared_ptr<tcp::socket> pSocket, boost::function<void(PackPtr&)> func) :bClose(false)
-		{
-			_pSocket = pSocket;
-			_OnGetPack = func;
-			//		_OnBreak = boost::function<void(std::string)>();
-
-			addr = _pSocket->remote_endpoint().address().to_string();
-			addr += ":";
-			char a[10] = { 0 };
-			sprintf_s(a, "%d", _pSocket->remote_endpoint().port());
-			addr += a;
-
-			handshake.resize(sizeof(PackHead));
-			rsize = 0;
-
-			type = TYPE_SOCKET;
-		}
 		NetConnect()
 		{
 
@@ -76,25 +66,14 @@ namespace xlib
 
 		}
 
-		void SetSocket(std::shared_ptr<boost::asio::ip::tcp::socket> pSocket)
-		{
-			_pSocket = pSocket;
-			bClose = false;
-		}
-
-		void RegistOnDisConnect(boost::function<void(ConnectPtr&)> OnBreak)
-		{
-			_OnBreak = OnBreak;
-		}
-
 		boost::asio::ip::tcp::socket& GetSocket()
 		{
 			return *_pSocket.get();
 		}
 
-		std::string GetAddress()
+		const char* GetAddress()
 		{
-			return addr;
+			return addr.c_str();
 		}
 
 		void Send(long messegeid, const char*pdata, int len, long roleid)
@@ -122,6 +101,36 @@ namespace xlib
 			}
 		}
 
+	private:
+		NetConnect(std::shared_ptr<tcp::socket> pSocket, boost::function<void(PackPtr&)> func) :bClose(false)
+		{
+			_pSocket = pSocket;
+			_OnGetPack = func;
+			//		_OnBreak = boost::function<void(std::string)>();
+
+			addr = _pSocket->remote_endpoint().address().to_string();
+			addr += ":";
+			char a[10] = { 0 };
+			sprintf_s(a, "%d", _pSocket->remote_endpoint().port());
+			addr += a;
+
+			handshake.resize(sizeof(PackHead));
+			rsize = 0;
+
+			type = TYPE_SOCKET;
+		}
+
+		void SetSocket(std::shared_ptr<boost::asio::ip::tcp::socket> pSocket)
+		{
+			_pSocket = pSocket;
+			bClose = false;
+		}
+
+		void RegistOnDisConnect(boost::function<void(ConnectPtr&)> OnBreak)
+		{
+			_OnBreak = OnBreak;
+		}
+
 		void Handshake(int off)
 		{
 			_pSocket->async_read_some(boost::asio::buffer(const_cast<char*>(handshake.c_str() + off), handshake.size() - off),
@@ -136,7 +145,6 @@ namespace xlib
 				boost::asio::placeholders::bytes_transferred));
 		}
 
-	private:
 		void OnHandShake(const boost::system::error_code& e, std::size_t bytes_transferred)
 		{
 			if (e)
@@ -388,7 +396,7 @@ namespace xlib
 		NetPack readBuf;
 		std::string handshake;
 		int rsize;
-		WebSocketProtocol::WebSocketPack webpack;
+		WebSocketPack webpack;
 		std::shared_ptr<boost::asio::ip::tcp::socket> _pSocket;
 		//boost::array<char, 128 * 1024> buffer_;
 		boost::function<void(PackPtr&)> _OnGetPack;
@@ -399,14 +407,14 @@ namespace xlib
 		bool bClose;
 	};
 
-	class NetObserver
+	class XDLL NetObserver
 	{
 	public:
 		virtual void OnConnect(ConnectPtr&) = 0;
 		virtual void OnDisConnect(ConnectPtr&) = 0;
 	};
 
-	class NetService : public MessageHandle<PackPtr>
+	class XDLL NetService : public MessageHandle<PackPtr>
 	{
 	public:
 		NetService(int ionum);
@@ -416,23 +424,23 @@ namespace xlib
 
 		void update();
 
-		bool Connect(const std::string& ip, int port, boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc);
-		void OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket,
-			boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc, boost::system::error_code ec);
+		bool Connect(const char* ip, int port, boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc);
 		//void DisConnect(std::string addr);
-
-		void GetNetPack(PackPtr& pPack);
 
 		void RegistObserver(NetObserver* observer);
 
 		void UnRegistObserver(NetObserver* observer);
-
-		void OnDisConnect(ConnectPtr& pConnetct);
 		void run();
 	protected:
+		void GetNetPack(PackPtr& pPack);
+
 		void accept();
 
+		void OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket,
+			boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc, boost::system::error_code ec);
 		void OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket, boost::system::error_code ec);
+
+		void OnDisConnect(ConnectPtr& pConnetct);
 	private:
 		io_service_pool _io_service_pool;
 		boost::asio::ip::tcp::acceptor* _acceptor;
@@ -450,3 +458,4 @@ namespace xlib
 	};
 }
 
+#pragma warning (pop)

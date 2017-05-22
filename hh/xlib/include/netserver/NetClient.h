@@ -1,7 +1,13 @@
 #pragma once
 
+#include "../include/define/define.h"
 #include "NetService.h"
 #include "../include/timer/TimerManager.h"
+
+#pragma warning (push)
+
+#pragma warning (disable: 4251)
+
 
 namespace xlib
 {
@@ -12,7 +18,9 @@ namespace xlib
 		status_disconnect,
 	};
 
-	class NetClient
+	template class _declspec(dllexport) std::basic_string<char>;
+
+	class XDLL NetClient
 	{
 	public:
 		NetClient(TimerManager* ptimer);
@@ -52,7 +60,7 @@ namespace xlib
 			m_pNetService->RegisterMessage(id, arg...);
 		}
 
-		bool ConnectTo(const std::string& ip, int port);
+		bool ConnectTo(const char* ip, int port);
 
 		bool Send(int messageid, const char* pdata, int length, int roleid = 0, bool bResend = false);
 		template<typename T>
@@ -61,9 +69,9 @@ namespace xlib
 			return Send(mesageid, (const char *)&t, sizeof(T), m_address, roleid);
 		}
 
-		std::string& getAddress();
+		const char* getAddress();
 
-		std::string& getIP(){ return m_ip; }
+		const char* getIP(){ return m_ip.c_str(); }
 
 		int getPort(){ return m_port; }
 
@@ -88,3 +96,4 @@ namespace xlib
 	};
 }
 
+#pragma warning (pop)

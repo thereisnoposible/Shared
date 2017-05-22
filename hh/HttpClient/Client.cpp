@@ -7,6 +7,7 @@
 #include <assert.h>
 
 #include "zlib/zlib.h"
+#include "singleton/Singleton.h"
 
 enum code
 {
@@ -49,6 +50,13 @@ void test(int i)
 
 friendStep Client::step_ = INIT;
 
+class iiiii
+{
+public:
+	int32 i = 0;
+
+};
+
 Client::Client(std::string& plat)
 {
 	m_manager = new http::connect_manager();
@@ -84,6 +92,8 @@ Client::Client(std::string& plat)
 
 	m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::loulanPray, this), -1);
 	m_pTimerManager->AddIntervalTimer(60, std::bind(&Client::prayReward, this), -1);
+
+	m_pTimerManager->AddIntervalTimer(150, std::bind(&Client::get_challenge, this), -1);
 
 	m_pTimeWheel->AddTimer(300000, std::bind(&Client::ManorGet, this), -1);
 
@@ -244,8 +254,9 @@ void Client::run(double diff)
  
     m_pTimeWheel->Update();
 
+	xlib::CSingleton<iiiii>::GetInstance().i++;
 
-	if (platform_ == "ios")
+	if (platform_ == "11111")
 	{
 		http::http_request request;
 
@@ -1042,7 +1053,6 @@ void Client::get_fight_map_sub_response(int cid, Json::Value& value)
 	if (chapter.cid == m_pChapter.rbegin()->second.cid)
 	{
 		run_fight();
-		get_challenge();
 	}
 }
 
@@ -1171,11 +1181,6 @@ void Client::set_ip(std::string& param)
 
 void Client::get_challenge()
 {
-	if (m_challenge == NULL)
-	{
-		m_challenge = m_pTimerManager->AddIntervalTimer(5, std::bind(&Client::get_challenge, this));
-	}
-
 	http::http_request request;
 	request.type = HTTP_GET;
     request.url = "/s20042/port/interface.php?s=Challenge&m=init&a={}&v=";
@@ -1258,8 +1263,6 @@ void Client::challenge_response(Json::Value& value)
 		{
 		case NOON_DEDURENCE:
 			std::cout << "error code:" << codess << codestr[code] << "\n";
-			m_pTimerManager->RemoveTimer(m_challenge);
-			m_challenge = NULL;
 			return;
 		case Success:
 			endurance -= 1;

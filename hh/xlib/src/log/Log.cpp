@@ -4,9 +4,7 @@
 
 namespace xlib
 {
-	LogService* Singleton<LogService>::single = nullptr;
-
-	LogService::LogService(const std::string& logname) : m_hFile(NULL)
+	LogService::LogService(const char*  logname) : m_hFile(NULL)
 	{
 		m_LogName = logname;
 		createLogFile();
@@ -67,6 +65,7 @@ namespace xlib
 			plocal++;
 		}
 
+		va_end(argp);
 		fwrite(logmessa.c_str(), logmessa.length(), 1, m_hFile);
 		fclose(m_hFile);
 		m_hFile = NULL;

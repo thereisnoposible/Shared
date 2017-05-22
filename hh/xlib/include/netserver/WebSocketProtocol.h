@@ -3,10 +3,67 @@
 #include <memory>
 #include <boost/asio.hpp>
 
+#include "../include/define/define.h"
+
 namespace xlib
 {
 	class NetPack;
-	class WebSocketProtocol
+
+	struct WebSocketHead
+	{
+		//#ifdef BIG_ENDIAN
+		//unsigned char fin : 1;				//FIN
+		//unsigned char RSV1: 1;				//
+		//unsigned char RSV2 : 1;				//
+		//unsigned char RSV3 : 1;				//
+		//unsigned char opcode : 4;			//opcode
+
+		//unsigned char mask : 1;				//MASK	
+		//unsigned char payloadlen : 7;		//payload len
+
+
+		//#else
+		unsigned char opcode : 4;			//opcode
+		unsigned char RSV3 : 1;				//
+		unsigned char RSV2 : 1;				//
+		unsigned char RSV1 : 1;				//
+		unsigned char fin : 1;				//FIN
+
+		unsigned char payloadlen : 7;		//payload len
+		unsigned char mask : 1;				//MASK	
+
+		//#endif
+
+	};
+
+	struct WebSocketPack
+	{
+		WebSocketPack()
+		{
+			datalen = 0;
+		}
+		WebSocketHead head;
+		union
+		{
+			unsigned long long datalen;
+			struct DataLen
+			{
+#ifdef BIG_ENDIAN
+				unsigned int long_high;
+				unsigned short high;
+				unsigned short low;
+#else
+				unsigned short low;
+				unsigned short high;
+				unsigned int long_high;
+#endif
+			} high_low;
+		};
+		unsigned int mask_key;
+		std::string data;
+	};
+
+	class XDLL WebSocketProtocol
 	{
 	public:
 		enum FrameType
@@ -34,60 +91,6 @@ namespace xlib
 
 			// πÿ±’¡¨Ω”
 			CLOSE_FRAME = 0x08
-		};
-
-		struct WebSocketHead
-		{
-			//#ifdef BIG_ENDIAN
-			//unsigned char fin : 1;				//FIN
-			//unsigned char RSV1: 1;				//
-			//unsigned char RSV2 : 1;				//
-			//unsigned char RSV3 : 1;				//
-			//unsigned char opcode : 4;			//opcode
-
-			//unsigned char mask : 1;				//MASK	
-			//unsigned char payloadlen : 7;		//payload len
-
-
-			//#else
-			unsigned char opcode : 4;			//opcode
-			unsigned char RSV3 : 1;				//
-			unsigned char RSV2 : 1;				//
-			unsigned char RSV1 : 1;				//
-			unsigned char fin : 1;				//FIN
-
-			unsigned char payloadlen : 7;		//payload len
-			unsigned char mask : 1;				//MASK	
-
-			//#endif
-
-		};
-
-		struct WebSocketPack
-		{
-			WebSocketPack()
-			{
-				datalen = 0;
-			}
-			WebSocketHead head;
-			union
-			{
-				unsigned long long datalen;
-				struct DataLen
-				{
-#ifdef BIG_ENDIAN
-					unsigned int long_high;
-					unsigned short high;
-					unsigned short low;
-#else
-					unsigned short low;
-					unsigned short high;
-					unsigned int long_high;
-#endif
-				} high_low;
-			};
-			unsigned int mask_key;
-			std::string data;
 		};
 
 		/**

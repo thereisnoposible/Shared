@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="libgame" />
+		<Option pch_mode="0" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/game" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+					<Add option="-shared" />
+					<Add option="-fPIC" />
+					<Add option="-fpermissive" />
+					<Add directory="include" />
+					<Add directory="../libgame" />
+					<Add directory="../depend" />
+					<Add directory="/usr/include/mysql" />
+					<Add directory="../" />
+				</Compiler>
+				<Linker>
+					<Add library="pthread" />
+					<Add library="mysqlclient" />
+					<Add library="boost_system" />
+					<Add library="boost_filesystem" />
+					<Add library="dl" />
+					<Add library="protobuf" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/game" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="include/BaseApp.h" />
+		<Unit filename="include/CircularQueue.h" />
+		<Unit filename="include/Config.h" />
+		<Unit filename="include/CustParament.h" />
+		<Unit filename="include/DBConnect.h" />
+		<Unit filename="include/DBInterface.h" />
+		<Unit filename="include/DBSaveManager.h" />
+		<Unit filename="include/DBService.h" />
+		<Unit filename="include/DFA.h" />
+		<Unit filename="include/Event.h" />
+		<Unit filename="include/HTTPSession.h" />
+		<Unit filename="include/Heap.h" />
+		<Unit filename="include/HttpClient.h" />
+		<Unit filename="include/HttpExecuter.h" />
+		<Unit filename="include/IOContext.h" />
+		<Unit filename="include/LinuxApp.h" />
+		<Unit filename="include/LogService.h" />
+		<Unit filename="include/LuaManager.h" />
+		<Unit filename="include/MessageHandle.h" />
+		<Unit filename="include/MultiLanguage.h" />
+		<Unit filename="include/NetClient.h" />
+		<Unit filename="include/NetConnect.h" />
+		<Unit filename="include/NetConnect_boost.h" />
+		<Unit filename="include/NetPack.h" />
+		<Unit filename="include/NetService.h" />
+		<Unit filename="include/NetService_boost.h" />
+		<Unit filename="include/NetService_iocp.h" />
+		<Unit filename="include/SharedMemSave.h" />
+		<Unit filename="include/SharedMemory.h" />
+		<Unit filename="include/SharedObject.h" />
+		<Unit filename="include/Singleton.h" />
+		<Unit filename="include/Timer.h" />
+		<Unit filename="include/TimerManager.h" />
+		<Unit filename="include/WindowAPP.h" />
+		<Unit filename="include/base64.h" />
+		<Unit filename="include/crashReport.h" />
+		<Unit filename="include/helper.h" />
+		<Unit filename="include/inifile.h" />
+		<Unit filename="include/io_service_pool.h" />
+		<Unit filename="include/lua/lapi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lapi.h" />
+		<Unit filename="include/lua/lauxlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lauxlib.h" />
+		<Unit filename="include/lua/lbaselib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lcode.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lcode.h" />
+		<Unit filename="include/lua/ldblib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/ldebug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/ldebug.h" />
+		<Unit filename="include/lua/ldo.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/ldo.h" />
+		<Unit filename="include/lua/ldump.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lfunc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lfunc.h" />
+		<Unit filename="include/lua/lgc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lgc.h" />
+		<Unit filename="include/lua/linit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/liolib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/llex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/llex.h" />
+		<Unit filename="include/lua/llimits.h" />
+		<Unit filename="include/lua/lmathlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lmem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lmem.h" />
+		<Unit filename="include/lua/loadlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lobject.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lobject.h" />
+		<Unit filename="include/lua/lopcodes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lopcodes.h" />
+		<Unit filename="include/lua/loslib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lparser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lparser.h" />
+		<Unit filename="include/lua/lstate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lstate.h" />
+		<Unit filename="include/lua/lstring.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lstring.h" />
+		<Unit filename="include/lua/lstrlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/ltable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/ltable.h" />
+		<Unit filename="include/lua/ltablib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/ltm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/ltm.h" />
+		<Unit filename="include/lua/lua.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lua.h" />
+		<Unit filename="include/lua/luac.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/luaconf.h" />
+		<Unit filename="include/lua/lualib.h" />
+		<Unit filename="include/lua/lundump.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lundump.h" />
+		<Unit filename="include/lua/lvm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lvm.h" />
+		<Unit filename="include/lua/lzio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/lzio.h" />
+		<Unit filename="include/lua/print.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/tolua++.h" />
+		<Unit filename="include/lua/tolua_event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/tolua_event.h" />
+		<Unit filename="include/lua/tolua_is.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/tolua_map.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/tolua_push.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/lua/tolua_to.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="include/platform.h" />
+		<Unit filename="include/public.h" />
+		<Unit filename="include/smtp.h" />
+		<Unit filename="include/targetver.h" />
+		<Unit filename="include/tstdlibs.h" />
+		<Unit filename="pch.h">
+			<Option compile="1" />
+			<Option weight="0" />
+		</Unit>
+		<Unit filename="source/BaseApp.cpp" />
+		<Unit filename="source/Config.cpp" />
+		<Unit filename="source/CustParament.cpp" />
+		<Unit filename="source/DBConnect.cpp" />
+		<Unit filename="source/DBInterface.cpp" />
+		<Unit filename="source/DBSaveManager.cpp" />
+		<Unit filename="source/DBService.cpp" />
+		<Unit filename="source/DFA.cpp" />
+		<Unit filename="source/HTTPSession.cpp" />
+		<Unit filename="source/HttpClient.cpp" />
+		<Unit filename="source/HttpExecuter.cpp" />
+		<Unit filename="source/IniFile.cpp" />
+		<Unit filename="source/LinuxApp.cpp" />
+		<Unit filename="source/LogService.cpp" />
+		<Unit filename="source/LuaManager.cpp" />
+		<Unit filename="source/MultiLanguage.cpp" />
+		<Unit filename="source/NetClient.cpp" />
+		<Unit filename="source/NetConnect.cpp" />
+		<Unit filename="source/NetPack.cpp" />
+		<Unit filename="source/NetService.cpp" />
+		<Unit filename="source/SharedObject.cpp" />
+		<Unit filename="source/Timer.cpp" />
+		<Unit filename="source/TimerManager.cpp" />
+		<Unit filename="source/WindowAPP.cpp" />
+		<Unit filename="source/base64.cpp" />
+		<Unit filename="source/crashReport.cpp" />
+		<Unit filename="source/helper.cpp" />
+		<Unit filename="source/io_service_pool.cpp" />
+		<Unit filename="source/smtp.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

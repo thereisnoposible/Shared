@@ -41,14 +41,15 @@ namespace xlib
 	{
 		std::unique_lock<std::mutex> oLock(mutex);
 		result.push_back(cmd);
+		oLock.unlock();
 	}
 
 	void DBService::Update()
 	{
 		std::unique_lock<std::mutex> oLock(mutex);
-		std::vector<SqlCommond>&& temp = std::move(result);
+		std::vector<SqlCommond> temp = result;
 		result.clear();
-		mutex.unlock();
+		oLock.unlock();
 
 		for (int i = 0; i < (int)temp.size(); ++i)
 		{

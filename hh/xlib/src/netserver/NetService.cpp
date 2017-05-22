@@ -3,7 +3,7 @@
 namespace xlib
 {
 	//-------------------------------------------------------------------------------------------
-	NetService::NetService(int ionum) : _io_service_pool(ionum)
+	NetService::NetService(int ionum) : _io_service_pool(ionum), _acceptor(nullptr)
 	{
 		run();
 	}
@@ -115,7 +115,7 @@ namespace xlib
 		_NetObserverSet.erase(observer);
 	}
 	//-------------------------------------------------------------------------------------------
-	bool NetService::Connect(const std::string& ip, int port,
+	bool NetService::Connect(const char* ip, int port,
 		boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc)
 	{
 		std::shared_ptr<tcp::socket> skt(new tcp::socket(_io_service_pool.get_io_service()));

@@ -17,8 +17,6 @@ namespace xlib{
 		template class _declspec(dllexport) std::function<void()>;
 		template class _declspec(dllexport) std::list<Timer*>;
 		template class _declspec(dllexport) std::vector<std::list<Timer*>>;
-		template class _declspec(dllexport) std::function<void()>;
-		template class _declspec(dllexport) std::function<void()>;
 		template class _declspec(dllexport) std::chrono::duration<std::chrono::system_clock::rep, std::chrono::system_clock::period>;
 		template class _declspec(dllexport) std::chrono::time_point<std::chrono::system_clock, std::chrono::system_clock::duration>;
 

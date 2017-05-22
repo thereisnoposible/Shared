@@ -5,9 +5,17 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -22,6 +30,12 @@
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -29,13 +43,26 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -45,15 +72,35 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;LIBGAME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;LIBGAME_EXPORTS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;F:\myproject\hh\xlib\src</AdditionalIncludeDirectories>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>12333.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib32;F:\myproject\hh\Public\Visual Leak Detector\lib\Win32;F:\myproject\hh\Public\mysql\mysql32\lib;F:\myproject\third_party;F:\myproject\third_party\mysql\mysql32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib32;F:\myproject\hh\Public\Visual Leak Detector\lib\Win32;F:\myproject\hh\Public\mysql\mysql32\lib;F:\myproject\third_party;F:\myproject\third_party\mysql\mysql32;F:\myproject\hh\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;LIBGAME_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;F:\myproject\hh\xlib\src</AdditionalIncludeDirectories>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>12333.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib32;F:\myproject\hh\Public\Visual Leak Detector\lib\Win32;F:\myproject\hh\Public\mysql\mysql32\lib;F:\myproject\third_party;F:\myproject\third_party\mysql\mysql32;F:\myproject\hh\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -74,6 +121,26 @@
       <ModuleDefinitionFile>12333.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;F:\myproject\hh\xlib\src</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>12333.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib64;F:\myproject\hh\Public\Visual Leak Detector\lib\Win64;F:\myproject\hh\Public\mysql\mysql64\lib;F:\myproject\third_party;F:\myproject\third_party\mysql\mysql64;F:\myproject\hh\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
@@ -84,7 +151,10 @@
     <ClInclude Include="include\crashReport\crashReport.h" />
     <ClInclude Include="include\define\define.h" />
     <ClInclude Include="include\helper\Helper.h" />
+    <ClInclude Include="include\keywordFilter\DFA.h" />
+    <ClInclude Include="include\keywordFilter\KeywordFilter.h" />
     <ClInclude Include="include\log\Log.h" />
+    <ClInclude Include="include\log\LogService.h" />
     <ClInclude Include="include\MessageHandle.h" />
     <ClInclude Include="include\mysql\DBResult.h" />
     <ClInclude Include="include\mysql\DBService.h" />
@@ -96,6 +166,8 @@
     <ClInclude Include="include\netserver\WebSocketProtocol.h" />
     <ClInclude Include="include\Platform.h" />
     <ClInclude Include="include\rank_template\rank_template.h" />
+    <ClInclude Include="include\singleton\Singleton.h" />
+    <ClInclude Include="include\stmt\smtp.h" />
     <ClInclude Include="include\timer\Timer.h" />
     <ClInclude Include="include\timer\TimerManager.h" />
     <ClInclude Include="include\timer\TimeWheel.h" />
@@ -111,7 +183,6 @@
     <ClInclude Include="src\zlib\inftrees.h" />
     <ClInclude Include="src\zlib\trees.h" />
     <ClInclude Include="src\zlib\zutil.h" />
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -119,7 +190,10 @@
     <ClCompile Include="src\base64.cpp" />
     <ClCompile Include="src\crashReport\crashReport.cpp" />
     <ClCompile Include="src\helper\Helper.cpp" />
+    <ClCompile Include="src\keywordFilter\DFA.cpp" />
+    <ClCompile Include="src\keywordFilter\KeywordFilter.cpp" />
     <ClCompile Include="src\log\Log.cpp" />
+    <ClCompile Include="src\log\LogService.cpp" />
     <ClCompile Include="src\mysql\DBResult.cpp" />
     <ClCompile Include="src\mysql\DBService.cpp" />
     <ClCompile Include="src\mysql\DBSqlThread.cpp" />
@@ -127,7 +201,7 @@
     <ClCompile Include="src\netserver\NetClient.cpp" />
     <ClCompile Include="src\netserver\NetService.cpp" />
     <ClCompile Include="src\netserver\WebSocketProtocol.cpp" />
-    <ClCompile Include="src\timer\TimerManager.cpp" />
+    <ClCompile Include="src\stmt\smtp.cpp" />
     <ClCompile Include="src\timer\TimeWheel.cpp" />
     <ClCompile Include="src\zlib\adler32.c" />
     <ClCompile Include="src\zlib\compress.c" />
@@ -144,10 +218,6 @@
     <ClCompile Include="src\zlib\trees.c" />
     <ClCompile Include="src\zlib\uncompr.c" />
     <ClCompile Include="src\zlib\zutil.c" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="12333.def" />
