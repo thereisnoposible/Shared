@@ -2,7 +2,7 @@
 #include <functional>
 #include <list>
 #include <mutex>
-#include <condition_variable>
+#include <boost/thread/condition_variable.hpp>
 #include <thread>
 
 #include "DBResult.h"
@@ -35,8 +35,8 @@ namespace xlib
 		std::thread* pthread;
 		std::list<SqlCommond> querysql;
 		//std::list<std::string> excutsql;
-		std::mutex mutex;
-		std::condition_variable variable;
+		boost::mutex mutex;
+		boost::condition_variable variable;
 		bool bExit;
 		MYSQL* mysql;
 	};

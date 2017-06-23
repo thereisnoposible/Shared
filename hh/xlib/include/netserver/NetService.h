@@ -92,7 +92,7 @@ namespace xlib
 			{
 				NetPack Pack(messegeid, pdata, len, roleid, type);
 				NetPack WritePack;
-				webpack.head.mask = 0;
+				//webpack.head.mask = 0;
 				WebSocketProtocol::makeFrame(&Pack, &WritePack, WebSocketProtocol::BINARY_FRAME);
 
 				_pSocket->async_write_some(boost::asio::buffer(WritePack.m_pBuff.c_str(), WritePack.m_pBuff.size()),
@@ -133,6 +133,7 @@ namespace xlib
 
 		void Handshake(int off)
 		{
+			if (_pSocket)
 			_pSocket->async_read_some(boost::asio::buffer(const_cast<char*>(handshake.c_str() + off), handshake.size() - off),
 				boost::bind(&NetConnect::OnHandShake, shared_from_this(), boost::asio::placeholders::error,
 				boost::asio::placeholders::bytes_transferred));
@@ -140,6 +141,7 @@ namespace xlib
 
 		void ReadHead()
 		{
+			if (_pSocket)
 			boost::asio::async_read(*_pSocket, boost::asio::buffer(&readBuf.m_Head, sizeof(PackHead)),
 				boost::bind(&NetConnect::ReadReadyHead, shared_from_this(), boost::asio::placeholders::error,
 				boost::asio::placeholders::bytes_transferred));
@@ -202,6 +204,7 @@ namespace xlib
 
 		void ReadWebPackHead()
 		{
+			if (_pSocket)
 			boost::asio::async_read(*_pSocket, boost::asio::buffer(&webpack.head, sizeof(webpack.head)),
 				boost::bind(&NetConnect::ReadWebPackHeadReady, shared_from_this(), boost::asio::placeholders::error,
 				boost::asio::placeholders::bytes_transferred));
@@ -246,6 +249,7 @@ namespace xlib
 			else if (readdata == 8)
 				p = reinterpret_cast<char*>(&webpack.datalen);
 
+			if (_pSocket)
 			boost::asio::async_read(*_pSocket, boost::asio::buffer(p, readdata),
 				boost::bind(&NetConnect::ReadWebPackHeadBodyReady, shared_from_this(), boost::asio::placeholders::error,
 				boost::asio::placeholders::bytes_transferred));
@@ -272,6 +276,7 @@ namespace xlib
 
 		void ReadWebPackData()
 		{
+			if (_pSocket)
 			_pSocket->async_read_some(boost::asio::buffer(const_cast<char*>(webpack.data.c_str()), (int)webpack.datalen + (webpack.head.mask == 1 ? 4 : 0)),
 				boost::bind(&NetConnect::ReadWebPackDataReady, shared_from_this(), boost::asio::placeholders::error,
 				boost::asio::placeholders::bytes_transferred));
@@ -309,6 +314,11 @@ namespace xlib
 			p->m_Connect = shared_from_this();
 			_OnGetPack(p);
 
+			if (p->getMessageId() == 2100071 && p->m_pBuff.size() == 0)
+			{
+				int32 couttt = 1;
+			}
+
 			readBuf.m_pBuff.clear();
 			ReadWebPackHead();
 		}
@@ -334,9 +344,12 @@ namespace xlib
 		void ReadBody()
 		{
 			readBuf.m_pBuff.resize(readBuf.getBufferSize());/*, readBuf.getBufferSize()*/
-			boost::asio::async_read(*_pSocket, boost::asio::buffer(const_cast<char*>(readBuf.m_pBuff.c_str()), readBuf.getBufferSize()),
-				boost::bind(&NetConnect::ReadReadyBody, shared_from_this(), boost::asio::placeholders::error,
-				boost::asio::placeholders::bytes_transferred));
+			if (_pSocket)
+			{
+				boost::asio::async_read(*_pSocket, boost::asio::buffer(const_cast<char*>(readBuf.m_pBuff.c_str()), readBuf.getBufferSize()),
+					boost::bind(&NetConnect::ReadReadyBody, shared_from_this(), boost::asio::placeholders::error,
+					boost::asio::placeholders::bytes_transferred));
+			}
 
 			//boost::asio::async_read(
 			//	*_pSocket,
@@ -431,6 +444,9 @@ namespace xlib
 
 		void UnRegistObserver(NetObserver* observer);
 		void run();
+
+
+		void OnDisConnect(ConnectPtr& pConnetct);
 	protected:
 		void GetNetPack(PackPtr& pPack);
 
@@ -439,8 +455,6 @@ namespace xlib
 		void OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket,
 			boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc, boost::system::error_code ec);
 		void OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket, boost::system::error_code ec);
-
-		void OnDisConnect(ConnectPtr& pConnetct);
 	private:
 		io_service_pool _io_service_pool;
 		boost::asio::ip::tcp::acceptor* _acceptor;
@@ -455,6 +469,8 @@ namespace xlib
 		std::vector<PackPtr> NetPackVectorTemp;
 
 		std::set<NetObserver*> _NetObserverSet;
+
+		bool bClose;
 	};
 }
 

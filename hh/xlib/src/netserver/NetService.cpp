@@ -3,7 +3,7 @@
 namespace xlib
 {
 	//-------------------------------------------------------------------------------------------
-	NetService::NetService(int ionum) : _io_service_pool(ionum), _acceptor(nullptr)
+	NetService::NetService(int ionum) : _io_service_pool(ionum), _acceptor(nullptr), bClose(false)
 	{
 		run();
 	}
@@ -33,6 +33,8 @@ namespace xlib
 			_acceptor = nullptr;
 		}
 
+		bClose = true;
+		
 		_io_service_pool.stop();
 	}
 
@@ -41,7 +43,8 @@ namespace xlib
 	{
 		std::shared_ptr<tcp::socket> skt(new tcp::socket(_io_service_pool.get_io_service()));
 
-		_acceptor->async_accept(*skt, boost::bind(&NetService::OnConnect, this, skt, _1));
+		if (_acceptor)
+			_acceptor->async_accept(*skt, boost::bind(&NetService::OnConnect, this, skt, _1));
 	}
 
 	//-------------------------------------------------------------------------------------------
@@ -49,7 +52,7 @@ namespace xlib
 	{
 		if (ec)
 		{
-			if (_acceptor)
+			if (_acceptor && bClose == false)
 				accept();
 			return;
 		}
@@ -79,7 +82,14 @@ namespace xlib
 		lock.unlock();
 
 		for (int i = 0; i < (int)NetPackVectorTemp.size(); i++)
+		{
+			if (NetPackVectorTemp[i]->getMessageId() == 2100071 && strlen(NetPackVectorTemp[i]->getBuffer()) == 0)
+			{
+				int32 couttt = 1;
+			}
+
 			FireMessage(NetPackVectorTemp[i]->getMessageId(), NetPackVectorTemp[i]);
+		}
 		NetPackVectorTemp.clear();
 
 		boost::mutex::scoped_lock disconnlock(_disconnectmutex);

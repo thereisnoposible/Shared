@@ -6,7 +6,7 @@
 #include <functional>
 #include <vector>
 #include <thread>
-#include <mutex>
+#include <boost/thread/mutex.hpp>
 #include <unordered_map>
 #include <condition_variable>
 #include "DBSqlThread.h"
@@ -31,8 +31,8 @@ namespace xlib
 		std::function<void(DBResult& result)> func;
 		std::string sql;
 		SqlCommondType type;
-		DBResult result;
-		std::string err;
+		std::shared_ptr<DBResult> result;
+		//std::string err;
 	};
 
 	class XDLL DBService
@@ -48,15 +48,15 @@ namespace xlib
 
 		bool syncQuery(const std::string& sql, DBResult& pResult);
 		bool syncExcute(const std::string& sql);
-		void asynQuery(unsigned int, const std::string& sql, std::function<void(DBResult& result)> func);
-		void asynExcute(unsigned int, const std::string& sql, std::function<void(DBResult& result)> func);
+		void asynQuery(uint64, const std::string& sql, std::function<void(DBResult& result)> func);
+		void asynExcute(uint64, const std::string& sql, std::function<void(DBResult& result)> func);
 		const char* getError();
 
 		void OnGetResult(SqlCommond&);
 
 	private:
 		MYSQL* mysql;
-		std::mutex mutex;
+		boost::mutex mutex;
 		std::vector<SqlThread*> vecThread;
 		std::vector<SqlCommond> result;
 	};

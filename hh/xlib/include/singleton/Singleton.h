@@ -95,20 +95,20 @@ void _ClassName::DestroyInstance()					\
 		delete s_pInstance;							\
 		s_pInstance = NULL;							\
 				}												\
-			}													\
-class _V4(CZS##_ClassName, _, __LINE__, Producer)	\
-			{													\
-public:												\
-	_V4(CZS##_ClassName, _, __LINE__, Producer)()	\
-				{												\
-		_ClassName::GetInstance();					\
-				}												\
-													\
-	~_V4(CZS##_ClassName, _, __LINE__, Producer)()\
-				{												\
-		_ClassName::DestroyInstance();				\
-				}												\
-			}_V4(g_the##_ClassName, _, __LINE__,Singleton);
+			}													
+//class _V4(CZS##_ClassName, _, __LINE__, Producer)	\
+//			{													\
+//public:												\
+//	_V4(CZS##_ClassName, _, __LINE__, Producer)()	\
+//				{												\
+//		_ClassName::GetInstance();					\
+//				}												\
+//													\
+//	~_V4(CZS##_ClassName, _, __LINE__, Producer)()\
+//				{												\
+//		_ClassName::DestroyInstance();				\
+//				}												\
+//			}_V4(g_the##_ClassName, _, __LINE__,Singleton);
 
 #define PLUGIN_MANAGER_SINGLETON(_ClassName)			\
 public:													\

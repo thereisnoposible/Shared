@@ -49,6 +49,9 @@
     <Filter Include="stmt">
       <UniqueIdentifier>{57616873-2194-4103-a2d9-a1bc1f238717}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mysql2">
+      <UniqueIdentifier>{547272c1-7021-490f-adc2-489426f5a097}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -154,6 +157,24 @@
     <ClInclude Include="include\stmt\smtp.h">
       <Filter>stmt</Filter>
     </ClInclude>
+    <ClInclude Include="include\timer\timerlayering.h">
+      <Filter>timer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\timer\timehelp.h">
+      <Filter>timer</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mysql2\CustParament.h">
+      <Filter>mysql2</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mysql2\DBConnect.h">
+      <Filter>mysql2</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mysql2\DBInterface.h">
+      <Filter>mysql2</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mysql2\DBService2.h">
+      <Filter>mysql2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\timer\TimeWheel.cpp">
@@ -249,6 +270,27 @@
     </ClCompile>
     <ClCompile Include="src\stmt\smtp.cpp">
       <Filter>stmt</Filter>
+    </ClCompile>
+    <ClCompile Include="src\timer\timerlayering.cpp">
+      <Filter>timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\timer\timehelp.cpp">
+      <Filter>timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\timer\timer.cpp">
+      <Filter>timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mysql2\CustParament.cpp">
+      <Filter>mysql2</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mysql2\DBConnect.cpp">
+      <Filter>mysql2</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mysql2\DBInterface.cpp">
+      <Filter>mysql2</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mysql2\DBService2.cpp">
+      <Filter>mysql2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

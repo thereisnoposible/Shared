@@ -55,17 +55,17 @@ void LogService2::SetMaxSize(int32 maxsize)
 //-------------------------------------------------------------------------------------
 void LogService2::init()
 {
-#ifdef _WIN32
-	if(_access(FOLDERNAME, 0))		//判断当前工程中log文件夹是否存在
-	{
-		_mkdir(FOLDERNAME);
-	}
-#else
-    if(NULL==opendir(FOLDERNAME))
-    {
-       mkdir(FOLDERNAME,0775);
-    }
-#endif
+//#ifdef _WIN32
+//	if(_access(FOLDERNAME, 0))		//判断当前工程中log文件夹是否存在
+//	{
+//		_mkdir(FOLDERNAME);
+//	}
+//#else
+//    if(NULL==opendir(FOLDERNAME))
+//    {
+//       mkdir(FOLDERNAME,0775);
+//    }
+//#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -96,7 +96,25 @@ bool LogService2::createLogFile()
 	strftime(szTime,TIME_LENGTH,"%Y%m%d_%H%M%S",ptm);
 
 	std::stringstream ss;
-	ss <<  FOLDERNAME << "/" << m_LogName << szTime << ".log";
+	//ss <<  FOLDERNAME << "/" << m_LogName << szTime << ".log";
+	ss << m_LogName << szTime << ".log";
+
+	std::vector<std::string> sAstr;
+	Helper::SplitString(m_LogName, "/", sAstr);
+	for (int32 i = 0; i < (int32)sAstr.size() - 1; i++)
+	{
+#ifdef _WIN32
+		if (_access(sAstr[i].c_str(), 0))		//判断当前工程中log文件夹是否存在
+		{
+			_mkdir(sAstr[i].c_str());
+		}
+#else
+		if(NULL==opendir(sAstr[i].c_str()))
+		   {
+			mkdir(sAstr[i].c_str(),0775);
+		   }
+#endif
+	}
 
 	std::string filename = ss.str();
 #ifdef _WIN32

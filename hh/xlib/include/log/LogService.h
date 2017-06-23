@@ -6,7 +6,7 @@
 #include <boost/thread.hpp>
 
 #define LOG_BUF_LEN 1024*100		// 每条日志的大小
-#define FOLDERNAME "log"			// 存放日志文件夹名
+//#define FOLDERNAME "log"			// 存放日志文件夹名
 
 #pragma warning (push)
 

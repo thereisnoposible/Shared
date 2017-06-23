@@ -37,11 +37,11 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -106,12 +106,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;LIBGAME_EXPORTS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;F:\myproject\hh\xlib\src</AdditionalIncludeDirectories>
+      <AdditionalOptions>-D_SCL_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -119,6 +121,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>12333.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib32;F:\myproject\hh\Public\Visual Leak Detector\lib\Win32;F:\myproject\hh\Public\mysql\mysql32\lib;F:\myproject\third_party;F:\myproject\third_party\mysql\mysql32;F:\myproject\hh\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -128,7 +131,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;F:\myproject\hh\xlib\src</AdditionalIncludeDirectories>
     </ClCompile>
@@ -156,6 +159,10 @@
     <ClInclude Include="include\log\Log.h" />
     <ClInclude Include="include\log\LogService.h" />
     <ClInclude Include="include\MessageHandle.h" />
+    <ClInclude Include="include\mysql2\CustParament.h" />
+    <ClInclude Include="include\mysql2\DBConnect.h" />
+    <ClInclude Include="include\mysql2\DBInterface.h" />
+    <ClInclude Include="include\mysql2\DBService2.h" />
     <ClInclude Include="include\mysql\DBResult.h" />
     <ClInclude Include="include\mysql\DBService.h" />
     <ClInclude Include="include\mysql\DBSqlThread.h" />
@@ -168,7 +175,9 @@
     <ClInclude Include="include\rank_template\rank_template.h" />
     <ClInclude Include="include\singleton\Singleton.h" />
     <ClInclude Include="include\stmt\smtp.h" />
+    <ClInclude Include="include\timer\timehelp.h" />
     <ClInclude Include="include\timer\Timer.h" />
+    <ClInclude Include="include\timer\timerlayering.h" />
     <ClInclude Include="include\timer\TimerManager.h" />
     <ClInclude Include="include\timer\TimeWheel.h" />
     <ClInclude Include="include\zlib\zconf.h" />
@@ -194,6 +203,10 @@
     <ClCompile Include="src\keywordFilter\KeywordFilter.cpp" />
     <ClCompile Include="src\log\Log.cpp" />
     <ClCompile Include="src\log\LogService.cpp" />
+    <ClCompile Include="src\mysql2\CustParament.cpp" />
+    <ClCompile Include="src\mysql2\DBConnect.cpp" />
+    <ClCompile Include="src\mysql2\DBInterface.cpp" />
+    <ClCompile Include="src\mysql2\DBService2.cpp" />
     <ClCompile Include="src\mysql\DBResult.cpp" />
     <ClCompile Include="src\mysql\DBService.cpp" />
     <ClCompile Include="src\mysql\DBSqlThread.cpp" />
@@ -202,6 +215,9 @@
     <ClCompile Include="src\netserver\NetService.cpp" />
     <ClCompile Include="src\netserver\WebSocketProtocol.cpp" />
     <ClCompile Include="src\stmt\smtp.cpp" />
+    <ClCompile Include="src\timer\timehelp.cpp" />
+    <ClCompile Include="src\timer\timer.cpp" />
+    <ClCompile Include="src\timer\timerlayering.cpp" />
     <ClCompile Include="src\timer\TimeWheel.cpp" />
     <ClCompile Include="src\zlib\adler32.c" />
     <ClCompile Include="src\zlib\compress.c" />

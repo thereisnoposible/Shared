@@ -523,6 +523,14 @@ namespace xlib{
 		//-------------------------------------------------------------------------------
 		std::string Helper::Timet2String(time_t t)
 		{
+			if (t < 0)
+				t = 0;
+
+			if (t > 0x793406FFF)
+			{
+				t = 0x793406FFF;
+			}
+
 			char szTime[20] = { 0 };
 #ifdef ZS_WINOS
 			struct tm timeinfo;
@@ -563,6 +571,27 @@ namespace xlib{
 			char a[3] = { 0 };
 			sprintf_s(a, "%X", p);
 			return a;
+		}
+
+		std::string Helper::HexToString(const unsigned char* pdata, int32 len)
+		{
+			std::string str;
+
+			if (pdata != NULL)
+			{
+				char buff[3] = { 0 };
+				for (int32 i = 0; i < len; i++)
+				{
+#ifdef _WIN32
+					sprintf_s(buff, 3, "%02x", pdata[i]);
+#else
+					sprintf(buff, "%02x", pdata[i]);
+#endif
+					str += buff;
+				}
+			}
+
+			return str;
 		}
 
 		bool hextoint64(const std::string& _In_str, long long& _out_num)
@@ -628,5 +657,74 @@ namespace xlib{
 			return true;
 		}
 
+		//-------------------------------------------------------------------------------
+		bool IsTimeChanged(time_t tLast, time_t tCurr, int32 hour, int32 min, int32 sec)
+		{
+#ifdef _WIN32
+			struct tm _tm;
+			localtime_s(&_tm, &tLast);
+			struct tm* p_tm = &_tm;
+#else
+			struct tm* p_tm = localtime(&tLast);
+#endif
+			p_tm->tm_hour = hour;
+			p_tm->tm_min = min;
+			p_tm->tm_sec = sec;
+
+			time_t tSepCurDay = mktime(p_tm);
+			time_t tSepNextDay = tSepCurDay + 24 * 60 * 60;
+
+			if (tLast < tSepCurDay)
+			{
+				if (tCurr >= tSepCurDay)
+					return true;
+			}
+			else
+			{
+				if (tCurr >= tSepNextDay)
+					return true;
+			}
+
+			return false;
+		}
+
+		//-------------------------------------------------------------------------------
+		bool IsTimeChanged(time_t t, int32 hour, int32 min, int32 sec)
+		{
+			time_t tNow = time(NULL);
+
+			return IsTimeChanged(t, tNow, hour, min, sec);
+		}
+
+		//-------------------------------------------------------------------------------
+		void SplitTimet(time_t t, int32& year, int32& mon, int32& day, int32& hour, int32& min, int32& sec)
+		{
+#ifdef _WIN32
+			struct tm _tm;
+			localtime_s(&_tm, &t);
+			struct tm* ptm = &_tm;
+#else
+			struct tm* ptm = localtime(&t);
+#endif
+
+			year = ptm->tm_year + 1900;
+			mon = ptm->tm_mon + 1;
+			day = ptm->tm_mday;
+			hour = ptm->tm_hour;
+			min = ptm->tm_min;
+			sec = ptm->tm_sec;
+		}
+
+		//-------------------------------------------------------------------------------
+		int32 Helper::GetDaySeconds(time_t t)
+		{
+			int32 total = 0;
+			int32 year, mon, day, hour, min, sec;
+			SplitTimet(t, year, mon, day, hour, min, sec);
+
+			total = hour * 60 * 60 + min * 60 + sec;
+
+			return total;
+		}
 	}
 }

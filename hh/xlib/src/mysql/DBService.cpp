@@ -24,6 +24,8 @@ namespace xlib
 			SqlThread* sql = new SqlThread(std::bind(&DBService::OnGetResult, this, std::placeholders::_1));
 			vecThread.push_back(sql);
 		}
+
+		mysql = nullptr;
 	}
 
 	DBService::~DBService()
@@ -39,21 +41,22 @@ namespace xlib
 	}
 	void DBService::OnGetResult(SqlCommond& cmd)
 	{
-		std::unique_lock<std::mutex> oLock(mutex);
+		boost::mutex::scoped_lock oLock(mutex);
 		result.push_back(cmd);
 		oLock.unlock();
 	}
 
 	void DBService::Update()
 	{
-		std::unique_lock<std::mutex> oLock(mutex);
+		boost::mutex::scoped_lock oLock(mutex);
 		std::vector<SqlCommond> temp = result;
 		result.clear();
 		oLock.unlock();
 
 		for (int i = 0; i < (int)temp.size(); ++i)
 		{
-			temp[i].func(temp[i].result);
+			if (temp[i].func)
+				temp[i].func(*temp[i].result);
 		}
 	}
 
@@ -108,21 +111,23 @@ namespace xlib
 		return mysql_real_query(mysql, sql.c_str(), sql.length()) == 0;
 	}
 
-	void DBService::asynQuery(unsigned int key, const std::string& sql, std::function<void(DBResult& result)> func)
+	void DBService::asynQuery(uint64 key, const std::string& sql, std::function<void(DBResult& result)> func)
 	{
 		SqlCommond cmd;
 		cmd.sql = sql;
 		cmd.func = func;
 		cmd.type = sql_query;
+		cmd.result = std::shared_ptr<DBResult>(new DBResult);
 		vecThread[key%vecThread.size()]->addQuerySql(cmd);
 	}
 
-	void DBService::asynExcute(unsigned int key, const std::string& sql, std::function<void(DBResult& result)> func)
+	void DBService::asynExcute(uint64 key, const std::string& sql, std::function<void(DBResult& result)> func)
 	{
 		SqlCommond cmd;
 		cmd.sql = sql;
 		cmd.func = func;
 		cmd.type = sql_exect;
+		cmd.result = std::shared_ptr<DBResult>(new DBResult);
 		vecThread[key%vecThread.size()]->addExcutSql(cmd);
 	}
 

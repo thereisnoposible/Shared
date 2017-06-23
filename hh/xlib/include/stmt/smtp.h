@@ -39,6 +39,21 @@ namespace xlib
 	XDLL int mailAttachment(char **mail, const char *filePath);
 	XDLL int mailEnd(char **mail);
 	XDLL int connectSmtp(const char* smtpUrl, const unsigned short smtpPort);
+
+	//example
+	//const EMailSandEvent* pEvt = dynamic_cast<const EMailSandEvent*>(&eventx);
+	//const EMailSandData& data = pEvt->GetData();
+	//int ret = 0;
+	//char* pMail = (char*)calloc(1, 1);
+
+	//ret = ::mailText(&pMail, m_fromMail.c_str(), data.toMail.c_str(), data.titleMail.c_str(), data.textMail.c_str());
+	//ret = ::mailEnd(&pMail);
+	//m_fd = ::connectSmtp(m_smtpUrl.c_str(), SMTP_PORT);
+	//ret = ::authEmail(m_fd, m_fromMail.c_str(), m_fromMailPwa.c_str());
+	//ret = ::sendEmail(m_fd, m_fromMail.c_str(), data.toMail.c_str(), pMail, strlen((char*)pMail));
+	//closesocket(m_fd);
+	//free(pMail);
+	//m_fd = 0;
 }
 
 

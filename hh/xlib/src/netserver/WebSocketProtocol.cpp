@@ -301,6 +301,15 @@ namespace xlib
 			{
 				pPacket->m_pBuff += *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
 			}
+
+			if (pPacket->m_pBuff.size() == 0)
+			{
+				std::string temp;
+				for (int i = sizeof(pPacket->m_Head); i < len; ++i)
+				{
+					temp += *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
+				}
+			}
 			//std::string str;
 			//for (int i = 0; i < len; ++i)
 			//{

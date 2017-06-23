@@ -125,5 +125,15 @@ namespace xlib
 		len = it->second.length;
 		memcpy((void*)pdata, it->second.pData, len);
 	}
+
+	bool DBResult::IsSuccess()
+	{
+		return isSucce;
+	}
+
+	std::string& DBResult::GetError()
+	{
+		return err;
+	}
 }
 

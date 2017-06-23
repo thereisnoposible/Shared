@@ -19,36 +19,36 @@ namespace xlib
 	class XDLL DBResult
 	{
 	public:
-		DBResult() :mysql(nullptr), pResult(nullptr), row(nullptr){}
+		friend class DBService;
+		friend struct SqlThread;
+
+		DBResult() :mysql(nullptr), pResult(nullptr), row(nullptr), isSucce(true){}
 		~DBResult();
 		bool eof();
-
-		void GetResult(MYSQL_RES* p);
 		void nextRow();
 
 		int getIntField(const char* szField);
-
-		long long getLongLongField(const char* szField);
-
 		float getFloatField(const char* szField);
-
+		long long getLongLongField(const char* szField);
 		const char* getStringField(const char* szField);
-
 		void getBlobField(const char* szField, char* pdata, int& len);
-		bool IsSuccess();
-	public:
 
+		bool IsSuccess();
+		std::string& GetError();
+	public:
 		struct DBdata
 		{
 			char* pData;
 			unsigned int length;
 		};
+
+	private:
+		void GetResult(MYSQL_RES* p);
 		MYSQL* mysql;
 		MYSQL_RES* pResult;
 		MYSQL_ROW  row;
 		std::unordered_map<std::string, DBdata> rowData;
 		std::string err;
-	private:
 		bool isSucce;
 	};
 }

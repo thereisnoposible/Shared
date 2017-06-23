@@ -67,6 +67,7 @@ namespace xlib
 		time_t XDLL String2Timet(const std::string& str);
 
 		std::string XDLL chartohex(unsigned char p);
+		std::string XDLL HexToString(const unsigned char* pdata, int32 len);
 
 		bool XDLL hextoint32(const std::string& _In_str, int& _out_num);
 		bool XDLL hextoint64(const std::string& _In_str, long long& _out_num);
@@ -85,5 +86,11 @@ namespace xlib
 		{
 			convert<sizeof(T)>((char *)(val));
 		}
+
+		bool XDLL IsTimeChanged(time_t t, int32 hour, int32 min, int32 sec);
+		bool XDLL IsTimeChanged(time_t tLast, time_t tCurr, int32 hour, int32 min, int32 sec);
+
+		void  XDLL SplitTimet(time_t t, int32& year, int32& mon, int32& day, int32& hour, int32& min, int32& sec);
+		int32 XDLL GetDaySeconds(time_t t);
 	}
 }

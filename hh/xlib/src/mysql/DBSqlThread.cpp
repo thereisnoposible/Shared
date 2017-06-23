@@ -81,7 +81,7 @@ namespace xlib
 	{
 		while (!bExit)
 		{
-			std::unique_lock<std::mutex> oLock(mutex);
+			boost::mutex::scoped_lock oLock(mutex);
 			if (querysql.size() == 0)
 			{
 				variable.wait(oLock);
@@ -96,11 +96,14 @@ namespace xlib
 			{
 			case 1:
 				//std::cout << mysql_error(mysql) << "\n";
-				commd.result.err = mysql_error(mysql);
+				commd.result->err = commd.sql;
+				commd.result->err += ",";
+				commd.result->err += mysql_error(mysql);
+				commd.result->isSucce = false;
 				//break;
 			case 0:
-				if (!commd.func._Empty())
-					commd.func(commd.result);
+				if (func)
+					func(commd);
 			case -1:
 				break;
 			default:
@@ -116,11 +119,14 @@ namespace xlib
 			{
 			case 1:
 				//std::cout << "error :" << mysql_error(mysql);
-				(*it).err = mysql_error(mysql);
+				(*it).result->err = it->sql;
+				(*it).result->err += ",";
+				(*it).result->err += mysql_error(mysql);
+				it->result->isSucce = false;
 				//break;
 			case 0:
-				if (!(*it).func._Empty())
-					(*it).func((*it).result);
+				if (func)
+					func(*it);
 			case -1:
 				break;
 			default:
@@ -152,7 +158,7 @@ namespace xlib
 		switch (str.type)
 		{
 		case sql_query:
-			if (syncQuery(str.sql, &str.result))
+			if (syncQuery(str.sql, &*str.result))
 				res = 0;
 			else
 				res = 1;
@@ -170,14 +176,14 @@ namespace xlib
 
 	void SqlThread::addQuerySql(SqlCommond& str)
 	{
-		std::unique_lock<std::mutex> oLock(mutex);
+		boost::mutex::scoped_lock oLock(mutex);
 		querysql.push_back(str);
 		oLock.unlock();
 		variable.notify_all();
 	}
 	void SqlThread::addExcutSql(SqlCommond& str)
 	{
-		std::unique_lock<std::mutex> oLock(mutex);
+		boost::mutex::scoped_lock oLock(mutex);
 		querysql.push_back(str);
 		oLock.unlock();
 		variable.notify_all();
