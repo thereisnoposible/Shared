@@ -315,9 +315,13 @@ void JsonConvertImpl<_Type>::SerializeProtoBuf(const _Type& val, Json::Value& js
                     {
                     case ::google::protobuf::FieldDescriptor::TYPE_MESSAGE:
                     {
-
+#ifdef GetMessage
+#undef GetMessage
                         ::google::protobuf::Message& rMessage = const_cast<::google::protobuf::Message&>(pReflection->GetMessage(*pMessage, pField));
-                        stackMessage.push(&rMessage);
+#define GetMessage GetMessageA
+
+#endif // GetMessage                      
+						stackMessage.push(&rMessage);
                         stackJson.push(&val);
                     }break;
                     case ::google::protobuf::FieldDescriptor::TYPE_DOUBLE:

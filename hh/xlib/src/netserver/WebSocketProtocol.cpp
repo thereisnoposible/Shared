@@ -280,67 +280,26 @@ namespace xlib
 		//	return false;
 		std::string temp;
 		temp.assign(data, len);
-		if (msg_masked)
+		if (!msg_masked)
+			return false;
+
+		std::string str;
+		for (int i = 0; i < sizeof(pPacket->m_Head); ++i)
 		{
-			std::string str;
-			for (int i = 0; i < sizeof(pPacket->m_Head); ++i)
-			{
-				*((char*)(&pPacket->m_Head) + i) = *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
-				str += *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
-			}
-
-			//pPacket->m_Head.version = ntohs(pPacket->m_Head.version);
-			//pPacket->m_Head.messageid = ntohl(pPacket->m_Head.messageid);
-			//pPacket->m_Head.roleid = ntohl(pPacket->m_Head.roleid);
-			//pPacket->m_Head.datasize = ntohl(pPacket->m_Head.datasize);
-			if (pPacket->m_Head.begflag != tagPackHead::PACK_HFLAG || pPacket->m_Head.endflag != tagPackHead::PACK_EFLAG)
-			{
-				return false;
-			}
-			for (int i = sizeof(pPacket->m_Head); i < len; ++i)
-			{
-				pPacket->m_pBuff += *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
-			}
-
-			if (pPacket->m_pBuff.size() == 0)
-			{
-				std::string temp;
-				for (int i = sizeof(pPacket->m_Head); i < len; ++i)
-				{
-					temp += *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
-				}
-			}
-			//std::string str;
-			//for (int i = 0; i < len; ++i)
-			//{
-			//	str += *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
-			//}
-			//Json::Reader read;
-			//Json::Value param;
-			//read.parse(str, param, false);
-			//if (!param.isMember("begflag") ||
-			//	!param.isMember("version") ||
-			//	!param.isMember("messageid") ||
-			//	!param.isMember("roleid") ||
-			//	!param.isMember("datasize") ||
-			//	!param.isMember("endflag") ||
-			//	!param.isMember("data"))
-			//	return false;
-
-			//pPacket->m_Head.begflag = param["begflag"].asInt();
-			//pPacket->m_Head.version = param["version"].asInt();
-			//pPacket->m_Head.messageid = param["messageid"].asInt();
-			//pPacket->m_Head.roleid = param["roleid"].asInt();
-			//pPacket->m_Head.datasize = param["datasize"].asInt();
-			//pPacket->m_Head.endflag = param["endflag"].asInt();
-
-			//if (pPacket->m_Head.begflag != tagPackHead::PACK_HFLAG || pPacket->m_Head.endflag != tagPackHead::PACK_EFLAG)
-			//{
-			//	return false;
-			//}
-
-			//pPacket->m_pBuff = param["data"].asString();
+			*((char*)(&pPacket->m_Head) + i) = *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
+			str += *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
 		}
+
+		if (pPacket->m_Head.begflag != tagPackHead::PACK_HFLAG || pPacket->m_Head.endflag != tagPackHead::PACK_EFLAG)
+		{
+			return false;
+		}
+
+		for (int i = sizeof(pPacket->m_Head); i < len; ++i)
+		{
+			pPacket->m_pBuff += *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
+		}
+		
 
 		return true;
 	}
@@ -355,7 +314,13 @@ namespace xlib
 				*(o_data + i) = *(data + i) ^ ((unsigned char*)(&msg_mask))[i % 4];
 			}
 		}
-
+		else
+		{
+			for (int i = 0; i < len; ++i)
+			{
+				*(o_data + i) = *(data + i);
+			}
+		}
 		return true;
 	}
 }

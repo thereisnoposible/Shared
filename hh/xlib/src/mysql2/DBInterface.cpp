@@ -399,7 +399,13 @@ bool  DBInterface::querySQL(const std::string& sql, MySQLQuery& pQuery)
 	{
 		mysql_free_result(pQuery._mysql_res);
 	}
-	//
+	
+	do
+	{
+		MYSQL_RES *result = mysql_store_result(_db_ptr);
+		mysql_free_result(result);
+	} while (!mysql_next_result(_db_ptr));
+
 	if ( !mysql_real_query( _db_ptr, sql.c_str(), sql.length() ) )
 	{
 		pQuery._mysql_res=mysql_store_result( _db_ptr );
@@ -421,6 +427,12 @@ bool  DBInterface::querySQL(const std::string& sql, MySQLQuery& pQuery)
 //--------------------------------------------------------------------
 int32 DBInterface::execSQL(const std::string& sql)
 {
+	do
+	{
+		MYSQL_RES *result = mysql_store_result(_db_ptr);
+		mysql_free_result(result);
+	} while (!mysql_next_result(_db_ptr));
+
 	if( !mysql_real_query( _db_ptr, sql.c_str(), sql.length() ) )
 	{
 		int effectrow = (int)mysql_affected_rows(_db_ptr);
@@ -429,6 +441,12 @@ int32 DBInterface::execSQL(const std::string& sql)
 			if (_logservice)
 				_logservice->LogMessage("%s", sql.c_str());
 		}
+
+		do
+		{
+			MYSQL_RES *result = mysql_store_result(_db_ptr);
+			mysql_free_result(result);
+		} while (!mysql_next_result(_db_ptr));
 		//得到受影响的行数
 		return effectrow ;
 	}

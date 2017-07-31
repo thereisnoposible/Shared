@@ -61,6 +61,7 @@ namespace xlib
 		};
 		unsigned int mask_key;
 		std::string data;
+		std::string total_data;
 	};
 
 	class XDLL WebSocketProtocol
