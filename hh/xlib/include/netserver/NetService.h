@@ -80,7 +80,7 @@ namespace xlib
 		void ReadWebPackData();
 		void ReadWebPackDataReady(const boost::system::error_code& e, std::size_t bytes_transferred);
 
-		bool GetNetPackBuffer(std::string& buff, NetPack& netPack);
+		int32 GetNetPackBuffer(std::string& buff, NetPack& netPack);
 
 		void ReadHead();
 		void ReadReadyHead(const boost::system::error_code& e, std::size_t bytes_transferred);

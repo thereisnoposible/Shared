@@ -457,23 +457,23 @@ namespace xlib
 			boost::asio::placeholders::bytes_transferred));
 	}
 
-	bool NetConnect::GetNetPackBuffer(std::string& buff, NetPack& netPack)
+	int32 NetConnect::GetNetPackBuffer(std::string& buff, NetPack& netPack)
 	{
 		if (buff.size() < sizeof(PackHead))
-			return false;
+			return 1;
 
 		memcpy(&netPack.m_Head, buff.c_str(), sizeof(PackHead));
 		if (netPack.m_Head.begflag != tagPackHead::PACK_HFLAG || netPack.m_Head.endflag != tagPackHead::PACK_EFLAG)
-			return false;
+			return 2;
 
 		if (buff.size() < sizeof(PackHead) + netPack.m_Head.datasize)
-			return false;
+			return 1;
 
 		netPack.m_pBuff.clear();
 		netPack.m_pBuff.assign(buff.c_str() + sizeof(PackHead), netPack.m_Head.datasize);
 
 		buff.erase(buff.begin(), buff.begin() + sizeof(PackHead) + netPack.m_Head.datasize);
-		return true;
+		return 0;
 	}
 
 	void NetConnect::ReadWebPackDataReady(const boost::system::error_code& e, std::size_t bytes_transferred)
@@ -503,7 +503,8 @@ namespace xlib
 		}
 
 		NetPack temp_pack;
-		while (GetNetPackBuffer(webpack.total_data, temp_pack))
+		int32 result = GetNetPackBuffer(webpack.total_data, temp_pack);
+		while (result == 0)
 		{
 			PackPtr p(new NetPack);
 			*p = temp_pack;
@@ -512,6 +513,15 @@ namespace xlib
 			_OnGetPack(p);
 
 			temp_pack = NetPack();
+
+			result = GetNetPackBuffer(webpack.total_data, temp_pack);
+		}
+
+		if (result == 2)
+		{
+			if (!_OnBreak.empty())
+				_OnBreak(shared_from_this());
+			return;
 		}
 
 		if (webpack.head.fin == 0)
