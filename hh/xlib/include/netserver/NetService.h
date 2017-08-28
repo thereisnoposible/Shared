@@ -145,10 +145,12 @@ namespace xlib
 		io_service_pool _io_service_pool;
 		boost::asio::ip::tcp::acceptor* _acceptor;
 		boost::mutex _packmutex;
+		boost::mutex _connectmutex;
 		boost::mutex _disconnectmutex;
 
 		std::hash_map<ConnectPtr, std::string> _connectMap;
 
+		std::vector<ConnectPtr> newConnect;
 		std::vector<ConnectPtr> newDisConnect;
 
 		std::vector<PackPtr> NetPackVector;

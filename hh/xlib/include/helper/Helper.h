@@ -92,5 +92,9 @@ namespace xlib
 
 		void  XDLL SplitTimet(time_t t, int32& year, int32& mon, int32& day, int32& hour, int32& min, int32& sec);
 		int32 XDLL GetDaySeconds(time_t t);
+
+
+		std::string XDLL DeEscapeString(const std::string& str);
+		std::string XDLL EscapeString(const std::string& escape, const std::string& str);
 	}
 }

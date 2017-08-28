@@ -77,6 +77,11 @@ namespace xlib
 		//conn->ReadHead();
 		conn->Handshake(0);
 
+		boost::mutex::scoped_lock disconnlock(_connectmutex);
+		newConnect.push_back(conn);
+		disconnlock.unlock();
+		
+
 		if (_loger)
 		{
 			_loger->LogMessage("accept success addr = %s",conn->GetAddress());
@@ -95,6 +100,18 @@ namespace xlib
 	//-------------------------------------------------------------------------------------------
 	void NetService::update()
 	{
+		{
+			boost::mutex::scoped_lock connlock(_connectmutex);
+			auto tmp_newConnect = newConnect;
+			newConnect.clear();
+			connlock.unlock();
+
+			for (int i = 0; i < (int)tmp_newConnect.size(); i++)
+			{
+				std::for_each(_NetObserverSet.begin(), _NetObserverSet.end(), boost::bind(&NetObserver::OnConnect, _1, tmp_newConnect[i]));
+			}
+		}
+
 		boost::mutex::scoped_lock lock(_packmutex);
 		NetPackVectorTemp = NetPackVector;
 		NetPackVector.clear();

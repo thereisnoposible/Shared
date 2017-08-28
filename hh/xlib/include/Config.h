@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <memory.h>
 #include "helper/Helper.h"
+#include <sys/stat.h>
 #include <vector>
 #include <string>
 #include <hash_map>
@@ -18,9 +19,31 @@ namespace xlib
 			if (pFile == NULL)
 				return -1;
 
-			fseek(pFile, 0, SEEK_SET);
 
-			fread(buf, 4096, 1, pFile);
+#if defined(_MSC_VER)
+			auto descriptor = _fileno(pFile);
+#else
+			auto descriptor = fileno(fp);
+#endif
+			struct stat statBuf;
+			if (fstat(descriptor, &statBuf) == -1) {
+				fclose(pFile);
+				return 0;
+			}
+			size_t num = statBuf.st_size;
+
+			//file.seekg(0, ios::end);
+			//int num = file.tellg();
+			//file.seekg(0, ios::beg);
+			//str.resize(num);
+
+			size_t readsize = fread(buf, 1, num, pFile);
+			//fclose(file);
+			
+
+			//fseek(pFile, 0, SEEK_SET);
+
+			//fread(buf, 4096, 1, pFile);
 			std::vector<std::string> sAstr;
 			Helper::SplitString(buf, "[", sAstr);
 			for (int i = 0; i < (int)sAstr.size(); i++)

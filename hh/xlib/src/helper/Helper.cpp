@@ -726,5 +726,46 @@ namespace xlib{
 
 			return total;
 		}
+
+		//-------------------------------------------------------------------------------
+		std::string DeEscapeString(const std::string& str)
+		{
+			std::string ret;
+			for (int32 i = 0; i < (int32)str.size(); i++)
+			{
+				bool bFind = false;
+
+				if (str[i] == '\\')
+				{
+					i++;
+				}
+
+				if (i < (int32)str.size())
+					ret += str[i];
+			}
+
+			return ret;
+		}
+
+		//-------------------------------------------------------------------------------
+		std::string EscapeString(const std::string& escape, const std::string& str)
+		{
+			std::string ret;
+			for (int32 i = 0; i < (int32)str.size(); i++)
+			{
+				for (int32 j = 0; j < (int32)escape.size(); j++)
+				{
+					if (str[i] == escape[j])
+					{
+						ret += "\\";
+						break;
+					}
+				}
+
+				ret += str[i];
+			}
+
+			return ret;
+		}
 	}
 }
