@@ -1,5 +1,5 @@
 #pragma once
-#pragma pack(1)
+
 #include <stdint.h>
 #include <memory>
 #include <boost/shared_ptr.hpp>
@@ -15,6 +15,7 @@ namespace xlib
 	struct NetConnect;
 	class WebSocketProtocol;
 
+#pragma pack(1)
 	typedef struct XDLL tagPackHead
 	{
 		static const short PACK_VER = 1;				/** –≠“È∞Ê±æ */
