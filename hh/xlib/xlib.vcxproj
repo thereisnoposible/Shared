@@ -138,7 +138,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;F:\myproject\third_party;F:\myproject\third_party\protobuf-2.5.0\src;F:\myproject\third_party\g3dlite;F:\myproject\hh\xlib\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>g3dlite;g3dlite/g3d;$(boost);../protobuf-2.5.0/src;../../new;../Public;E:\myproject\third_party;E:\myproject\third_party\protobuf-2.5.0\src;E:\myproject\third_party\g3dlite;E:\myproject\hh\xlib\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,7 +146,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>12333.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib64;F:\myproject\hh\Public\Visual Leak Detector\lib\Win64;F:\myproject\hh\Public\mysql\mysql64\lib;F:\myproject\third_party;F:\myproject\third_party\mysql\mysql64;F:\myproject\hh\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(boost)/bin/vc12/lib64;E:\myproject\hh\Public\Visual Leak Detector\lib\Win64;E:\myproject\hh\Public\mysql\mysql64\lib;E:\myproject\third_party;E:\myproject\third_party\mysql\mysql64;E:\myproject\hh\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

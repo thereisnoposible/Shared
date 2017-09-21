@@ -39,6 +39,18 @@ namespace xlib
 		}
 
 		bClose = true;
+
+		for (int32 i = 0; i < (int32)newConnect.size(); i++)
+		{
+			newConnect[i]->CloseSocket();
+		}
+		newConnect.clear();
+
+		for (int32 i = 0; i < (int32)newDisConnect.size(); i++)
+		{
+			newDisConnect[i]->CloseSocket();
+		}
+		newDisConnect.clear();
 		
 		_io_service_pool.stop();
 	}
