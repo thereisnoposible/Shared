@@ -96,5 +96,7 @@ namespace xlib
 
 		std::string XDLL DeEscapeString(const std::string& str);
 		std::string XDLL EscapeString(const std::string& escape, const std::string& str);
+
+		std::string XDLL FilterUTF8(const char* str, int length);
 	}
 }
