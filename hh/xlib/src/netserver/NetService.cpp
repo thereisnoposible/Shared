@@ -267,6 +267,9 @@ namespace xlib
 		if (bClose)
 			return;
 
+		if (_pSocket == nullptr)
+			return;
+
 		if (type == TYPE_SOCKET)
 		{
 			NetPack Pack(messegeid, pdata, len, roleid, type);
