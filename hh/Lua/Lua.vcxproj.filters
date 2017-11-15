@@ -16,6 +16,9 @@
     <Filter Include="lua">
       <UniqueIdentifier>{cc5f4155-605f-42df-89e6-c198af0a5ccb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lua503">
+      <UniqueIdentifier>{17312db9-0b7e-4eb4-bde5-c25f46734851}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -132,6 +135,111 @@
     <ClCompile Include="lua\tolua_to.c">
       <Filter>lua</Filter>
     </ClCompile>
+    <ClCompile Include="3rd\lua\lapi.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lauxlib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lbaselib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lbitlib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lcode.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lcorolib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lctype.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\ldblib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\ldebug.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\ldo.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\ldump.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lfunc.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lgc.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\linit.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\liolib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\llex.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lmathlib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lmem.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\loadlib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lobject.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lopcodes.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\loslib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lparser.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lstate.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lstring.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lstrlib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\ltable.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\ltablib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\ltm.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lua.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\luac.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lundump.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lutf8lib.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lvm.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
+    <ClCompile Include="3rd\lua\lzio.c">
+      <Filter>lua503</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lua\lapi.h">
@@ -209,5 +317,91 @@
     <ClInclude Include="lua\tolua_event.h">
       <Filter>lua</Filter>
     </ClInclude>
+    <ClInclude Include="3rd\lua\lapi.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lauxlib.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lcode.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lctype.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\ldebug.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\ldo.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lfunc.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lgc.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\llex.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\llimits.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lmem.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lobject.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lopcodes.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lparser.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lprefix.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lstate.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lstring.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\ltable.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\ltm.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lua.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lua.hpp">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\luaconf.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lualib.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lundump.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lvm.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+    <ClInclude Include="3rd\lua\lzio.h">
+      <Filter>lua503</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3rd\lua\Makefile">
+      <Filter>lua503</Filter>
+    </None>
+    <None Include="3rd\lua\README">
+      <Filter>lua503</Filter>
+    </None>
   </ItemGroup>
 </Project>

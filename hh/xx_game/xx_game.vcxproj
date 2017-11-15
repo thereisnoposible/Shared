@@ -176,9 +176,13 @@
     <ClCompile Include="lua\tolua_map.c" />
     <ClCompile Include="lua\tolua_push.c" />
     <ClCompile Include="lua\tolua_to.c" />
-    <ClCompile Include="lua_helper.cpp" />
+    <ClCompile Include="luna\lua_archiver.cpp" />
+    <ClCompile Include="luna\luna.cpp" />
+    <ClCompile Include="luna\lz4.c" />
+    <ClCompile Include="luna\var_int.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="XX.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -208,8 +212,13 @@
     <ClInclude Include="lua\lzio.h" />
     <ClInclude Include="lua\tolua++.h" />
     <ClInclude Include="lua\tolua_event.h" />
-    <ClInclude Include="lua_helper.h" />
+    <ClInclude Include="luna\lua_archiver.h" />
+    <ClInclude Include="luna\luna11.h" />
+    <ClInclude Include="luna\luna14.h" />
+    <ClInclude Include="luna\lz4.h" />
+    <ClInclude Include="luna\var_int.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="XX.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lua\Makefile" />

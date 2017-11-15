@@ -462,9 +462,9 @@ void lua_push_object(lua_State* L, T obj)
     }
 
     // stack: __objects__
-    if (lua_rawgetp(L, -1, obj) != LUA_TTABLE)
+   // if (lua_rawgetp(L, -1, obj) != LUA_TTABLE)
     {
-        lua_pop(L, 1);
+        //lua_pop(L, 1);
 
         lua_newtable(L);
         lua_pushstring(L, "__pointer__");
@@ -483,8 +483,8 @@ void lua_push_object(lua_State* L, T obj)
         lua_setmetatable(L, -2);
 
         // stack: __objects__, tab
-        lua_pushvalue(L, -1);
-        lua_rawsetp(L, -3, obj);
+        //lua_pushvalue(L, -1);
+        //lua_rawsetp(L, -3, obj);
     }
     lua_remove(L, -2);
 }

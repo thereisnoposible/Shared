@@ -15,7 +15,7 @@ namespace xlib
 
 		if (m_pConnect != nullptr)
 		{
-			m_pConnect->CloseSocket();
+			m_pNetService->OnDisConnect(m_pConnect, "");
 			m_pConnect.reset();
 		}
 
@@ -51,7 +51,7 @@ namespace xlib
 
 		if (m_pConnect != nullptr)
 		{
-			m_pConnect->CloseSocket();
+			m_pNetService->OnDisConnect(m_pConnect, "");
 			m_pConnect.reset();
 		}
 
@@ -122,7 +122,7 @@ namespace xlib
 		{
 			if (m_pConnect != nullptr)
 			{
-				m_pConnect->CloseSocket();
+				m_pNetService->OnDisConnect(m_pConnect, "");
 				m_pConnect.reset();
 			}
 

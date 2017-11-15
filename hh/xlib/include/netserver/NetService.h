@@ -57,7 +57,6 @@ namespace xlib
 		//	return readBuf;
 		//}
 
-		void CloseSocket();
 		boost::asio::ip::tcp::socket& GetSocket();
 
 		const char* GetAddress();
@@ -68,7 +67,7 @@ namespace xlib
 
 		void SetSocket(std::shared_ptr<boost::asio::ip::tcp::socket> pSocket);
 
-		void RegistOnDisConnect(boost::function<void(ConnectPtr&)> OnBreak);
+		void RegistOnDisConnect(boost::function<void(ConnectPtr&, const std::string&)> OnBreak);
 
 		void Handshake(int off);
 		void OnHandShake(const boost::system::error_code& e, std::size_t bytes_transferred);
@@ -89,6 +88,7 @@ namespace xlib
 
 		void WriteReady(const boost::system::error_code& e, std::size_t bytes_transferred);
 
+		void CloseSocket();
 		void handle_close();
 	private:
 		NetPack readBuf;
@@ -98,7 +98,7 @@ namespace xlib
 		std::shared_ptr<boost::asio::ip::tcp::socket> _pSocket;
 		//boost::array<char, 128 * 1024> buffer_;
 		boost::function<void(PackPtr&)> _OnGetPack;
-		boost::function<void(ConnectPtr&)> _OnBreak;
+		boost::function<void(ConnectPtr&,const std::string&)> _OnBreak;
 		std::string addr;
 		SocketType type;
 
@@ -109,7 +109,7 @@ namespace xlib
 	{
 	public:
 		virtual void OnConnect(ConnectPtr&) = 0;
-		virtual void OnDisConnect(ConnectPtr&) = 0;
+		virtual void OnDisConnect(ConnectPtr&, const std::string& message) = 0;
 	};
 
 	class XDLL NetService : public MessageHandle<PackPtr>
@@ -122,7 +122,7 @@ namespace xlib
 
 		void update();
 
-		bool Connect(const char* ip, int port, boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc);
+		bool Connect(const char* ip, int port, boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&, const std::string&)> ffunc);
 		//void DisConnect(std::string addr);
 
 		void RegistObserver(NetObserver* observer);
@@ -132,14 +132,14 @@ namespace xlib
 
 		void SetLog(std::string& url);
 
-		void OnDisConnect(ConnectPtr& pConnetct);
+		void OnDisConnect(const ConnectPtr& pConnetct, const std::string& message);
 	protected:
 		void GetNetPack(PackPtr& pPack);
 
 		void accept();
 
 		void OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket,
-			boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc, boost::system::error_code ec);
+			boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&, const std::string&)> ffunc, boost::system::error_code ec);
 		void OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket, boost::system::error_code ec);
 	private:
 		io_service_pool _io_service_pool;
@@ -151,7 +151,7 @@ namespace xlib
 		std::hash_map<ConnectPtr, std::string> _connectMap;
 
 		std::vector<ConnectPtr> newConnect;
-		std::vector<ConnectPtr> newDisConnect;
+		std::vector<std::pair<ConnectPtr, std::string>> newDisConnect;
 
 		std::vector<PackPtr> NetPackVector;
 		std::vector<PackPtr> NetPackVectorTemp;

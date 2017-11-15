@@ -39,6 +39,8 @@ extern "C"
 #include "lua/tolua++.h"
 }
 
+#include "luna/luna11.h"
+
 using namespace xlib;
 
 #define SAFE_DELETE(p) {if(p!=nullptr){delete p;p=nullptr;}}

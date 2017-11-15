@@ -48,7 +48,7 @@ namespace xlib
 
 		for (int32 i = 0; i < (int32)newDisConnect.size(); i++)
 		{
-			newDisConnect[i]->CloseSocket();
+			newDisConnect[i].first->CloseSocket();
 		}
 		newDisConnect.clear();
 		
@@ -85,7 +85,7 @@ namespace xlib
 		}
 
 		ConnectPtr conn(new NetConnect(psocket, boost::bind(&NetService::GetNetPack, this, _1)));
-		conn->RegistOnDisConnect(boost::bind(&NetService::OnDisConnect, this, _1));
+		conn->RegistOnDisConnect(boost::bind(&NetService::OnDisConnect, this, _1, _2));
 		//conn->ReadHead();
 		conn->Handshake(0);
 
@@ -103,10 +103,10 @@ namespace xlib
 	}
 
 	//-------------------------------------------------------------------------------------------
-	void NetService::OnDisConnect(ConnectPtr& pConnetct)
-	{
+	void NetService::OnDisConnect(const ConnectPtr& pConnetct, const std::string& message)
+	{		
 		boost::mutex::scoped_lock lock(_disconnectmutex);
-		newDisConnect.push_back(pConnetct);
+		newDisConnect.push_back(std::pair<ConnectPtr, std::string>(pConnetct, message));
 	}
 
 	//-------------------------------------------------------------------------------------------
@@ -141,8 +141,9 @@ namespace xlib
 		disconnlock.unlock();
 		for (int i = 0; i < (int)tmp_newDisConnect.size(); i++)
 		{
-			tmp_newDisConnect[i]->CloseSocket();
-			std::for_each(_NetObserverSet.begin(), _NetObserverSet.end(), boost::bind(&NetObserver::OnDisConnect, _1, tmp_newDisConnect[i]));
+			tmp_newDisConnect[i].first->CloseSocket();
+			std::for_each(_NetObserverSet.begin(), _NetObserverSet.end(), 
+				boost::bind(&NetObserver::OnDisConnect, _1, tmp_newDisConnect[i].first, tmp_newDisConnect[i].second));
 		}
 		
 
@@ -181,7 +182,7 @@ namespace xlib
 	}
 	//-------------------------------------------------------------------------------------------
 	bool NetService::Connect(const char* ip, int port,
-		boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc)
+		boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&, const std::string&)> ffunc)
 	{
 		std::shared_ptr<tcp::socket> skt(new tcp::socket(_io_service_pool.get_io_service()));
 		tcp::endpoint endpoint(boost::asio::ip::address_v4::from_string(ip), port);
@@ -194,11 +195,11 @@ namespace xlib
 
 	//-------------------------------------------------------------------------------------------
 	void NetService::OnConnect(std::shared_ptr<boost::asio::ip::tcp::socket> psocket,
-		boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&)> ffunc, boost::system::error_code ec)
+		boost::function<void(ConnectPtr&)> sfunc, boost::function<void(ConnectPtr&, const std::string&)> ffunc, boost::system::error_code ec)
 	{
 		if (ec)
 		{
-			ffunc(ConnectPtr());
+			ffunc(ConnectPtr(), ec.message());
 			return;
 		};
 
@@ -237,7 +238,7 @@ namespace xlib
 		bClose = false;
 	}
 
-	void NetConnect::RegistOnDisConnect(boost::function<void(ConnectPtr&)> OnBreak)
+	void NetConnect::RegistOnDisConnect(boost::function<void(ConnectPtr&, const std::string&)> OnBreak)
 	{
 		_OnBreak = OnBreak;
 	}
@@ -267,7 +268,7 @@ namespace xlib
 		if (bClose)
 			return;
 
-		if (_pSocket == nullptr)
+		if (!_pSocket)
 			return;
 
 		if (type == TYPE_SOCKET)
@@ -303,7 +304,7 @@ namespace xlib
 		if (e)
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(), e.message());
 			return;
 		}
 		//		readBuf += buffer_.data();
@@ -335,7 +336,7 @@ namespace xlib
 			if (!WebSocketProtocol::handshake(_pSocket, handshake.c_str(), rsize))
 			{
 				if (!_OnBreak.empty())
-					_OnBreak(shared_from_this());
+					_OnBreak(shared_from_this(), "handshake failed");
 				return;
 			}
 			ReadWebPackHead();
@@ -366,7 +367,7 @@ namespace xlib
 		if (e)
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(),e.message());
 			return;
 		}
 		//		readBuf += buffer_.data();
@@ -374,7 +375,7 @@ namespace xlib
 		if (readBuf.m_Head.begflag != tagPackHead::PACK_HFLAG || readBuf.m_Head.endflag != tagPackHead::PACK_EFLAG)
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(), "unlawful pack");
 			return;
 		}
 		ReadBody();
@@ -396,7 +397,7 @@ namespace xlib
 		if (e)
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(), e.message());
 			return;
 		}
 		//		readBuf += buffer_.data();
@@ -421,14 +422,14 @@ namespace xlib
 		if (e)
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(), e.message());
 			return;
 		}
 
 		if (webpack.head.opcode == WebSocketProtocol::CLOSE_FRAME)
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(), "close frame");
 			return;
 		}
 
@@ -467,7 +468,7 @@ namespace xlib
 		if (e)
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(), e.message());
 			return;
 		}
 
@@ -513,7 +514,7 @@ namespace xlib
 		if (e)
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(), e.message());
 			return;
 		}
 
@@ -529,7 +530,7 @@ namespace xlib
 			const_cast<char*>(webpack.total_data.c_str()) + off, webpack.head.mask, webpack.mask_key))
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(), "decoding failed");
 
 			return;
 		}
@@ -552,7 +553,7 @@ namespace xlib
 		if (result == 2)
 		{
 			if (!_OnBreak.empty())
-				_OnBreak(shared_from_this());
+				_OnBreak(shared_from_this(), "unlawful pack");
 			return;
 		}
 

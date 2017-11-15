@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <boost/format.hpp>
 #include <boost/uuid/sha1.hpp>  
-#include "base64.h"
+#include "../base64.h"
 #include "../include/json/json.h"
 #include "../include/netserver/NetPack.h"
 

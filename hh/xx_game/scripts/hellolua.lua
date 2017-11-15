@@ -13,6 +13,10 @@ function aaaaa(num)
 	return num+3000;
 end
 
+function bbbb(xx)
+    xx.luaSay();
+end
+
 for key,value in pairs(ppp) do
 	print(key,":",value,"\n");
 end

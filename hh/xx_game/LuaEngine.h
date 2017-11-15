@@ -1,4 +1,5 @@
 #pragma once
+#include "XX.h"
 
 class LuaEngine
 {
@@ -15,4 +16,6 @@ protected:
 private:
 	
 	lua_State* lua_state_;
+
+	XX_Env* m_XX;
 };

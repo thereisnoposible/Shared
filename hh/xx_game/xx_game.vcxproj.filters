@@ -16,6 +16,9 @@
     <Filter Include="lua">
       <UniqueIdentifier>{affa246e-6354-4d94-9f02-9c7061bb5b0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="luna">
+      <UniqueIdentifier>{cc6445a1-59ab-42a1-8ee3-57bd983f21ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -141,8 +144,20 @@
     <ClCompile Include="LuaEngine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="lua_helper.cpp">
+    <ClCompile Include="XX.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="luna\lua_archiver.cpp">
+      <Filter>luna</Filter>
+    </ClCompile>
+    <ClCompile Include="luna\luna.cpp">
+      <Filter>luna</Filter>
+    </ClCompile>
+    <ClCompile Include="luna\lz4.c">
+      <Filter>luna</Filter>
+    </ClCompile>
+    <ClCompile Include="luna\var_int.cpp">
+      <Filter>luna</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -230,8 +245,23 @@
     <ClInclude Include="LuaEngine.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="lua_helper.h">
+    <ClInclude Include="XX.h">
       <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="luna\lua_archiver.h">
+      <Filter>luna</Filter>
+    </ClInclude>
+    <ClInclude Include="luna\luna11.h">
+      <Filter>luna</Filter>
+    </ClInclude>
+    <ClInclude Include="luna\luna14.h">
+      <Filter>luna</Filter>
+    </ClInclude>
+    <ClInclude Include="luna\lz4.h">
+      <Filter>luna</Filter>
+    </ClInclude>
+    <ClInclude Include="luna\var_int.h">
+      <Filter>luna</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

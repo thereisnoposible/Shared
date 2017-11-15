@@ -176,8 +176,17 @@ bool lua_archiver::save_value(lua_State* L, int idx)
     case LUA_TNIL:
         return save_nill();
 
-    case LUA_TNUMBER:
-        return lua_isinteger(L, idx) ? save_integer(lua_tointeger(L, idx)) : save_number(lua_tonumber(L, idx));
+	case LUA_TNUMBER:
+	{
+		lua_Integer i = lua_tointeger(L, idx);
+		if (i != 0)
+		{
+			return save_integer(i);
+		}
+
+		return save_number(lua_tonumber(L, idx));
+	}
+       //return lua_isinteger(L, idx) ? save_integer(lua_tointeger(L, idx)) : save_number(lua_tonumber(L, idx));
 
     case LUA_TBOOLEAN:
         return save_bool(!!lua_toboolean(L, idx));
