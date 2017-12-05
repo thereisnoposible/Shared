@@ -57,7 +57,7 @@ namespace xlib
 		//	return readBuf;
 		//}
 
-		boost::asio::ip::tcp::socket& GetSocket();
+		boost::asio::ip::tcp::socket* GetSocket();
 
 		const char* GetAddress();
 

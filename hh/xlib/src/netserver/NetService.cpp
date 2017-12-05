@@ -120,7 +120,14 @@ namespace xlib
 
 			for (int i = 0; i < (int)tmp_newConnect.size(); i++)
 			{
-				std::for_each(_NetObserverSet.begin(), _NetObserverSet.end(), boost::bind(&NetObserver::OnConnect, _1, tmp_newConnect[i]));
+				try
+				{
+					std::for_each(_NetObserverSet.begin(), _NetObserverSet.end(), boost::bind(&NetObserver::OnConnect, _1, tmp_newConnect[i]));
+				}
+				catch (...)
+				{
+
+				}
 			}
 		}
 
@@ -131,7 +138,14 @@ namespace xlib
 
 		for (int i = 0; i < (int)NetPackVectorTemp.size(); i++)
 		{
-			FireMessage(NetPackVectorTemp[i]->getMessageId(), NetPackVectorTemp[i]);
+			try
+			{
+				FireMessage(NetPackVectorTemp[i]->getMessageId(), NetPackVectorTemp[i]);
+			}
+			catch (...)
+			{
+
+			}
 		}
 		NetPackVectorTemp.clear();
 
@@ -141,9 +155,16 @@ namespace xlib
 		disconnlock.unlock();
 		for (int i = 0; i < (int)tmp_newDisConnect.size(); i++)
 		{
-			tmp_newDisConnect[i].first->CloseSocket();
-			std::for_each(_NetObserverSet.begin(), _NetObserverSet.end(), 
-				boost::bind(&NetObserver::OnDisConnect, _1, tmp_newDisConnect[i].first, tmp_newDisConnect[i].second));
+			try
+			{
+				tmp_newDisConnect[i].first->CloseSocket();
+				std::for_each(_NetObserverSet.begin(), _NetObserverSet.end(),
+					boost::bind(&NetObserver::OnDisConnect, _1, tmp_newDisConnect[i].first, tmp_newDisConnect[i].second));
+			}
+			catch (...)
+			{
+
+			}
 		}
 		
 
@@ -220,11 +241,14 @@ namespace xlib
 		_OnGetPack = func;
 		//		_OnBreak = boost::function<void(std::string)>();
 
-		addr = _pSocket->remote_endpoint().address().to_string();
-		addr += ":";
-		char a[10] = { 0 };
-		sprintf_s(a, "%d", _pSocket->remote_endpoint().port());
-		addr += a;
+		if (_pSocket)
+		{
+			addr = _pSocket->remote_endpoint().address().to_string();
+			addr += ":";
+			char a[10] = { 0 };
+			sprintf_s(a, "%d", _pSocket->remote_endpoint().port());
+			addr += a;
+		}
 
 		handshake.resize(sizeof(PackHead));
 		rsize = 0;
@@ -253,9 +277,12 @@ namespace xlib
 
 	}
 
-	boost::asio::ip::tcp::socket& NetConnect::GetSocket()
+	boost::asio::ip::tcp::socket* NetConnect::GetSocket()
 	{
-		return *_pSocket.get();
+		if (_pSocket)
+			return _pSocket.get();
+
+		return nullptr;
 	}
 
 	const char* NetConnect::GetAddress()
@@ -330,7 +357,7 @@ namespace xlib
 			handshake.resize(1000);
 		}
 
-		if (WebSocketProtocol::isWebSocketProtocol(handshake.c_str(), rsize))
+		if (WebSocketProtocol::isWebSocketProtocol(handshake.c_str(), rsize) && _pSocket)
 		{
 			type = TYPE_WEBSOCKET;
 			if (!WebSocketProtocol::handshake(_pSocket, handshake.c_str(), rsize))
@@ -587,10 +614,13 @@ namespace xlib
 	void NetConnect::handle_close()
 	{
 		try{
-			boost::system::error_code ignored_ec;
-			_pSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
-			_pSocket->close();
-			_pSocket.reset();
+			if (_pSocket)
+			{
+				boost::system::error_code ignored_ec;
+				_pSocket->shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+				_pSocket->close();
+				_pSocket.reset();
+			}
 		}
 		catch (...)
 		{
