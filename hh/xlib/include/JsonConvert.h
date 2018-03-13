@@ -1,5 +1,6 @@
 #pragma once
-#include "../public/proto/protoFiles/player.txt.pb.h"
+#include "google/protobuf/message.h"
+
 #include "json/json.h"
 
 template<typename _Type>
